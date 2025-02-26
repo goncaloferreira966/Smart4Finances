@@ -16,6 +16,17 @@ class UserController extends Controller
 {
     public function update(Request $request, $id)
     {
+        //SECURITY
+        // Obtém o usuário logado
+        $user = auth()->user();
+
+        // Verifica se o ID do usuário logado é o mesmo que o ID recebido ou se o tipo é 'A' (administrador)
+        if ($user->id != $id) {
+            // Retorna Unauthorized caso o ID não coincidam e o tipo não seja 'A'
+            return response()->json(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
+        }
+        //SECURITY-END
+
         // Validação dos dados
         $validator = Validator::make($request->all(), [
             'name' => 'nullable|string|max:255',
@@ -155,7 +166,7 @@ class UserController extends Controller
         $user = auth()->user();
 
         // Verifica se o ID do usuário logado é o mesmo que o ID recebido ou se o tipo é 'A' (administrador)
-        if ($user->id != $id && $user->type == 'P') {
+        if ($user->id != $id && $user->type == 'C') {
             // Retorna Unauthorized caso o ID não coincidam e o tipo não seja 'A'
             return response()->json(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
@@ -177,7 +188,7 @@ class UserController extends Controller
         $user = auth()->user();
 
         // Verifica se o ID do usuário logado é o mesmo que o ID recebido ou se o tipo é 'A' (administrador)
-        if ($user->type == 'P') {
+        if ($user->type == 'C') {
             // Retorna Unauthorized caso o ID não coincidam e o tipo não seja 'A'
             return response()->json(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
@@ -192,7 +203,7 @@ class UserController extends Controller
         $user = auth()->user();
 
         // Verifica se o ID do usuário logado é o mesmo que o ID recebido ou se o tipo é 'A' (administrador)
-        if ($user->type == 'P') {
+        if ($user->type == 'C') {
             // Retorna Unauthorized caso o ID não coincidam e o tipo não seja 'A'
             return response()->json(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
@@ -200,7 +211,7 @@ class UserController extends Controller
         
         $query = User::query();
 
-        if ($request->has('type') && in_array($request->type, ['A', 'P'])) {
+        if ($request->has('type') && in_array($request->type, ['A', 'C'])) {
             $query->where('type', $request->type);
         }
 
@@ -214,7 +225,7 @@ class UserController extends Controller
         $user = auth()->user();
 
         // Verifica se o ID do usuário logado é o mesmo que o ID recebido ou se o tipo é 'A' (administrador)
-        if ($user->id != $userId && $user->type == 'P') {
+        if ($user->id != $userId && $user->type == 'C') {
             // Retorna Unauthorized caso o ID não coincidam e o tipo não seja 'A'
             return response()->json(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
@@ -244,7 +255,7 @@ class UserController extends Controller
         $user = auth()->user();
 
         // Verifica se o ID do usuário logado é o mesmo que o ID recebido ou se o tipo é 'A' (administrador)
-        if ($user->type == 'P') {
+        if ($user->type == 'C') {
             // Retorna Unauthorized caso o ID não coincidam e o tipo não seja 'A'
             return response()->json(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
@@ -269,28 +280,6 @@ class UserController extends Controller
 
         // Retorna a resposta de sucesso
         return response()->json(['message' => 'Status de bloqueio atualizado com sucesso', 'user' => $user], Response::HTTP_OK);
-    }
-    
-    public function getUserCoins($userId)
-    {
-        //SECURITY
-        // Obtém o usuário logado
-        $user = auth()->user();
-
-        // Verifica se o ID do usuário logado é o mesmo que o ID recebido ou se o tipo é 'A' (administrador)
-        if ($user->id != $userId ) {
-            // Retorna Unauthorized caso o ID não coincidam e o tipo não seja 'A'
-            return response()->json(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
-        }
-        //SECURITY-END
-
-        $user = User::find($userId);
-
-        if (!$user) {
-            return response()->json(['message' => 'User não encontrado'], 404);
-        }
-
-        return response()->json(['brain_coins_balance' => $user->brain_coins_balance]);
     }
 
     public function getUserRole($userId)

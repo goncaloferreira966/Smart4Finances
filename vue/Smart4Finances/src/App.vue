@@ -24,6 +24,9 @@
       <div v-else-if="currentSection === 'editUser'">
         <EditUser @update-success="handleUpdateSuccess" />
       </div>
+      <div v-else-if="currentSection === 'administration'">
+        <Administration />
+      </div>
   
     </div>
 
@@ -45,7 +48,7 @@ import NavbarLoginRegister from './components/NavbarLoginRegister.vue';
 import Register from './components/Register.vue';
 import Profile from './components/Profile.vue';
 import EditUser from './components/EditUser.vue';
-
+import Administration from './components/Administration.vue';
 
 
 export default {
@@ -56,6 +59,7 @@ export default {
     Register,
     Profile,
     EditUser,
+    Administration,
   },
   computed: {
     currentYear() {

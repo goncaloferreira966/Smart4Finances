@@ -54,9 +54,8 @@ Route::middleware(['auth:api'])->group(function () {
     //DAD
     Route::post('user/{id}/updateProfile', [UserController::class, 'update']);
     Route::post('logout',  [AuthController::class, 'logout']);
-   
+    Route::patch('/users/{userId}/block', [UserController::class, 'updateBlocked']);
     Route::get('/users/{userId}/nickname', [UserController::class, 'getUserNickname']);
-    
     Route::apiResource("users", UserController::class);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::post('/auth/refreshtoken', [AuthController::class, 'refreshToken']);

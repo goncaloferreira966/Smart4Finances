@@ -3,10 +3,14 @@
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-xl font-bold"><i class="bi bi-coin"></i> Smart4Finances</h1>
             <ul class="flex space-x-1 mt-2">
+                <li v-if="userRole !== 'C'">
+                    <button @click="$emit('navigate', 'administration')" class="hover:text-gray-200"><i
+                            class="bi bi-people"></i> Administração</button>
+                </li>
                 <li>
                     <button @click="$emit('navigate', 'profile')" class="hover:text-gray-200"><i
                             class="bi bi-person"></i> {{ formattedNickname }}</button>
-                </li>
+                </li>           
                 <!-- Botão de Terminar Sessão -->
                 <li>
                     <button @click="handleLogout" class="hover:text-red-500"><i class="bi bi-box-arrow-right"></i>

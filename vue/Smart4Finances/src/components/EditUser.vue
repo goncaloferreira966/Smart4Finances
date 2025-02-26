@@ -112,6 +112,9 @@ export default {
                 this.errorMessage = "Ocorreu um erro ao conectar à API. Tente novamente.";
             }
         },
+        handleEditUserCancel(){
+
+        },
         getUserIdFromToken() {
             const token = localStorage.getItem("AccessToken");
             if (token) {
