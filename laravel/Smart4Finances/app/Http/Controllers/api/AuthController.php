@@ -9,11 +9,8 @@ use App\Models\User;
 
 
 const PASSPORT_SERVER_URL = "http://localhost"; //Local server
-//const PASSPORT_SERVER_URL = "http://api-dad-group23.172.22.21.101.sslip.io"; //School server
-const CLIENT_ID = 2; //Local Client Server ID
-//const CLIENT_ID = 1; //School Client Server ID
-const CLIENT_SECRET = 'yyAilfD1XrJyhBgZfNMiAjanMK4cRRYs6sJ4UNZU'; //Gonçalo Auth Server Token
-//const CLIENT_SECRET = 'fUGPpc9nDom6FJvlljfMan33eGkFuC4jOSEV6diX'; //School Auth Server Token
+const CLIENT_ID = 1; //Local Client Server ID
+const CLIENT_SECRET = 'ZgbyVh6zxdYG0izCxMSPwbGzGcQbiO9t5fw41gLC'; //Gonçalo Auth Server Token
 
 class AuthController extends Controller
 {
