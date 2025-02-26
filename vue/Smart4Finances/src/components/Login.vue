@@ -59,10 +59,10 @@ export default {
       const authStore = useAuthStore();
       try {
         // Configura o token para o axios
-        axios.defaults.baseURL = `http://${import.meta.env.VITE_API_DOMAIN}/api`;
+        axios.defaults.baseURL = `http://localhost/api`;
         axios.defaults.headers.common.Authorization = 'Bearer ' + token;
 
-        // Tenta obter as informações do usuário
+        // Tenta obter as informações do user
         const user = await authStore.loginWithToken(token); // Login automático
         if (user) {
           console.log('Login automático bem-sucedido', user);

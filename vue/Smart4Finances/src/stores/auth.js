@@ -43,7 +43,7 @@ export const useAuthStore = defineStore('auth', () => {
 
         try {
 
-            axios.defaults.baseURL = `http://${import.meta.env.VITE_API_DOMAIN}/api`;
+            axios.defaults.baseURL = `http://localhost/api`;
             const responseLogin = await axios.post('/login', credentials)
             token.value = responseLogin.data.access_token;
             localStorage.setItem('AccessToken', token.value)
@@ -67,7 +67,7 @@ export const useAuthStore = defineStore('auth', () => {
         }
 
         try {
-            axios.defaults.baseURL = `http://${import.meta.env.VITE_API_DOMAIN}/api`;
+            axios.defaults.baseURL = `http://localhost/api`;
             axios.defaults.headers.common.Authorization = 'Bearer ' + storedToken;
 
             const userId = getUserIdFromToken();
@@ -90,7 +90,7 @@ export const useAuthStore = defineStore('auth', () => {
         }
 
         try {
-            axios.defaults.baseURL = `http://${import.meta.env.VITE_API_DOMAIN}/api`;
+            axios.defaults.baseURL = `http://localhost/api`;
             axios.defaults.headers.common.Authorization = 'Bearer ' + storedToken;
 
             const userId = getUserIdFromToken();
@@ -115,7 +115,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     const logout = async () => {
         try {   
-            axios.defaults.baseURL = `http://${import.meta.env.VITE_API_DOMAIN}/api`;
+            axios.defaults.baseURL = `http://localhost/api`;
             await axios.post('/logout', {}, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("AccessToken")}`
