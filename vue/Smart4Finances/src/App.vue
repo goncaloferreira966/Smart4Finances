@@ -21,6 +21,9 @@
       <div v-if="currentSection === 'profile'">
         <Profile @editer="handleEditUser" @logout="logout" />
       </div>
+      <div v-else-if="currentSection === 'editUser'">
+        <EditUser @update-success="handleUpdateSuccess" />
+      </div>
   
     </div>
 
@@ -41,6 +44,8 @@ import Navbar from './components/Navbar.vue';
 import NavbarLoginRegister from './components/NavbarLoginRegister.vue';
 import Register from './components/Register.vue';
 import Profile from './components/Profile.vue';
+import EditUser from './components/EditUser.vue';
+
 
 
 export default {
@@ -50,6 +55,7 @@ export default {
     NavbarLoginRegister,
     Register,
     Profile,
+    EditUser,
   },
   computed: {
     currentYear() {
