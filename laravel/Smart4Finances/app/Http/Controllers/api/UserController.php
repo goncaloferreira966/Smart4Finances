@@ -113,7 +113,7 @@ class UserController extends Controller
                 'nickname' => $request->input('nickname'),
                 'email' => $request->input('email'),
                 'password' => Hash::make($request->input('password')),
-                'type' => $request->input('type', 'P'),
+                'type' => $request->input('type', 'C'),
                 'photo_filename' => $photoPath ? basename($photoPath) : null, // Guarda o nome do arquivo
                 'brain_coins_balance' => $request->input('brain_coins_balance', 10), // Valor padrão
                 'blocked' => $request->input('blocked', 0), // Valor padrão

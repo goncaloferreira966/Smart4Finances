@@ -9,8 +9,8 @@ use App\Models\User;
 
 
 const PASSPORT_SERVER_URL = "http://localhost"; //Local server
-const CLIENT_ID = 1; //Local Client Server ID
-const CLIENT_SECRET = 'ZgbyVh6zxdYG0izCxMSPwbGzGcQbiO9t5fw41gLC'; //Gonçalo Auth Server Token
+const CLIENT_ID = 2; //Local Client Server ID
+const CLIENT_SECRET = 'd1NW4MODp3QqqYZOj3SCvLULxUGWqudk1jIpLmBn'; //Gonçalo Auth Server Token
 
 class AuthController extends Controller
 {

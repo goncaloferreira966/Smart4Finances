@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             // Administrator, Player
-            $table->enum('type', ['A', 'P'])->default('P');
+            $table->enum('type', ['A', 'C'])->default('C');
 
             // Nickname - must be unique
             $table->string('nickname', 20)->unique();
@@ -75,7 +75,7 @@ return new class extends Migration
             // Game total time (in seconds) = ended_at - began_at
             $table->decimal('total_time', 8, 2)->nullable();
 
-            // Game board
+            // Game boardDROP TABLE IF EXISTS oauth_access_tokens;
             $table->unsignedBigInteger('board_id');
             $table->foreign('board_id')->references('id')->on('boards');
 
