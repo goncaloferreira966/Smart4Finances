@@ -6,7 +6,7 @@
         <div v-if="user">
           <h3 class="card-subtitle mb-2 text-muted mt-4"><i class="bi bi-person"></i> {{ user.data.name }}</h3>
 
-          <img v-show="user && user.data.photoFileName" :src="`http://${apiDomain}${user.data.photoFileName}`"
+          <img v-show="user && user.data.photoFileName" :src="`http://localhost${user.data.photoFileName}`"
             alt="User Photo" class="card-img-top rounded-circle mt-4" />
 
           <p class="card-text mt-4"><strong><i class="bi bi-envelope"></i> Email:</strong> {{ user.data.email }}</p>
@@ -14,14 +14,13 @@
           <p class="card-text mt-4"><strong><i class="bi bi-person-circle"></i> Nickname:</strong> {{ user.data.nickname
             }}</p>
 
-          <p class="card-text mt-4" v-if="user.data.type == 'P'"><i class="bi bi-controller"></i><strong> Type:</strong>
-            Player</p>
+          <p class="card-text mt-4" v-if="user.data.type == 'C'"><i class="bi bi-coin"></i><strong> Type:</strong>
+            Cliente</p>
 
-          <p class="card-text mt-4" v-else><i class="bi bi-person-fill-gear"></i><strong> Type:</strong> Administrator
+          <p class="card-text mt-4" v-else><i class="bi bi-person-fill-gear"></i><strong> Type:</strong> Administrador
           </p>
 
-          <p v-if="userRole !== 'A'" class="card-text mt-4"><strong><i class="bi bi-coin"></i> Brain Coins
-              Balance:</strong> {{
+          <p v-if="userRole !== 'A'" class="card-text mt-4"><strong><i class="bi bi-coin"></i> Saldo:</strong> {{
                 user.data.brain_coins_balance }}</p>
 
           <div class="container mt-2">
@@ -50,7 +49,6 @@ export default {
   data() {
     return {
       user: null,
-      apiDomain: import.meta.env.VITE_API_DOMAIN,
       userRole: "", // Armazena o tipo de user
     };
   },
@@ -77,7 +75,7 @@ export default {
     async fetchUser() {
       try {
         const userId = this.getUserIdFromToken();
-        axios.defaults.baseURL = `http://${import.meta.env.VITE_API_DOMAIN}/api`;
+        axios.defaults.baseURL = `http://localhost/api`;
         const token = localStorage.getItem('AccessToken');
         const response = await axios.get(`/users/${userId}`, {
           headers: {
