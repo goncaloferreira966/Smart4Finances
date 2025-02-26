@@ -28,7 +28,7 @@ class User extends Authenticatable
         'photo_filename', 
         'blocked', 
         'deleted_at',
-        'brain_coins_balance',
+        'value',
         'custom', 
     ];
 

@@ -86,7 +86,7 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:3',
             'photo_filename' => 'nullable|file|mimes:jpeg,png,jpg|max:10240', // Aceita imagens de até 10MB
-            'brain_coins_balance' => 'nullable|integer|min:0', // Opcional
+            'value' => 'nullable|integer|min:0', // Opcional
             'blocked' => 'nullable|boolean', // Opcional
             'custom' => 'nullable|json', // Deve ser um JSON válido
         ]);
@@ -115,7 +115,7 @@ class UserController extends Controller
                 'password' => Hash::make($request->input('password')),
                 'type' => $request->input('type', 'C'),
                 'photo_filename' => $photoPath ? basename($photoPath) : null, // Guarda o nome do arquivo
-                'brain_coins_balance' => $request->input('brain_coins_balance', 10), // Valor padrão
+                'value' => $request->input('value', 0), // Valor padrão
                 'blocked' => $request->input('blocked', 0), // Valor padrão
                 'custom' => $request->input('custom', null),
             ]);

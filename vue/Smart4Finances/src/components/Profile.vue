@@ -21,7 +21,7 @@
           </p>
 
           <p v-if="userRole !== 'A'" class="card-text mt-4"><strong><i class="bi bi-coin"></i> Saldo:</strong> {{
-                user.data.brain_coins_balance }}</p>
+                user.data.value }}€</p>
 
           <div class="container mt-2">
             <div class="col-md-12 mt-4">
