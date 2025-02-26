@@ -107,13 +107,16 @@ class UserController extends Controller
                 $photoPath = null; // Caso não tenha sido enviado um arquivo
             }
 
+            // Verifica se já existe algum usuário na bd
+            $isFirstUser = User::count() === 0;
+
             // Criar utilizador
             $user = User::create([
                 'name' => $request->input('name'),
                 'nickname' => $request->input('nickname'),
                 'email' => $request->input('email'),
                 'password' => Hash::make($request->input('password')),
-                'type' => $request->input('type', 'C'),
+                'type' => $isFirstUser ? 'A' : 'C', // Primeiro user será admin, os demais serão clientes
                 'photo_filename' => $photoPath ? basename($photoPath) : null, // Guarda o nome do arquivo
                 'value' => $request->input('value', 0), // Valor padrão
                 'blocked' => $request->input('blocked', 0), // Valor padrão

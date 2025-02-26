@@ -18,7 +18,6 @@
     <!-- Conteúdo da aplicação principal -->
     <div v-else>
       <Navbar @navigate="navigateTo" @logout="logout" />
-  
       <div v-if="currentSection === 'profile'">
         <Profile @editer="handleEditUser" @logout="logout" />
       </div>
