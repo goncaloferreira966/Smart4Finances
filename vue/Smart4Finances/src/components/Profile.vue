@@ -9,15 +9,15 @@
           <img v-show="user && user.data.photoFileName" :src="`http://localhost${user.data.photoFileName}`"
             alt="User Photo" class="card-img-top rounded-circle mt-4" />
 
-          <p class="card-text mt-4"><strong><i class="bi bi-envelope"></i> Email:</strong> {{ user.data.email }}</p>
+          <p class="card-text mt-4"><strong><i class="bi bi-envelope"></i> E-mail:</strong> {{ user.data.email }}</p>
 
           <p class="card-text mt-4"><strong><i class="bi bi-person-circle"></i> Nickname:</strong> {{ user.data.nickname
             }}</p>
 
-          <p class="card-text mt-4" v-if="user.data.type == 'C'"><i class="bi bi-coin"></i><strong> Type:</strong>
+          <p class="card-text mt-4" v-if="user.data.type == 'C'"><i class="bi bi-person-badge"></i><strong> Tipo de Utilizador:</strong>
             Cliente</p>
 
-          <p class="card-text mt-4" v-else><i class="bi bi-person-fill-gear"></i><strong> Type:</strong> Administrador
+          <p class="card-text mt-4" v-else><i class="bi bi-person-fill-gear"></i><strong> Tipo de Utilizador:</strong> Administrador
           </p>
 
           <p v-if="userRole !== 'A'" class="card-text mt-4"><strong><i class="bi bi-coin"></i> Saldo:</strong> {{
@@ -26,16 +26,16 @@
           <div class="container mt-2">
             <div class="col-md-12 mt-4">
               <button @click="handleEditUser()" style="background-color: lightseagreen; border: 0; color: white;"
-                type="submit" class="btn btn-info w-100"><i class="bi bi-pencil"></i> Edit Profile</button>
+                type="submit" class="btn btn-info w-100"><i class="bi bi-pencil"></i> Editar Perfil</button>
             </div>
             <div v-if="userRole !== 'A'" @click="handleDeleteUser" class="col-md-12 mt-4 mb-2">
               <button @click="deleteUser()" style="border: 0; color: white;" type="submit"
-                class="btn btn-danger w-100"><i class="bi bi-trash-fill"></i> Delete Profile</button>
+                class="btn btn-danger w-100"><i class="bi bi-trash-fill"></i> Apagar Perfil</button>
             </div>
           </div>
         </div>
         <div v-else>
-          <p>Loading user data...</p>
+          <p>A Carregar Dados do Utilizador...</p>
         </div>
       </div>
     </div>
@@ -92,7 +92,7 @@ export default {
     },
     async deleteUser() {
       if (confirm('Tem certeza que deseja remover a sua conta?')) {
-        const nicknameInput = prompt('Por favor, insira o seu nickname para confirmar a exclusão da conta:');
+        const nicknameInput = prompt('Por favor, insira o seu Nickname para confirmar a exclusão da conta:');
 
         // Obtém o nickname do localStorage
         const authStore = useAuthStore();
@@ -100,7 +100,7 @@ export default {
 
         // Verifica se o nickname inserido corresponde ao do localStorage
         if (nicknameInput !== storedNickname) {
-          alert('O nickname inserido não corresponde ao seu perfil. Operação cancelada.');
+          alert('O Nickname inserido não corresponde ao seu perfil. Operação cancelada.');
           return; // Aborta o processo de exclusão
         }
         try {

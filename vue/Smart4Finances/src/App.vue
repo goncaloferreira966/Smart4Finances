@@ -138,6 +138,36 @@ export default {
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
+    background-color: #f0f0f0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f0f0f0; 
+}
+
+  .footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-color: lightseagreen;
+    color: #fff;
+    font-size: 0.9em;
+    margin-top: auto;
+  }
+  /*#app {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
     background-color: #444e52;
     width: 100%;
     display: flex;
@@ -145,7 +175,7 @@ export default {
     min-height: 100vh;
   }
 
-  /* Track */
+  /* Track 
 ::-webkit-scrollbar-track {
   background: #444e52; 
 }
@@ -169,6 +199,7 @@ export default {
     font-size: 0.9em;
     margin-top: auto;
   }
+    */
 }
 
 .footer-links {
