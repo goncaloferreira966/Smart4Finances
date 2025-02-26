@@ -33,9 +33,12 @@
                 </div>
                 <button style="background-color: lightseagreen; border-color: lightseagreen;" type="submit"
                     class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-                    Guardar Alterações
+                    <i class="bi bi-floppy-fill"></i> Guardar Alterações
                 </button>
             </form>
+            <button @click="handleEditUserCancel()" style=" border: 0; color: white;"
+                class="btn btn-danger w-100 mt-4"><i class="bi bi-x-circle-fill"></i> Cancelar</button>
+          
             <p v-if="errorMessage" class="text-red-500 text-sm mt-4">{{ errorMessage }}</p>
         </div>
     </div>
@@ -113,7 +116,7 @@ export default {
             }
         },
         handleEditUserCancel(){
-
+            this.$emit("update-cancel");
         },
         getUserIdFromToken() {
             const token = localStorage.getItem("AccessToken");

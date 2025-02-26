@@ -22,7 +22,7 @@
         <Profile @editer="handleEditUser" @logout="logout" />
       </div>
       <div v-else-if="currentSection === 'editUser'">
-        <EditUser @update-success="handleUpdateSuccess" />
+        <EditUser @update-success="handleUpdateSuccess"  @update-cancel="handleUpdateCancel"/>
       </div>
       <div v-else-if="currentSection === 'administration'">
         <Administration />
@@ -95,6 +95,9 @@ export default {
       this.isRegistering = true;
     },
     handleUpdateSuccess() {
+      this.currentSection = 'profile';
+    },
+    handleUpdateCancel() {
       this.currentSection = 'profile';
     },
   },
