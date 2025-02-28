@@ -27,6 +27,9 @@
       <div v-else-if="currentSection === 'administration'">
         <Administration />
       </div>
+      <div v-else-if="currentSection === 'notifications'">
+        <Notifications />
+      </div>
   
     </div>
 
@@ -49,6 +52,7 @@ import Register from './components/Register.vue';
 import Profile from './components/Profile.vue';
 import EditUser from './components/EditUser.vue';
 import Administration from './components/Administration.vue';
+import Notifications from './components/Notifications.vue';
 
 
 export default {
@@ -60,6 +64,7 @@ export default {
     Profile,
     EditUser,
     Administration,
+    Notifications,
   },
   computed: {
     currentYear() {

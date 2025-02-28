@@ -8,6 +8,10 @@
                             class="bi bi-people"></i> Administração</button>
                 </li>
                 <li>
+                    <button @click="$emit('navigate', 'notifications')" class="hover:text-gray-200"><i
+                            class="bi bi-bell"></i> Notificações</button>
+                </li>
+                <li>
                     <button @click="$emit('navigate', 'profile')" class="hover:text-gray-200"><i
                             class="bi bi-person"></i> {{ formattedNickname }}</button>
                 </li>           
