@@ -10,6 +10,9 @@
       <div v-else-if="currentSection === 'register'">
         <Register @register-success="handleRegisterSuccess" />
       </div>
+      <div v-else-if="currentSection === 'test'">
+        <test/>
+      </div>
       <div v-else>
         <Login @login-success="handleLoginSuccess" />
       </div>
@@ -49,6 +52,7 @@ import Register from './components/Register.vue';
 import Profile from './components/Profile.vue';
 import EditUser from './components/EditUser.vue';
 import Administration from './components/Administration.vue';
+import test from './components/test.vue';
 
 
 export default {
@@ -60,6 +64,7 @@ export default {
     Profile,
     EditUser,
     Administration,
+    test,
   },
   computed: {
     currentYear() {

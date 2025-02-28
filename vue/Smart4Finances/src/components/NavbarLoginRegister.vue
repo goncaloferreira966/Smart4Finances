@@ -9,6 +9,9 @@
                 <li>
                     <button @click="$emit('navigate', 'register')" class="hover:text-gray-200"><i class="bi bi-person-bounding-box"></i> Registar</button>
                 </li>
+                <li>
+                    <button @click="$emit('navigate', 'test')" class="hover:text-gray-200"><i class="bi bi-person-bounding-box"></i> teste</button>
+                </li>
             </ul>
         </div>
     </nav>
