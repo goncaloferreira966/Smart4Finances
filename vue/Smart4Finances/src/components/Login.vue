@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center justify-center min-h-screen">
-    <div class="login-container bg-white p-8 rounded-lg shadow-lg w-full max-w-xs">
-      <h2 style="color: lightseagreen;" class="text-2xl font-bold mb-6 text-center">Login</h2>
+    <div class="login-container bg-#DAA520 p-8 rounded-lg shadow-lg w-full max-w-xs">
+      <h2 class="text-2xl font-bold mb-6 text-center" style="color: black;">Login</h2>
       <form @submit.prevent="handleLogin">
         <div class="mb-4">
           <label for="username" class="block text-gray-700 font-semibold mb-2">Utilizador</label>
@@ -15,7 +15,7 @@
             class="form-control w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             required />
         </div>
-        <button style="background-color: lightseagreen; border-color: lightseagreen;" type="submit"
+        <button style="background-color: black; border-color: #DAA520;" type="submit"
           class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
           Entrar
         </button>
@@ -27,8 +27,8 @@
 
 <script>
 import axios from 'axios';
-import { useAuthStore } from "@/stores/auth"; // Importa a store Pinia
-
+import { toast } from 'vue3-toastify';
+import { useAuthStore } from "@/stores/auth";
 
 export default {
   data() {
@@ -39,10 +39,8 @@ export default {
     };
   },
   mounted() {
-    // Verifica se o token de acesso já está no localStorage
     const token = localStorage.getItem("AccessToken");
     if (token) {
-      // Se o token existir, tenta realizar o login automaticamente
       this.handleLoginWithToken(token);
     }
   },
@@ -50,57 +48,48 @@ export default {
     getUserIdFromToken() {
       const token = localStorage.getItem("AccessToken");
       if (token) {
-        const payload = JSON.parse(atob(token.split(".")[1])); // Decodifica o payload do token
-        return payload.sub; // Retorna o ID do user (sub)
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        return payload.sub;
       }
       return null;
     },
     async handleLoginWithToken(token) {
       const authStore = useAuthStore();
       try {
-        // Configura o token para o axios
-        axios.defaults.baseURL = `http://localhost/api`;
         axios.defaults.headers.common.Authorization = 'Bearer ' + token;
-
-        // Tenta obter as informações do user
-        const user = await authStore.loginWithToken(token); // Login automático
+        const user = await authStore.loginWithToken(token);
         if (user) {
-          console.log('Login automático bem-sucedido', user);
+          toast.success("Login automático bem-sucedido! 🚀");
           this.$emit('login-success');
         } else {
           throw new Error('Usuário não encontrado');
         }
       } catch (error) {
         console.error(error);
+        toast.error("Erro ao realizar login automático.");
         this.errorMessage = "Erro ao realizar login automático.";
       }
     },
-
     async handleLogin() {
-      const authStore = useAuthStore(); // Obtém a instância da store
-
+      const authStore = useAuthStore();
       try {
-        // Realiza o login através da store
         const user = await authStore.login({
           username: this.username,
           password: this.password,
         });
-
         if (user) {
-          console.log(user)
-          // Redireciona ou emite evento após sucesso no login
+          toast.success("Login realizado com sucesso! ✅");
           this.$emit("login-success");
-        }
-        else{
+        } else {
           this.errorMessage = "Credenciais Inválidas.";
+          toast.error("Credenciais Inválidas ❌");
         }
       } catch (error) {
         console.error(error);
         this.errorMessage = "Erro inesperado no login.";
+        toast.error("Erro inesperado no login ❌");
       }
     },
   },
 };
 </script>
-
-<style scoped></style>
