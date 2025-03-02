@@ -44,7 +44,6 @@ export const useAuthStore = defineStore('auth', () => {
         try {
             const responseLogin = await axios.post('/login', credentials)
             token.value = responseLogin.data.access_token;
-            console.log(token.value)
             localStorage.setItem('AccessToken', token.value)
             const userId = getUserIdFromToken();
             axios.defaults.headers.common.Authorization = 'Bearer ' + token.value

@@ -67,7 +67,6 @@
           if (this.photo_filename) formData.append("photo_filename", this.photo_filename);
           const userId = this.getUserIdFromToken();
           const token = localStorage.getItem("AccessToken");
-          console.log(token);
           const response = await axios.post(`/user/${userId}/updateProfile`, formData, {
             headers: { Authorization: `Bearer ${token}` }
           });

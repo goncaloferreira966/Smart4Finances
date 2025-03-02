@@ -14,6 +14,11 @@
             </button>
           </li>
           <li>
+            <button @click="$emit('navigate', 'test')" class="hover:text-gray-200">
+              <i class="bi bi-bell"></i> test
+            </button>
+          </li>
+          <li>
             <button @click="$emit('navigate', 'profile')" class="hover:text-gray-200">
               <i class="bi bi-person"></i> {{ formattedNickname }}
             </button>

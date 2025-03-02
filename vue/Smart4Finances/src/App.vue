@@ -29,6 +29,9 @@
       <div v-else-if="currentSection === 'notifications'">
         <Notifications />
       </div>
+      <div v-else-if="currentSection === 'test'">
+        <test />
+      </div>
     </div>
 
     <footer class="footer">
@@ -49,6 +52,7 @@ import NavbarLoginRegister from './components/NavbarLoginRegister.vue';
 import Register from './components/Register.vue';
 import Profile from './components/Profile.vue';
 import EditUser from './components/EditUser.vue';
+import test from './components/test.vue';
 import Administration from './components/Administration.vue';
 import Notifications from './components/Notifications.vue';
 import { toast } from 'vue3-toastify';
@@ -63,6 +67,7 @@ export default {
     EditUser,
     Administration,
     Notifications,
+    test,
   },
   data() {
     return {
@@ -80,7 +85,6 @@ export default {
     handleLoginSuccess() {
       this.isLoggedIn = true;
       this.currentSection = 'profile';
-      toast.success("Login realizado com sucesso!");
     },
     logout() {
       this.isLoggedIn = false;

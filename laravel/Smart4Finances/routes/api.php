@@ -1,5 +1,5 @@
 <?php
-//import of controller of laravel API
+// Importação dos controllers da API
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\AuthController;
@@ -7,40 +7,38 @@ use App\Http\Controllers\api\UserController;
 use App\Http\Controllers\api\GameController;
 use App\Http\Controllers\api\StatisticsController;
 use App\Http\Controllers\api\TransactionsController;
+use App\Http\Controllers\api\CategoryController;
+use App\Http\Controllers\api\ExpenseController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
+| Aqui você registra as rotas da API para a sua aplicação. Essas rotas
+| são carregadas pelo RouteServiceProvider e todas estão no grupo "api".
 |
 */
 
-Route::post('/login', [AuthController::class, 'login']);
+// Rotas públicas
+Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/usersPost', [UserController::class, 'store']);
 
-
-
-
+// Rotas protegidas por middleware de autenticação
 Route::middleware(['auth:api'])->group(function () {
-    //Android TAES
-   
+    // Endpoints para notificações
     Route::get('/notifications', function (Request $request) {
         return response()->json([
-            'notifications' => $request->user()->notifications, // Todas as notificações
+            'notifications' => $request->user()->notifications,
         ]);
     });
 
-    // Endpoint para listar notificações não lidas
     Route::get('/notifications/unread', function (Request $request) {
         return response()->json([
-            'unread_notifications' => $request->user()->unreadNotifications, // Apenas não lidas
+            'unread_notifications' => $request->user()->unreadNotifications,
         ]);
     });
 
-    // Endpoint para marcar notificações como lidas
     Route::post('/notifications/{id}/mark-as-read', function ($id) {
         $notification = auth()->user()->notifications()->find($id);
         if ($notification) {
@@ -49,9 +47,8 @@ Route::middleware(['auth:api'])->group(function () {
         }
         return response()->json(['error' => 'Notification not found.'], 404);
     });
-    //END
-    
-    //DAD
+
+    // Endpoints para usuários (DAD)
     Route::post('user/{id}/updateProfile', [UserController::class, 'update']);
     Route::post('logout',  [AuthController::class, 'logout']);
     Route::patch('/users/{userId}/block', [UserController::class, 'updateBlocked']);
@@ -59,8 +56,11 @@ Route::middleware(['auth:api'])->group(function () {
     Route::apiResource("users", UserController::class);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::post('/auth/refreshtoken', [AuthController::class, 'refreshToken']);
-    Route::post('/users/me', [UserController::class , 'showMe']);
-    //END
+    Route::post('/users/me', [UserController::class, 'showMe']);
+
+    // Endpoints para Categorias
+    Route::apiResource("categories", CategoryController::class);
+
+    // Endpoints para Despesas
+    Route::apiResource("expenses", ExpenseController::class);
 });
-
-
