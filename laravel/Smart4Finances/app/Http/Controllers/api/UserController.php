@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use App\Notifications\CustomNotification;
 
 class UserController extends Controller
 {
@@ -74,6 +75,8 @@ class UserController extends Controller
             }
 
             // Guardar as alterações
+            $user->notify(new CustomNotification("Parabéns! Você editou o seu perfil com Sucesso!"));
+
             $user->save();
 
             return response()->json([

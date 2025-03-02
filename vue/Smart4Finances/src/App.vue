@@ -1,17 +1,13 @@
 <template>
   <div id="app">
-
-    <!-- Exibir o componente Login apenas se o user não estiver logado -->
+    <!-- Exibir o componente Login apenas se o usuário não estiver logado -->
     <div v-if="!isLoggedIn">
-      <NavbarLoginRegister @navigate="navigateTo" @logout="logout" />
+      <NavbarLoginRegister :activeForm="currentSection" @navigate="navigateTo" @logout="logout" />
       <div v-if="currentSection === 'login'">
         <Login @login-success="handleLoginSuccess" />
       </div>
       <div v-else-if="currentSection === 'register'">
         <Register @register-success="handleRegisterSuccess" />
-      </div>
-      <div v-else-if="currentSection === 'test'">
-        <test/>
       </div>
       <div v-else>
         <Login @login-success="handleLoginSuccess" />
@@ -25,16 +21,18 @@
         <Profile @editer="handleEditUser" @logout="logout" />
       </div>
       <div v-else-if="currentSection === 'editUser'">
-        <EditUser @update-success="handleUpdateSuccess"  @update-cancel="handleUpdateCancel"/>
+        <EditUser @update-success="handleUpdateSuccess" @update-cancel="handleUpdateCancel" />
       </div>
       <div v-else-if="currentSection === 'administration'">
         <Administration />
       </div>
-  
+      <div v-else-if="currentSection === 'notifications'">
+        <Notifications />
+      </div>
     </div>
 
     <footer class="footer">
-      <p>&copy; {{ currentYear }} Smart4Finances. Todos os direitos reservados.</p>
+      <p style="color:#DAA520">&copy; {{ currentYear }} Smart4Finances. Todos os direitos reservados.</p>
       <div class="footer-links">
         <a href="#">Política de Privacidade</a>
         <a href="#">Termos de Serviço</a>
@@ -52,8 +50,8 @@ import Register from './components/Register.vue';
 import Profile from './components/Profile.vue';
 import EditUser from './components/EditUser.vue';
 import Administration from './components/Administration.vue';
-import test from './components/test.vue';
-
+import Notifications from './components/Notifications.vue';
+import { toast } from 'vue3-toastify';
 
 export default {
   components: {
@@ -64,186 +62,49 @@ export default {
     Profile,
     EditUser,
     Administration,
-    test,
+    Notifications,
+  },
+  data() {
+    return {
+      isLoggedIn: false,
+      isRegistering: false,
+      currentSection: 'login',
+    };
   },
   computed: {
     currentYear() {
       return new Date().getFullYear();
     },
   },
-  data() {
-    return {
-      isLoggedIn: false,
-      currentSection: 'profile',
-    };
-  },
   methods: {
     handleLoginSuccess() {
       this.isLoggedIn = true;
       this.currentSection = 'profile';
+      toast.success("Login realizado com sucesso!");
     },
     logout() {
       this.isLoggedIn = false;
+      toast.info("Logout realizado com sucesso!");
     },
     navigateTo(section) {
-      this.currentSection = section; // Altera a secção ativa
+      this.currentSection = section;
     },
     handleRegisterSuccess() {
       this.isRegistering = false;
       this.currentSection = 'login';
+      toast.success("Registro realizado com sucesso! Faça login.");
     },
     handleEditUser() {
       this.isRegistering = false;
       this.currentSection = 'editUser';
     },
-    showRegisterForm() {
-      this.isRegistering = true;
-    },
     handleUpdateSuccess() {
       this.currentSection = 'profile';
+      toast.success("Dados atualizados com sucesso!");
     },
     handleUpdateCancel() {
       this.currentSection = 'profile';
     },
   },
 };
-
-
-
 </script>
-
-<style>
-/* Estilos para o modo claro */
-@media (prefers-color-scheme: light) {
-  #app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    background-color: #f0f0f0;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
-
-
-/* Track */
-::-webkit-scrollbar-track {
-  background: #f0f0f0; 
-}
-
-  .footer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    background-color: lightseagreen;
-    color: #fff;
-    font-size: 0.9em;
-    margin-top: auto;
-  }
-}
-
-/* Estilos para o modo escuro */
-@media (prefers-color-scheme: dark) {
-  #app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    background-color: #f0f0f0;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
-
-
-/* Track */
-::-webkit-scrollbar-track {
-  background: #f0f0f0; 
-}
-
-  .footer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    background-color: lightseagreen;
-    color: #fff;
-    font-size: 0.9em;
-    margin-top: auto;
-  }
-  /*#app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    background-color: #444e52;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
-
-  /* Track 
-::-webkit-scrollbar-track {
-  background: #444e52; 
-}
-
-  p, label {
-    color: lightseagreen;
-  }
-
-  footer p {
-    color: white;
-  }
-
-  .footer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    background-color: lightseagreen;
-    color: #fff;
-    font-size: 0.9em;
-    margin-top: auto;
-  }
-    */
-}
-
-.footer-links {
-  display: flex;
-  gap: 15px;
-}
-
-.footer-links a {
-  color: wheat;
-  text-decoration: none;
-}
-
-.footer-links a:hover {
-  text-decoration: underline;
-}
-
-::-webkit-scrollbar {
-  width: 15px;
-}
- 
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: lightseagreen; 
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: lightseagreen; 
-}
-</style>

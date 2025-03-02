@@ -11,31 +11,32 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@xenova/transformers": "^2.17.2",
-    "axios": "^1.7.7",
+    "axios": "^1.8.1",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "bootstrap-vue": "^2.23.1",
-    "chart.js": "^4.4.6",
+    "chart.js": "^4.4.8",
     "date-fns": "^4.1.0",
-    "pinia": "^2.3.0",
+    "pinia": "^3.0.1",
     "socket.io-client": "^4.8.1",
     "tesseract.js": "^6.0.0",
-    "vue": "^3.5.12",
-    "vue-chartjs": "^5.3.1",
-    "vue-google-charts": "^1.1.0"
+    "vue": "^3.5.13",
+    "vue-chartjs": "^5.3.2",
+    "vue-google-charts": "^1.1.0",
+    "vue3-toastify": "^0.2.8"
   },
   "devDependencies": {
-    "@eslint/js": "^9.13.0",
-    "@vitejs/plugin-vue": "^5.1.4",
-    "@vue/eslint-config-prettier": "^10.0.0",
+    "@eslint/js": "^9.21.0",
+    "@tailwindcss/postcss7-compat": "^2.2.17",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@vue/eslint-config-prettier": "^10.2.0",
     "autoprefixer": "^10.4.20",
-    "eslint": "^9.13.0",
-    "eslint-plugin-vue": "^9.29.0",
-    "postcss": "^8.4.47",
-    "prettier": "^3.3.3",
-    "tailwindcss": "^3.4.14",
-    "vite": "^5.4.10",
-    "vite-plugin-vue-devtools": "^7.5.3"
+    "eslint": "^9.21.0",
+    "eslint-plugin-vue": "^9.32.0",
+    "postcss": "^8.5.3",
+    "prettier": "^3.5.2",
+    "tailwindcss": "^3.4.17",
+    "vite": "^6.2.0",
+    "vite-plugin-vue-devtools": "^7.7.2"
   }
 }
