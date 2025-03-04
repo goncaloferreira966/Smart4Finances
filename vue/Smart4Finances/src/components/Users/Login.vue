@@ -43,16 +43,9 @@ export default {
     if (token) {
       this.handleLoginWithToken(token);
     }
+    
   },
   methods: {
-    getUserIdFromToken() {
-      const token = localStorage.getItem("AccessToken");
-      if (token) {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        return payload.sub;
-      }
-      return null;
-    },
     async handleLoginWithToken(token) {
       const authStore = useAuthStore();
       try {
@@ -60,7 +53,7 @@ export default {
         const user = await authStore.loginWithToken(token);
         if (user) {
           toast.success("Login automático bem-sucedido! 🚀");
-          this.$emit('login-success');
+          this.$router.push({ name: 'Profile' });
         } else {
           throw new Error('Usuário não encontrado');
         }
@@ -79,7 +72,7 @@ export default {
         });
         if (user) {
           toast.success("Login realizado com sucesso! ✅");
-          this.$emit("login-success");
+          this.$router.push({ name: 'Profile' });
         } else {
           this.errorMessage = "Credenciais Inválidas.";
           toast.error("Credenciais Inválidas ❌");

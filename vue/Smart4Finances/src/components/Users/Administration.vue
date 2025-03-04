@@ -110,7 +110,7 @@ export default {
       loading: false,
       error: null,
       currentPage: 1,
-      perPage: 20, // Número de usuários por página
+      perPage: 20,
     };
   },
   created() {

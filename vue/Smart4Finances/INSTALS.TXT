@@ -1,2 +1,5 @@
 npm install vue3-toastify
 npm install tesseract.js
+npm install vue-router@next
+
+npm install pinia-plugin-persistedstate

@@ -1,30 +1,27 @@
 import './assets/main.css';
-// Importar o Bootstrap e o BootstrapVue CSS
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
-// Importar os ícones do Bootstrap
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import axios from 'axios';
-import { io } from "socket.io-client";
 import App from './App.vue';
-import FieldErrorMessage from './components/errorMessage.vue';
+import router from './router'; // Importa o router que acabamos de criar
+import FieldErrorMessage from './components/icons/errorMessage.vue';
 import Toastify from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 
 const app = createApp(App);
-
-// Configuração do WebSocket
-//app.provide('socket', io("http://localhost:8080"));
-
+const pinia = createPinia();
+pinia.use(piniaPluginPersistedstate);
+app.use(pinia);
 const serverBaseUrl = import.meta.env.VITE_API_DOMAIN;
 app.provide('serverBaseUrl', serverBaseUrl);
 axios.defaults.baseURL = serverBaseUrl + '/api';
 axios.defaults.headers.common['Content-type'] = 'application/json';
 
-// Configuração do Toastify
 app.use(Toastify, {
     position: "top-center",
     autoClose: 3000,
@@ -37,7 +34,7 @@ app.use(Toastify, {
     icon: true,
 });
 
-app.use(createPinia());
+app.use(router); // Registra o Vue Router
 
 app.component('FieldErrorMessage', FieldErrorMessage);
 
