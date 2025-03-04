@@ -153,8 +153,8 @@ export default {
         });
         this.users = response.data;
       } catch (err) {
-        this.error = 'Erro ao buscar os usuários.';
-        toast.error("Erro ao buscar os usuários.");
+        this.error = 'Erro ao buscar os Utilizadores.';
+        toast.error("Erro ao buscar os Utilizadores.");
         console.error(err);
       } finally {
         this.loading = false;
