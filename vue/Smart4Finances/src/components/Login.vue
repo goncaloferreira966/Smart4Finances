@@ -59,7 +59,7 @@ export default {
         axios.defaults.headers.common.Authorization = 'Bearer ' + token;
         const user = await authStore.loginWithToken(token);
         if (user) {
-          toast.success("Login automático bem-sucedido! 🚀");
+         // toast.success("Login automático bem-sucedido! 🚀");
           this.$emit('login-success');
         } else {
           throw new Error('Usuário não encontrado');
@@ -78,7 +78,7 @@ export default {
           password: this.password,
         });
         if (user) {
-          toast.success("Login realizado com sucesso! ✅");
+          //toast.success("Login realizado com sucesso! ✅");
           this.$emit("login-success");
         } else {
           this.errorMessage = "Credenciais Inválidas.";

@@ -23,8 +23,8 @@
         </div>
       </div>
       
-      <button type="button" @click="showModal = true" 
-              class="mb-4 bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600">
+      <button type="button" @click="showModal = true" style="background-color:black; color:#DAA520"
+              class="mb-4 py-2 px-4 rounded hover:bg-gray-600">
         Ver todas as categorias
       </button>
       
@@ -62,7 +62,24 @@
     
     <!-- Modal para seleção de categoria -->
     <div v-if="showModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <!-- conteúdo do modal de categorias -->
+      <div class="bg-white p-6 rounded-lg w-11/12 max-w-md">
+        <h3 class="text-xl font-bold mb-4">Selecione uma Categoria</h3>
+        <input type="text" v-model="modalSearchQuery" placeholder="Pesquisar categoria..." class="w-full p-2 border rounded mb-2" />
+        <div class="border rounded mb-4" style="max-height: 300px; overflow-y: auto;">
+          <div v-for="category in modalFilteredCategories" :key="category.id" 
+               class="p-2 cursor-pointer hover:bg-gray-200"
+               @click="selectCategoryFromModal(category)">
+            {{ category.name }}
+          </div>
+          <div v-if="modalFilteredCategories.length === 0" class="p-2 text-gray-500">
+            Nenhuma categoria encontrada.
+          </div>
+        </div>
+        <button @click="showModal = false" style="background-color:black; color:#DAA520"
+                class="w-full py-2 rounded hover:bg-gray-600">
+          Fechar
+        </button>
+      </div>
     </div>
     
     <!-- Modal de visualização da imagem -->
@@ -209,6 +226,7 @@ export default {
       this.processing = false;
     },
     extractTotal(text) {
+      console.log(text);
       const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
       const candidateKeywords = ['total', 'pagar', 'pagamento'];
       const excludedKeywords = ['iban', 'swift', 'bic'];

@@ -4,7 +4,7 @@
         <h1 class="text-xl font-bold">
           <i class="bi bi-coin"></i> Smart4Finances
         </h1>
-        <ul class="flex space-x-1 mt-2">
+        <ul class="flex space-x-3 mt-2">
           <!-- Se estivermos no formulário de login, exibe o botão de Registar -->
           <li v-if="activeForm === 'login'">
             <button @click="$emit('navigate', 'register')" class="hover:text-gray-200">
