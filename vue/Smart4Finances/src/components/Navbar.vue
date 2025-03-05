@@ -2,7 +2,7 @@
     <nav class="navbar bg-blue-500 p-4 text-#DAA520 shadow-md">
       <div class="container mx-auto flex justify-between items-center">
         <h1 class="text-xl font-bold"><i class="bi bi-coin"></i> Smart4Finances</h1>
-        <ul class="flex space-x-1 mt-2">
+        <ul class="flex space-x-3 mt-2">
           <li v-if="userRole !== 'C'">
             <button @click="$emit('navigate', 'administration')" class="hover:text-gray-200">
               <i class="bi bi-people"></i> Administração
