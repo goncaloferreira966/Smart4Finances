@@ -17,8 +17,8 @@
           <GChart type="PieChart" :data="chartData3" :options="chartOptions3" />
         </div>
 
-        <div class="col-md-6 mt-5">
-          <p>Último Utilizador Apagado</p>
+        <div class="col-md-6 mt-2">
+          <p style="font-weight:bold;">Último Utilizador Apagado</p>
           <div v-if="statistics.last_deleted_user">
 
             <p class="card-text mt-4"><strong><i class="bi bi-envelope"></i> E-mail:</strong>
@@ -58,12 +58,16 @@ export default {
       ],
       chartOptions: {
         title: "Distribuição de Utilizadores por Estado",
-        width: 700,
-        height: 400,
+        width: '100%',
         pieHole: 0.4,  // Isso cria o efeito de "donut"
         backgroundColor: "transparent", // Fundo transparente
         is3D: false,
-        colors: ['#2196F3', '#FFC107', '#9C27B0', '#FF5722'], 
+        colors: ['#2196F3', '#FFC107', '#9C27B0', '#FF5722'],
+        titleTextStyle: {
+          fontSize: 15,  // Aumente o tamanho da fonte do título
+          bold: true,    // Deixe o título em negrito
+          color: '#333', // Cor do título
+        }, 
       },
 
       chartData2: [
@@ -71,12 +75,16 @@ export default {
       ],
       chartOptions2: {
         title: "Distribuição de Utilizadores por Role",
-        width: 700,
-        height: 400,
+        width: '100%',
         pieHole: 0.4,  // Isso cria o efeito de "donut"
         backgroundColor: "transparent", // Fundo transparente
         is3D: false,
         colors: ['#4CAF50', '#FF9800'],
+        titleTextStyle: {
+          fontSize: 15,  // Aumente o tamanho da fonte do título
+          bold: true,    // Deixe o título em negrito
+          color: '#333', // Cor do título
+        }, 
       },
 
       chartData3: [
@@ -84,12 +92,16 @@ export default {
       ],
       chartOptions3: {
         title: "Distribuição de Utilizadores por Estado da Fotografia de Perfil",
-        width: 700,
-        height: 400,
+        width: '100%',
         pieHole: 0.4,  // Isso cria o efeito de "donut"
         backgroundColor: "transparent", // Fundo transparente
         is3D: false,
         colors: ['#3F51B5', '#E91E63'],
+        titleTextStyle: {
+          fontSize: 15,  // Aumente o tamanho da fonte do título
+          bold: true,    // Deixe o título em negrito
+          color: '#333', // Cor do título
+        }, 
       },
     };
   },
@@ -151,4 +163,5 @@ export default {
   border-radius: 10px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
+
 </style>
