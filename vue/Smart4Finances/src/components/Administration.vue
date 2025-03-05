@@ -39,7 +39,7 @@
                     <i class="bi bi-person-fill-slash"></i>
                   </button>
                 </div>
-                <button class="btn btn-danger btn-sm m-1" @click="deleteUser(user.id)">
+                <button v-if="user.id != userLoggedId" class="btn btn-danger btn-sm m-1" @click="deleteUser(user.id)">
                   <i class="bi bi-trash-fill"></i>
                 </button>
               </td>
@@ -94,10 +94,12 @@
 <script>
 import axios from 'axios';
 import { toast } from 'vue3-toastify';
+import { useAuthStore } from "@/stores/auth";
 
 export default {
   data() {
     return {
+      userLoggedId: "",
       users: {
         data: [],
         meta: {
@@ -110,11 +112,15 @@ export default {
       loading: false,
       error: null,
       currentPage: 1,
-      perPage: 20, // Número de usuários por página
+      perPage: 20, // Número de users por página
     };
   },
   created() {
     this.fetchUsers(this.currentPage);
+  },
+  mounted(){
+    const authStore = useAuthStore();
+    this.userLoggedId = authStore.user.data.id;
   },
   methods: {
     changePage(page) {
