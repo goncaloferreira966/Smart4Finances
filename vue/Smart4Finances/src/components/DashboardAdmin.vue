@@ -17,7 +17,7 @@
           <GChart type="PieChart" :data="chartData3" :options="chartOptions3" />
         </div>
 
-        <div class="col-md-6 mt-2">
+        <div class="col-md-6 mt-5">
           <p style="font-weight:bold;">Último Utilizador Apagado</p>
           <div v-if="statistics.last_deleted_user">
 
@@ -59,6 +59,7 @@ export default {
       chartOptions: {
         title: "Distribuição de Utilizadores por Estado",
         width: '100%',
+        height: window.innerWidth < 768 ? 300 : 500, // Altura dinâmica baseada na largura do ecra
         pieHole: 0.4,  // Isso cria o efeito de "donut"
         backgroundColor: "transparent", // Fundo transparente
         is3D: false,
@@ -76,6 +77,7 @@ export default {
       chartOptions2: {
         title: "Distribuição de Utilizadores por Role",
         width: '100%',
+        height: window.innerWidth < 768 ? 300 : 500, // Altura dinâmica baseada na largura do ecra
         pieHole: 0.4,  // Isso cria o efeito de "donut"
         backgroundColor: "transparent", // Fundo transparente
         is3D: false,
@@ -93,6 +95,7 @@ export default {
       chartOptions3: {
         title: "Distribuição de Utilizadores por Estado da Fotografia de Perfil",
         width: '100%',
+        height: window.innerWidth < 768 ? 300 : 500, // Altura dinâmica baseada na largura do ecra
         pieHole: 0.4,  // Isso cria o efeito de "donut"
         backgroundColor: "transparent", // Fundo transparente
         is3D: false,
