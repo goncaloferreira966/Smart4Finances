@@ -1,2 +1,3 @@
 npm install vue3-toastify
 npm install tesseract.js
+npm install vue-google-charts
