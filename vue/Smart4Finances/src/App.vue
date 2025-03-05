@@ -1,8 +1,9 @@
 <template>
   <div id="app">
     <!-- Exibir o componente Login apenas se o usuário não estiver logado -->
-    <div v-if="!isLoggedIn">
-      <NavbarLoginRegister :activeForm="currentSection" @navigate="navigateTo" @logout="logout" />
+    <!--<NavbarLoginRegister :activeForm="currentSection" @navigate="navigateTo" @logout="logout" />-->
+    <Navbar :isLoggedIn="isLoggedIn" :activeForm="currentSection" @navigate="navigateTo" @logout="logout" />
+    <div v-if="!isLoggedIn" :activeForm="currentSection">
       <div v-if="currentSection === 'login'">
         <Login @login-success="handleLoginSuccess" />
       </div>
@@ -16,7 +17,6 @@
 
     <!-- Conteúdo da aplicação principal -->
     <div v-else>
-      <Navbar @navigate="navigateTo" @logout="logout" />
       <div v-if="currentSection === 'profile'">
         <Profile @editer="handleEditUser" @logout="logout" />
       </div>
@@ -29,8 +29,15 @@
       <div v-else-if="currentSection === 'notifications'">
         <Notifications />
       </div>
-      <div v-else-if="currentSection === 'test'">
-        <test />
+      <div v-else-if="currentSection === 'addExpenses'">
+        <addExpenses :expenseId="id"/>
+      </div>
+      <div v-else-if="currentSection === 'ExpensesList'">
+        <ExpensesList @ExpenseView="handleExpenseView" @addexpense="handleExpensEdit"/>
+      </div>
+      <div v-else-if="currentSection === 'ExpenseView'" >
+        <ExpenseView 
+         @editExpense="handleExpensEdit" :expenseId="id"/>
       </div>
     </div>
 
@@ -47,33 +54,36 @@
 
 <script>
 import Login from './components/Login.vue';
-import Navbar from './components/Navbar.vue';
-import NavbarLoginRegister from './components/NavbarLoginRegister.vue';
+import Navbar from './components/NavBar/Navbar.vue';
 import Register from './components/Register.vue';
 import Profile from './components/Profile.vue';
 import EditUser from './components/EditUser.vue';
-import test from './components/test.vue';
+import addExpenses from './components/expenses/addExpenses.vue';
 import Administration from './components/Administration.vue';
 import Notifications from './components/Notifications.vue';
+import ExpensesList from './components/expenses/ExpensesList.vue';
+import ExpenseView from './components/expenses/ExpenseView.vue';
 import { toast } from 'vue3-toastify';
 
 export default {
   components: {
     Login,
     Navbar,
-    NavbarLoginRegister,
     Register,
     Profile,
     EditUser,
     Administration,
     Notifications,
-    test,
+    addExpenses,
+    ExpensesList,
+    ExpenseView,
   },
   data() {
     return {
       isLoggedIn: false,
       isRegistering: false,
       currentSection: 'login',
+      id:null,
     };
   },
   computed: {
@@ -88,7 +98,7 @@ export default {
     },
     logout() {
       this.isLoggedIn = false;
-      toast.info("Logout realizado com sucesso!");
+      toast.success("Logout realizado com sucesso!");
     },
     navigateTo(section) {
       this.currentSection = section;
@@ -108,6 +118,17 @@ export default {
     },
     handleUpdateCancel() {
       this.currentSection = 'profile';
+    },
+    handleExpensesList() {
+      this.currentSection = 'ExpensesList';
+    },
+    handleExpenseView(id) {
+      this.id = id;
+      this.currentSection = 'ExpenseView';
+    },
+    handleExpensEdit(id) {
+      this.id = id;
+      this.currentSection = 'addExpenses';
     },
   },
 };

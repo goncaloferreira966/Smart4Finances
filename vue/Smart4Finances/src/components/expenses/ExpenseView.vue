@@ -34,6 +34,12 @@ export default {
       categories: []
     };
   },
+  props: {
+    expenseId: {
+      type: Number,
+      required: true
+    }
+  },
   created() {
     this.loadCategories();
     this.loadExpense();
@@ -45,8 +51,8 @@ export default {
       });
     },
     loadExpense() {
-      const expenseId = this.$route.params.id;
-      axios.get(`/expenses/${expenseId}`).then(response => {
+      console.log('Loading expense', this.expenseId);
+      axios.get(`/expenses/${this.expenseId}`).then(response => {
         this.expense = response.data;
       }).catch(error => {
         console.error(error);
@@ -60,7 +66,7 @@ export default {
       return axios.defaults.baseURL + '/storage/' + receiptPath;
     },
     editExpense() {
-      this.$router.push({ name: 'AddExpenses', query: { id: this.expense.id } });
+      this.$emit('editExpense', this.expense.id);
     }
   }
 };

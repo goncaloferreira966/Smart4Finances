@@ -110,7 +110,7 @@ import { toast } from 'vue3-toastify';
 export default {
   props: {
     expenseId: {
-      type: [String, Number],
+      type:  Number,
       default: null
     }
   },
@@ -173,6 +173,7 @@ export default {
       .catch(error => {
         console.error('Erro ao buscar categorias:', error);
       });
+      console.log(this.expenseId);
     if (this.expenseId) {
       this.isEditMode = true;
       this.loadExpense();
@@ -226,7 +227,6 @@ export default {
       this.processing = false;
     },
     extractTotal(text) {
-      console.log(text);
       const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
       const candidateKeywords = ['total', 'pagar', 'pagamento'];
       const excludedKeywords = ['iban', 'swift', 'bic'];

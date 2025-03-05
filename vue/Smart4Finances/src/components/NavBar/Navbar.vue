@@ -6,25 +6,25 @@
       </h1>
       <ul class="flex space-x-4">
         <template v-if="isLoggedIn">
-          <li>
-            <router-link to="/profile" class="hover:text-gray-200">
-              <i class="bi bi-person"></i> {{ formattedNickname }}
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/notifications" class="hover:text-gray-200">
-              <i class="bi bi-bell"></i> Notificações
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/add-expenses" class="hover:text-gray-200">
-              <i class="bi bi-plus-circle"></i> Despesa
-            </router-link>
-          </li>
-          <li v-if="userRole === 'A'">
-            <router-link to="/administration" class="hover:text-gray-200">
+          <li v-if="userRole !== 'C'">
+            <button @click="$emit('navigate', 'administration')" class="hover:text-gray-200">
               <i class="bi bi-people"></i> Administração
-            </router-link>
+            </button>
+          </li>
+          <li>
+            <button @click="$emit('navigate', 'notifications')" class="hover:text-gray-200">
+              <i class="bi bi-bell"></i> Notificações
+            </button>
+          </li>
+          <li>
+            <button @click="$emit('navigate', 'ExpensesList')" class="hover:text-gray-200">
+              <i class="bi bi-plus-circle"></i> Despesas
+            </button>
+          </li>
+          <li>
+            <button @click="$emit('navigate', 'profile')" class="hover:text-gray-200">
+              <i class="bi bi-person"></i> {{ formattedNickname }}
+            </button>
           </li>
           <li>
             <button @click="handleLogout" class="hover:text-red-500">
@@ -33,15 +33,17 @@
           </li>
         </template>
         <template v-else>
-          <li>
-            <router-link to="/login" class="hover:text-gray-200">
-              <i class="bi bi-box-arrow-in-right"></i> Login
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/register" class="hover:text-gray-200">
+          <!-- Se estivermos no formulário de login, exibe o botão de Registar -->
+          <li v-if="activeForm === 'login'">
+            <button @click="$emit('navigate', 'register')" class="hover:text-gray-200">
               <i class="bi bi-person-bounding-box"></i> Registar
-            </router-link>
+            </button>
+          </li>
+          <!-- Se estivermos no formulário de registo, exibe o botão de Login -->
+          <li v-else-if="activeForm === 'register'">
+            <button @click="$emit('navigate', 'login')" class="hover:text-gray-200">
+              <i class="bi bi-box-arrow-in-right"></i> Login
+            </button>
           </li>
         </template>
       </ul>
@@ -50,38 +52,44 @@
 </template>
 
 <script>
-import { useAuthStore } from '@/stores/auth';
-import { computed } from 'vue';
-import { useRouter } from 'vue-router';
-
-export default {
-  name: "Navbar",
-  setup() {
-    const router = useRouter();
-    const authStore = useAuthStore();
-
-    // Cria um computed reativo que verifica se há usuário logado
-    const isLoggedIn = computed(() => authStore.user !== null);
-
-    const formattedNickname = computed(() => {
-      const nickname = authStore.user?.data?.nickname || "Usuário";
-      return nickname.charAt(0).toUpperCase() + nickname.slice(1);
-    });
-
-    // Obtem a role diretamente do authStore
-    const userRole = computed(() => authStore.user?.data?.type || 'user');
-
-    const handleLogout = () => {
-      authStore.logout();
-      console.log('Usuário deslogado');
-      authStore.clearUser(); // Limpa a store e dados persistidos
-      router.push({ name: 'Login' });
-    };
-
-    return { isLoggedIn, formattedNickname, userRole, handleLogout };
-  }
-};
-</script>
+  import { useAuthStore } from "@/stores/auth";
+  
+  export default {
+    name: "Navbar",
+    data() {
+      return {
+        userRole: "",
+      };
+    },
+    props: {
+      activeForm: {
+        type: String,
+        required: true,
+      },
+      isLoggedIn: {
+        type: Boolean,
+        required: true
+      }
+    },
+    computed: {
+      formattedNickname() {
+        const authStore = useAuthStore();
+        const nickname = authStore.user?.data?.nickname || "";
+        this.userRole = authStore.user?.data?.type;        
+        return nickname.charAt(0).toUpperCase() + nickname.slice(1);
+      },
+    },
+    mounted() {
+    },
+    methods: {
+      async handleLogout() {
+        const authStore = useAuthStore();
+        await authStore.logout();
+        this.$emit("logout");
+      }
+    }
+  };
+  </script>
 
 <style scoped>
 .navbar a {

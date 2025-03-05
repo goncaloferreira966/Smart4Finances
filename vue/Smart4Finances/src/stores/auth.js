@@ -49,7 +49,6 @@ export const useAuthStore = defineStore('auth', () => {
             axios.defaults.headers.common.Authorization = 'Bearer ' + token.value
             const responseUser = await axios.get(`/users/${userId}`)
             user.value = responseUser.data
-            console.log(user)
             return user.value
         } catch (e) {
             clearUser()

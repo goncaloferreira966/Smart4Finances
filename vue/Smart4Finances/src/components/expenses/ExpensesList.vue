@@ -18,6 +18,7 @@
         <input type="date" v-model="filters.endDate" class="p-2 border rounded"/>
       </div>
       <button @click="applyFilters" class="bg-blue-500 text-white px-4 py-2 rounded">Filtrar</button>
+      <button @click="addexpense" class="bg-blue-500 text-white px-4 py-2 rounded">adicionar</button>
     </div>
     
     <!-- Tabela de despesas -->
@@ -123,12 +124,16 @@ export default {
     applyFilters() {
       this.loadExpenses(true);
     },
+    addexpense() {
+      this.$emit("addexpense", null);
+    },
     getCategoryName(categoryId) {
       const cat = this.categories.find(c => c.id === categoryId);
       return cat ? cat.name : '';
     },
     viewExpense(expenseId) {
-      this.$router.push({ name: 'ExpenseView', params: { id: expenseId } });
+      this.$emit("ExpenseView", expenseId);
+      //this.$router.push({ name: 'ExpenseView', params: { id: expenseId } });
     }
   }
 };
