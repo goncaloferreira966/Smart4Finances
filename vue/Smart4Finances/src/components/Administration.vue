@@ -1,6 +1,6 @@
 <template>
   <div class="container mt-4 mb-5">
-    <h2 class="text-center mt-4" style="color: black;">Gestão de Utilizadores</h2>
+    <h2 class="card-title" style="color: black;">Gestão de Utilizadores</h2>
     <div class="card mt-4">
       <div class="table-responsive mt-4">
         <table class="table table-striped table-hover">

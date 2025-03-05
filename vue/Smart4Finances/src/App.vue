@@ -32,6 +32,12 @@
       <div v-else-if="currentSection === 'test'">
         <test />
       </div>
+      <div v-else-if="currentSection === 'dashboardadmin'">
+        <DashboardAdmin />
+      </div>
+      <div v-else-if="currentSection === 'dashboardclient'">
+        <DashboardClient />
+      </div>
     </div>
 
     <footer class="footer">
@@ -55,6 +61,9 @@ import EditUser from './components/EditUser.vue';
 import test from './components/test.vue';
 import Administration from './components/Administration.vue';
 import Notifications from './components/Notifications.vue';
+import DashboardAdmin from './components/DashboardAdmin.vue';
+import DashboardClient from './components/DashboardClient.vue';
+
 import { toast } from 'vue3-toastify';
 
 export default {
@@ -68,6 +77,8 @@ export default {
     Administration,
     Notifications,
     test,
+    DashboardAdmin,
+    DashboardClient,
   },
   data() {
     return {

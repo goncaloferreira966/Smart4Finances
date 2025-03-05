@@ -4,6 +4,16 @@
         <h1 class="text-xl font-bold"><i class="bi bi-coin"></i> Smart4Finances</h1>
         <ul class="flex space-x-3 mt-2">
           <li v-if="userRole !== 'C'">
+            <button @click="$emit('navigate', 'dashboardadmin')" class="hover:text-gray-200">
+              <i class="bi bi-pie-chart"></i> Dashboard
+            </button>
+          </li>
+          <li v-if="userRole !== 'A'">
+            <button @click="$emit('navigate', 'dashboardclient')" class="hover:text-gray-200">
+              <i class="bi bi-pie-chart"></i> Dashboard
+            </button>
+          </li>
+          <li v-if="userRole !== 'C'">
             <button @click="$emit('navigate', 'administration')" class="hover:text-gray-200">
               <i class="bi bi-people"></i> Administração
             </button>

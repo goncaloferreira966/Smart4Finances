@@ -4,9 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\UserController;
-use App\Http\Controllers\api\GameController;
 use App\Http\Controllers\api\StatisticsController;
-use App\Http\Controllers\api\TransactionsController;
 use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\api\ExpenseController;
 
@@ -23,6 +21,8 @@ use App\Http\Controllers\api\ExpenseController;
 // Rotas públicas
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/usersPost', [UserController::class, 'store']);
+Route::get('/admin-statistics', [StatisticsController::class, 'index']);
+
 
 // Rotas protegidas por middleware de autenticação
 Route::middleware(['auth:api'])->group(function () {
