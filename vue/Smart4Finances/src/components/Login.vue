@@ -20,7 +20,7 @@
           Entrar
         </button>
       </form>
-      <p v-if="errorMessage" class="text-red-500 text-sm mt-4">{{ errorMessage }}</p>
+      <!--<p v-if="errorMessage" class="text-red-500 text-sm mt-4">{{ errorMessage }}</p>-->
     </div>
   </div>
 </template>
@@ -67,7 +67,7 @@ export default {
       } catch (error) {
         console.error(error);
         toast.error("Erro ao realizar login automático.");
-        this.errorMessage = "Erro ao realizar login automático.";
+        //this.errorMessage = "Erro ao realizar login automático.";
       }
     },
     async handleLogin() {
@@ -81,12 +81,12 @@ export default {
           //toast.success("Login realizado com sucesso! ✅");
           this.$emit("login-success");
         } else {
-          this.errorMessage = "Credenciais Inválidas.";
+          //this.errorMessage = "Credenciais Inválidas.";
           toast.error("Credenciais Inválidas ❌");
         }
       } catch (error) {
         console.error(error);
-        this.errorMessage = "Erro inesperado no login.";
+        //this.errorMessage = "Erro inesperado no login.";
         toast.error("Erro inesperado no login ❌");
       }
     },

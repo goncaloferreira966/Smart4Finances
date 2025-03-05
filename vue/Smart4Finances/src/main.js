@@ -10,7 +10,7 @@ import { createPinia } from 'pinia';
 import axios from 'axios';
 import { io } from "socket.io-client";
 import App from './App.vue';
-import FieldErrorMessage from './components/errorMessage.vue';
+import FieldErrorMessage from './components/icons/errorMessage.vue';
 import Toastify from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 
