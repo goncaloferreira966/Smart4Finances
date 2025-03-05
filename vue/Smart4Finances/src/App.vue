@@ -71,7 +71,6 @@ import DashboardAdmin from './components/DashboardAdmin.vue';
 import DashboardClient from './components/DashboardClient.vue';
 import ExpensesList from './components/expenses/ExpensesList.vue';
 import ExpenseView from './components/expenses/ExpenseView.vue';
-import DashboardAdmin from './components/DashboardAdmin.vue';
 import { toast } from 'vue3-toastify';
 
 export default {

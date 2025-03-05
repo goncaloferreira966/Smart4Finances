@@ -7,6 +7,16 @@
       <ul class="flex space-x-4">
         <template v-if="isLoggedIn">
           <li v-if="userRole !== 'C'">
+            <button @click="$emit('navigate', 'dashboardadmin')" class="hover:text-gray-200">
+              <i class="bi bi-pie-chart"></i> Dashboard
+            </button>
+          </li>
+          <li v-if="userRole !== 'A'">
+            <button @click="$emit('navigate', 'dashboardclient')" class="hover:text-gray-200">
+              <i class="bi bi-pie-chart"></i> Dashboard
+            </button>
+          </li>
+          <li v-if="userRole !== 'C'">
             <button @click="$emit('navigate', 'administration')" class="hover:text-gray-200">
               <i class="bi bi-people"></i> Administração
             </button>
