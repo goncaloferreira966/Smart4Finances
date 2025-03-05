@@ -40,6 +40,13 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        // Inserir categorias iniciais TESTE
+        DB::table('categories')->insert([
+            ['name' => 'Comida', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Água', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Luz', 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
         Schema::create('incomes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
