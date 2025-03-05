@@ -13,9 +13,9 @@
               <i class="bi bi-bell"></i> Notificações
             </button>
           </li>
-          <li>
+          <li v-if="userRole !== 'A'">
             <button @click="$emit('navigate', 'test')" class="hover:text-gray-200">
-              <i class="bi bi-bell"></i> test
+              <i class="bi bi-bell"></i> Despesas
             </button>
           </li>
           <li>
