@@ -22,7 +22,8 @@ class StatisticsController extends Controller
             'active_users' => User::where('blocked', false)->count(),
             'blocked_users' => User::where('blocked', true)->count(),
             'deleted_users' => User::onlyTrashed()->count(),
-            'user_types' => User::selectRaw('type, COUNT(*) as count')->groupBy('type')->get(),
+            'adminCount' => User::where('type', 'A')->count(), // Contagem de Admins
+            'clientCount' => User::where('type', 'C')->count(), // Contagem de Clients
             //'top_user' => User::orderByDesc('value')->first(['nickname', 'value']),
             'users_with_avatar' => User::whereNotNull('photo_filename')->count(),
             'users_without_avatar' => User::whereNull('photo_filename')->count(),

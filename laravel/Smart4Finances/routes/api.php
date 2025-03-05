@@ -21,7 +21,6 @@ use App\Http\Controllers\api\ExpenseController;
 // Rotas públicas
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/usersPost', [UserController::class, 'store']);
-Route::get('/admin-statistics', [StatisticsController::class, 'index']);
 
 
 // Rotas protegidas por middleware de autenticação
@@ -63,4 +62,8 @@ Route::middleware(['auth:api'])->group(function () {
 
     // Endpoints para Despesas
     Route::apiResource("expenses", ExpenseController::class);
+
+    //Endpoints para dashboard do admin
+    Route::get('/admin-statistics', [StatisticsController::class, 'index']);
+
 });
