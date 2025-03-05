@@ -40,7 +40,7 @@
           </li>
           <li>
             <router-link to="/register" class="hover:text-gray-200">
-              <i class="bi bi-person-bounding-box"></i> Registrar
+              <i class="bi bi-person-bounding-box"></i> Registar
             </router-link>
           </li>
         </template>
