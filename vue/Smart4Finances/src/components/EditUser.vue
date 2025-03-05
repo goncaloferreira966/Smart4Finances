@@ -68,10 +68,12 @@
           const userId = this.getUserIdFromToken();
           const token = localStorage.getItem("AccessToken");
           const response = await axios.post(`/user/${userId}/updateProfile`, formData, {
-            headers: { Authorization: `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data"  
+             }
           });
           if (response.status === 200) {
-            toast.success("Alteração de dados realizada com sucesso!");
+           // toast.success("Alteração de dados realizada com sucesso!");
             await authStore.atualizar(token);
             this.$emit("update-success");
           } else {
