@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // Administrator, Player
+            // Administrator, Client
             $table->enum('type', ['A', 'C'])->default('C');
 
             // Nickname - must be unique
@@ -24,7 +24,7 @@ return new class extends Migration
             // User Photo/Avatar
             $table->string('photo_filename')->nullable();
 
-            // Brain Coin Balance
+            //  Balance/value
             $table->decimal('value', 10, 2)->default(0);
 
             // custom data
