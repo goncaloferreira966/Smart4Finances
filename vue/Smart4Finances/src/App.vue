@@ -1,12 +1,39 @@
 <template>
   <div id="app">
-    <!-- Navbar única que se adapta ao estado da aplicação -->
-    <Navbar :isLoggedIn="isLoggedIn" />
+    <!-- Exibir o componente Login apenas se o usuário não estiver logado -->
+    <div v-if="!isLoggedIn">
+      <NavbarLoginRegister :activeForm="currentSection" @navigate="navigateTo" @logout="logout" />
+      <div v-if="currentSection === 'login'">
+        <Login @login-success="handleLoginSuccess" />
+      </div>
+      <div v-else-if="currentSection === 'register'">
+        <Register @register-success="handleRegisterSuccess" />
+      </div>
+      <div v-else>
+        <Login @login-success="handleLoginSuccess" />
+      </div>
+    </div>
 
-    <!-- Conteúdo principal renderizado conforme a rota -->
-    <router-view />
+    <!-- Conteúdo da aplicação principal -->
+    <div v-else>
+      <Navbar @navigate="navigateTo" @logout="logout" />
+      <div v-if="currentSection === 'profile'">
+        <Profile @editer="handleEditUser" @logout="logout" />
+      </div>
+      <div v-else-if="currentSection === 'editUser'">
+        <EditUser @update-success="handleUpdateSuccess" @update-cancel="handleUpdateCancel" />
+      </div>
+      <div v-else-if="currentSection === 'administration'">
+        <Administration />
+      </div>
+      <div v-else-if="currentSection === 'notifications'">
+        <Notifications />
+      </div>
+      <div v-else-if="currentSection === 'test'">
+        <test />
+      </div>
+    </div>
 
-    <!-- Footer fixo para toda a aplicação -->
     <footer class="footer">
       <p style="color:#DAA520">&copy; {{ currentYear }} Smart4Finances. Todos os direitos reservados.</p>
       <div class="footer-links">
@@ -19,38 +46,69 @@
 </template>
 
 <script>
-import Navbar from './components/NavBar/Navbar.vue';
-import { computed } from 'vue';
-import { useAuthStore } from '@/stores/auth';
+import Login from './components/Login.vue';
+import Navbar from './components/Navbar.vue';
+import NavbarLoginRegister from './components/NavbarLoginRegister.vue';
+import Register from './components/Register.vue';
+import Profile from './components/Profile.vue';
+import EditUser from './components/EditUser.vue';
+import test from './components/test.vue';
+import Administration from './components/Administration.vue';
+import Notifications from './components/Notifications.vue';
+import { toast } from 'vue3-toastify';
 
 export default {
   components: {
+    Login,
     Navbar,
+    NavbarLoginRegister,
+    Register,
+    Profile,
+    EditUser,
+    Administration,
+    Notifications,
+    test,
   },
-  setup() {
-    const authStore = useAuthStore();
-    // Supondo que seu store possui uma propriedade "isLoggedIn"
-    const isLoggedIn = computed(() => authStore.isLoggedIn);
-    const currentYear = new Date().getFullYear();
-    return { isLoggedIn, currentYear };
-  }
+  data() {
+    return {
+      isLoggedIn: false,
+      isRegistering: false,
+      currentSection: 'login',
+    };
+  },
+  computed: {
+    currentYear() {
+      return new Date().getFullYear();
+    },
+  },
+  methods: {
+    handleLoginSuccess() {
+      this.isLoggedIn = true;
+      this.currentSection = 'profile';
+    },
+    logout() {
+      this.isLoggedIn = false;
+      toast.info("Logout realizado com sucesso!");
+    },
+    navigateTo(section) {
+      this.currentSection = section;
+    },
+    handleRegisterSuccess() {
+      this.isRegistering = false;
+      this.currentSection = 'login';
+      toast.success("Registro realizado com sucesso! Faça login.");
+    },
+    handleEditUser() {
+      this.isRegistering = false;
+      this.currentSection = 'editUser';
+    },
+    handleUpdateSuccess() {
+      this.currentSection = 'profile';
+      toast.success("Dados atualizados com sucesso!");
+    },
+    handleUpdateCancel() {
+      this.currentSection = 'profile';
+    },
+  },
 };
 </script>
-
-<style>
-#app {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-.footer {
-  text-align: center;
-  padding: 1rem;
-}
-.footer-links a {
-  margin: 0 0.5rem;
-  text-decoration: none;
-  color: inherit;
-}
-</style>

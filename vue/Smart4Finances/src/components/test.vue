@@ -1,10 +1,11 @@
 <template>
-  <div class="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg" style="margin-top: 7vh; margin-bottom: 7vh; min-width: 50vh;">
-    <h2 class="text-2xl font-bold mb-4">{{ isEditMode ? 'Editar Despesa' : 'Registar Despesa' }}</h2>
+  <div class="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg" style="margin-top: 7vh;  margin-bottom: 7vh; min-width: 50vh;">
+    <h2 class="text-2xl font-bold mb-4">Registar Despesa</h2>
     
     <label class="block mb-2">Carregar Recibo:</label>
     <input type="file" @change="onFileChange" accept="image/*" class="mb-4" />
     
+    <!-- Pré-visualização com clique para abrir modal -->
     <div v-if="receiptPreview" class="mb-4">
       <img :src="receiptPreview" alt="Recibo" class="w-full rounded cursor-pointer" @click="openImageModal" />
     </div>
@@ -55,12 +56,12 @@
         </select>
       </div>
       
-      <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
-        {{ isEditMode ? 'Atualizar' : 'Confirmar' }}
+      <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600" >
+        Confirmar
       </button>
     </form>
     
-    <!-- Modal para seleção de categoria -->
+    <!-- Modal para seleção de categoria (não alterado) -->
     <div v-if="showModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div class="bg-white p-6 rounded-lg w-11/12 max-w-md">
         <h3 class="text-xl font-bold mb-4">Selecione uma Categoria</h3>
@@ -82,18 +83,20 @@
       </div>
     </div>
     
-    <!-- Modal de visualização da imagem -->
+    <!-- Modal de visualização da imagem com zoom e panning via mouse -->
     <div v-if="showImageModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50"
          @wheel.prevent="onWheel"
          @mousedown="onMouseDown"
          @mousemove="onMouseMove"
          @mouseup="onMouseUp"
          @mouseleave="onMouseUp">
+      <!-- Container sem fundo branco para não "esconder" a imagem -->
       <div class="relative p-2 rounded overflow-hidden" style="background: transparent; max-width: 90vw; max-height: 90vh;">
         <img :src="receiptPreview" alt="Recibo Detalhado"
              :style="imageStyle"
              class="select-none" />
       </div>
+      <!-- Botão para fechar o modal -->
       <button @click="closeImageModal" class="absolute top-4 right-4 px-4 py-2 bg-red-500 text-white rounded">
         Fechar
       </button>
@@ -108,15 +111,8 @@ import Tesseract from 'tesseract.js';
 import { toast } from 'vue3-toastify';
 
 export default {
-  props: {
-    expenseId: {
-      type: [String, Number],
-      default: null
-    }
-  },
   data() {
     return {
-      isEditMode: false,
       processing: false,
       receiptPreview: null,
       errorMessage: '',
@@ -134,6 +130,7 @@ export default {
       modalSearchQuery: '',
       showModal: false,
       showImageModal: false,
+      // Propriedades para zoom e panning
       zoomLevel: 1,
       offsetX: 0,
       offsetY: 0,
@@ -173,22 +170,8 @@ export default {
       .catch(error => {
         console.error('Erro ao buscar categorias:', error);
       });
-    if (this.expenseId) {
-      this.isEditMode = true;
-      this.loadExpense();
-    }
   },
   methods: {
-    loadExpense() {
-      axios.get(`/expenses/${this.expenseId}`)
-        .then(response => {
-          this.expense = response.data;
-          this.receiptPreview = response.data.receipt ? axios.defaults.baseURL + '/storage/' + response.data.receipt : null;
-        })
-        .catch(error => {
-          console.error('Erro ao carregar despesa:', error);
-        });
-    },
     onFileChange(event) {
       const file = event.target.files[0];
       if (file) {
@@ -211,8 +194,8 @@ export default {
           }
         });
         toast.remove(toastId);
-        // Extraindo e formatando o valor
-        this.expense.amount = this.formatAmountValue(this.extractTotal(result.data.text));
+        this.expense.amount = this.extractTotal(result.data.text);
+        this.formatAmount();
         const extractedDate = this.extractDate(result.data.text);
         if (extractedDate) {
           this.expense.date = this.formatDate(extractedDate);
@@ -226,6 +209,7 @@ export default {
       this.processing = false;
     },
     extractTotal(text) {
+      console.log(text);
       const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
       const candidateKeywords = ['total', 'pagar', 'pagamento'];
       const excludedKeywords = ['iban', 'swift', 'bic'];
@@ -288,7 +272,8 @@ export default {
       return value ? value.trim() : '';
     },
     stripSymbols(value) {
-      return value.replace(/[^0-9.,]/g, '');
+      value.replace(/[^0-9.,]/g, '');
+      return value;
     },
     selectCategory(category) {
       this.expense.category_id = category.id;
@@ -301,15 +286,7 @@ export default {
     },
     formatAmount() {
       let num = parseFloat(this.expense.amount.replace(',', '.'));
-      if (!isNaN(num)) {
-        this.expense.amount = num.toFixed(2);
-      } else {
-        this.expense.amount = '0.00';
-      }
-    },
-    formatAmountValue(value) {
-      let num = parseFloat(value.replace(',', '.'));
-      return !isNaN(num) ? num.toFixed(2) : '0.00';
+      this.expense.amount = num.toFixed(2);
     },
     submitExpense() {
       if (!this.expense.date || !this.expense.amount || !this.expense.category_id) {
@@ -336,26 +313,16 @@ export default {
         formData.append('receipt', this.expense.receipt);
       }
       
-      if (this.isEditMode) {
-        axios.put(`/expenses/${this.expenseId}`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        }).then(response => {
-          toast.success("Despesa atualizada com sucesso!");
-        }).catch(error => {
-          this.errorMessage = 'Erro ao atualizar despesa. Verifique os dados e tente novamente.';
-          toast.error(this.errorMessage);
-        });
-      } else {
-        axios.post('/expenses', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        }).then(response => {
-          toast.success("Despesa registada com sucesso!");
-        }).catch(error => {
-          this.errorMessage = 'Erro ao submeter despesa. Verifique os dados e tente novamente.';
-          toast.error(this.errorMessage);
-        });
-      }
+      axios.post('/expenses', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      }).then(response => {
+        toast.success("Despesa registada com sucesso!");
+      }).catch(error => {
+        this.errorMessage = 'Erro ao submeter despesa. Verifique os dados e tente novamente.';
+        toast.error(this.errorMessage);
+      });
     },
+    // Métodos para abrir/fechar o modal de imagem
     openImageModal() {
       this.showImageModal = true;
       this.zoomLevel = 1;
@@ -369,9 +336,10 @@ export default {
       this.offsetY = 0;
       this.isDragging = false;
     },
+    // Atualiza o zoom com a roda do mouse, mantendo o ponteiro como âncora
     onWheel(e) {
       e.preventDefault();
-      const scaleAmount = 0.001;
+      const scaleAmount = 0.001; // Valor menor para suavizar o zoom
       let newZoom = this.zoomLevel - e.deltaY * scaleAmount;
       newZoom = Math.max(newZoom, 1);
       const rect = e.currentTarget.getBoundingClientRect();
@@ -382,6 +350,7 @@ export default {
       this.offsetY = (this.offsetY - mouseY) * factor + mouseY;
       this.zoomLevel = newZoom;
     },
+    // Métodos para panning via mouse drag
     onMouseDown(e) {
       if (e.button !== 0) return;
       this.isDragging = true;
