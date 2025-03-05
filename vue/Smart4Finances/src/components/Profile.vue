@@ -7,7 +7,7 @@
           <h3 class="card-subtitle mb-2 text-muted mt-4">
             <i class="bi bi-person"></i> {{ user.data.name }}
           </h3>
-          <img v-show="user && user.data.photoFileName" :src="`http://localhost${user.data.photoFileName}`"
+          <img style="max-width: 150px; max-height: 150px;" v-show="user && user.data.photoFileName" :src="`${apiDomain}${user.data.photoFileName}`"
                alt="User Photo" class="card-img-top rounded-circle mt-4" />
           <p class="card-text mt-4"><strong><i class="bi bi-envelope"></i> E-mail:</strong> {{ user.data.email }}</p>
           <p class="card-text mt-4"><strong><i class="bi bi-person-circle"></i> Nickname:</strong> {{ user.data.nickname }}</p>
@@ -53,6 +53,7 @@ export default {
     return {
       user: null,
       userRole: "",
+      apiDomain: import.meta.env.VITE_API_DOMAIN,
       error: ""
     };
   },
