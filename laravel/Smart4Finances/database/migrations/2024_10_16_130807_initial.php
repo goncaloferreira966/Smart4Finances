@@ -53,6 +53,9 @@ return new class extends Migration
             $table->string('source');
             $table->decimal('amount', 10, 2);
             $table->date('date');
+            $table->string('recurring_interval', 20)->nullable();
+            $table->enum('recurring_interval_unit', ['dia', 'semanal', 'mes', 'anual'])->nullable();
+            $table->string('receipt', 255)->nullable();
             $table->timestamps();
         });
 
