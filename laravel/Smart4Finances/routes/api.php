@@ -7,6 +7,7 @@ use App\Http\Controllers\api\UserController;
 use App\Http\Controllers\api\StatisticsController;
 use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\api\ExpenseController;
+use App\Http\Controllers\Api\IncomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,13 +56,15 @@ Route::middleware(['auth:api'])->group(function () {
     Route::apiResource("users", UserController::class);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::post('/auth/refreshtoken', [AuthController::class, 'refreshToken']);
-    Route::post('/users/me', [UserController::class, 'showMe']);
+    //Route::post('/users/me', [UserController::class, 'showMe']);
 
     // Endpoints para Categorias
     Route::apiResource("categories", CategoryController::class);
 
     // Endpoints para Despesas
     Route::apiResource("expenses", ExpenseController::class);
+
+    Route::apiResource('incomes', IncomeController::class);
 
     //Endpoints para dashboard do admin
     Route::get('/admin-statistics', [StatisticsController::class, 'index']);
