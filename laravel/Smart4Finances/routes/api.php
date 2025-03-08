@@ -63,6 +63,8 @@ Route::middleware(['auth:api'])->group(function () {
     // Endpoints para Despesas
     Route::apiResource("expenses", ExpenseController::class);
 
+    Route::apiResource('incomes', IncomeController::class);
+
     //Endpoints para dashboard do admin
     Route::get('/admin-statistics', [StatisticsController::class, 'index']);
 
