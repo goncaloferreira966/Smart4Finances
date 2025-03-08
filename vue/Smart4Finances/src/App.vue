@@ -30,13 +30,14 @@
         <Notifications />
       </div>
       <div v-else-if="currentSection === 'addExpenses'">
-        <addExpenses :expenseId="id"/>
+        <addExpenses :expenseId="id" @ExpensesList = "handleExpensesList"/>
       </div>
       <div v-else-if="currentSection === 'ExpensesList'">
         <ExpensesList @ExpenseView="handleExpenseView" @addexpense="handleExpensEdit"/>
       </div>
       <div v-else-if="currentSection === 'ExpenseView'" >
         <ExpenseView 
+         @BackExpense="handleExpensesList"
          @editExpense="handleExpensEdit" :expenseId="id"/>
       </div>
       <div v-else-if="currentSection === 'dashboardadmin'">
@@ -59,13 +60,13 @@
 </template>
 
 <script>
-import Login from './components/Login.vue';
+import Login from './components/user/Login.vue';
 import Navbar from './components/NavBar/Navbar.vue';
-import Register from './components/Register.vue';
-import Profile from './components/Profile.vue';
-import EditUser from './components/EditUser.vue';
+import Register from './components/user/Register.vue';
+import Profile from './components/user/Profile.vue';
+import EditUser from './components/user/EditUser.vue';
 import addExpenses from './components/expenses/addExpenses.vue';
-import Administration from './components/Administration.vue';
+import Administration from './components/user/Administration.vue';
 import Notifications from './components/Notifications.vue';
 import DashboardAdmin from './components/DashboardAdmin.vue';
 import DashboardClient from './components/DashboardClient.vue';
@@ -130,7 +131,8 @@ export default {
       this.currentSection = 'profile';
     },
     handleExpensesList() {
-      this.currentSection = 'ExpensesList';
+      this.$refs.expenseList.loadExpenses(true);
+      //this.currentSection = 'ExpensesList';
     },
     handleExpenseView(id) {
       this.id = id;

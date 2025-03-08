@@ -55,7 +55,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::apiResource("users", UserController::class);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::post('/auth/refreshtoken', [AuthController::class, 'refreshToken']);
-    Route::post('/users/me', [UserController::class, 'showMe']);
+    //Route::post('/users/me', [UserController::class, 'showMe']);
 
     // Endpoints para Categorias
     Route::apiResource("categories", CategoryController::class);
