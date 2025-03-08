@@ -7,6 +7,7 @@ use App\Http\Controllers\api\UserController;
 use App\Http\Controllers\api\StatisticsController;
 use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\api\ExpenseController;
+use App\Http\Controllers\Api\IncomeController;
 
 /*
 |--------------------------------------------------------------------------

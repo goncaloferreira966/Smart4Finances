@@ -1,6 +1,6 @@
 <template>
   <div class="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg" style="margin-top: 7vh; margin-bottom: 7vh; min-width: 50vh;">
-    <h2 class="text-2xl font-bold mb-4">{{ isEditMode ? 'Editar Despesa' : 'Registar Despesa' }}</h2>
+    <h2 class="text-2xl font-bold mb-4">{{ isEditMode ? 'Editar Receita' : 'Registar Receita' }}</h2>
     
     <label class="block mb-2">Carregar Recibo:</label>
     <input type="file" @change="onFileChange" accept="image/*" class="mb-4" />
@@ -9,45 +9,20 @@
       <img :src="receiptPreview" alt="Recibo" class="w-full rounded cursor-pointer" @click="openImageModal" />
     </div>
     
-    <form @submit.prevent="submitExpense">
-      <label class="block mb-2">Categoria:</label>
-      <input type="text" v-model="searchQuery" placeholder="Pesquisar categoria..." class="w-full p-2 border rounded mb-2" />
-      <div class="border rounded mb-4" style="max-height: 200px; overflow-y: auto;">
-        <div v-for="category in filteredCategories" :key="category.id" 
-             class="p-2 cursor-pointer hover:bg-gray-200"
-             @click="selectCategory(category)">
-          {{ category.name }}
-        </div>
-        <div v-if="filteredCategories.length === 0" class="p-2 text-gray-500">
-          Nenhuma categoria encontrada.
-        </div>
-      </div>
-      
-      <button type="button" @click="showModal = true" style="background-color:black; color:#DAA520"
-              class="mb-4 py-2 px-4 rounded hover:bg-gray-600">
-        Ver todas as categorias
-      </button>
-      
-      <!-- Select oculto para manter o valor selecionado -->
-      <select v-model="expense.category_id" class="hidden">
-        <option v-for="category in categories" :key="category.id" :value="category.id">
-          {{ category.name }}
-        </option>
-      </select>
-      
+    <form @submit.prevent="submitIncome">
+      <label class="block mb-2">Fonte:</label>
+      <input type="text" v-model="income.source" placeholder="Introduza a fonte da receita..." class="w-full p-2 border rounded mb-4" />
+
       <label class="block mb-2">Valor:</label>
-      <input type="text" v-model="expense.amount" @blur="formatAmount" class="w-full p-2 border rounded mb-4" />
-      
-      <label class="block mb-2">Descrição:</label>
-      <input type="text" v-model="expense.description" class="w-full p-2 border rounded mb-4" />
+      <input type="text" v-model="income.amount" @blur="formatAmount" class="w-full p-2 border rounded mb-4" />
       
       <label class="block mb-2">Data:</label>
-      <input type="date" v-model="expense.date" class="w-full p-2 border rounded mb-4" />
+      <input type="date" v-model="income.date" class="w-full p-2 border rounded mb-4" />
       
       <label class="block mb-2">Intervalo Recorrente (opcional):</label>
       <div class="flex mb-4">
-        <input type="text" v-model="expense.recurring_interval" placeholder="0" class="flex-1 p-2 border rounded-l" />
-        <select v-model="expense.recurring_interval_unit" class="p-2 border rounded-r">
+        <input type="text" v-model="income.recurring_interval" placeholder="0" class="flex-1 p-2 border rounded-l" />
+        <select v-model="income.recurring_interval_unit" class="p-2 border rounded-r">
           <option value="dia">Dia</option>
           <option value="semana">Semana</option>
           <option value="mes">Mês</option>
@@ -55,33 +30,11 @@
         </select>
       </div>
       
-      <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 bthouver">
+      <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
         <i class="bi bi-check2-circle"></i>
         {{ isEditMode ? 'Atualizar' : 'Confirmar' }}
       </button>
     </form>
-    
-    <!-- Modal para seleção de categoria -->
-    <div v-if="showModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div class="bg-white p-6 rounded-lg w-11/12 max-w-md">
-        <h3 class="text-xl font-bold mb-4">Selecione uma Categoria</h3>
-        <input type="text" v-model="modalSearchQuery" placeholder="Pesquisar categoria..." class="w-full p-2 border rounded mb-2" />
-        <div class="border rounded mb-4" style="max-height: 300px; overflow-y: auto;">
-          <div v-for="category in modalFilteredCategories" :key="category.id" 
-               class="p-2 cursor-pointer hover:bg-gray-200"
-               @click="selectCategoryFromModal(category)">
-            {{ category.name }}
-          </div>
-          <div v-if="modalFilteredCategories.length === 0" class="p-2 text-gray-500">
-            Nenhuma categoria encontrada.
-          </div>
-        </div>
-        <button @click="showModal = false" style="background-color:black; color:#DAA520"
-                class="w-full py-2 rounded hover:bg-gray-600">
-          Fechar
-        </button>
-      </div>
-    </div>
     
     <!-- Modal de visualização da imagem -->
     <div v-if="showImageModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50"
@@ -110,8 +63,8 @@ import { toast } from 'vue3-toastify';
 
 export default {
   props: {
-    expenseId: {
-      type:  Number,
+    incomeId: {
+      type: Number,
       default: null
     }
   },
@@ -121,19 +74,15 @@ export default {
       processing: false,
       receiptPreview: null,
       errorMessage: '',
-      expense: {
-        category_id: '',
+      income: {
+        source: '',
         amount: '0.00',
-        description: '',
         date: '',
         recurring_interval: '0',
         recurring_interval_unit: 'dia',
         receipt: ''
       },
-      categories: [],
-      searchQuery: '',
-      modalSearchQuery: '',
-      showModal: false,
+      // Variáveis para a visualização e manipulação da imagem
       showImageModal: false,
       zoomLevel: 1,
       offsetX: 0,
@@ -146,18 +95,6 @@ export default {
     };
   },
   computed: {
-    filteredCategories() {
-      if (!this.searchQuery) return this.categories;
-      return this.categories.filter(category =>
-        category.name.toLowerCase().includes(this.searchQuery.toLowerCase())
-      );
-    },
-    modalFilteredCategories() {
-      if (!this.modalSearchQuery) return this.categories;
-      return this.categories.filter(category =>
-        category.name.toLowerCase().includes(this.modalSearchQuery.toLowerCase())
-      );
-    },
     imageStyle() {
       return {
         transform: `translate(${this.offsetX}px, ${this.offsetY}px) scale(${this.zoomLevel})`,
@@ -167,35 +104,27 @@ export default {
     }
   },
   mounted() {
-    axios.get('/categories')
-      .then(response => {
-        this.categories = response.data;
-      })
-      .catch(error => {
-        console.error('Erro ao buscar categorias:', error);
-      });
-      console.log(this.expenseId);
-    if (this.expenseId) {
+    if (this.incomeId) {
       this.isEditMode = true;
-      this.loadExpense();
+      this.loadIncome();
     }
   },
   methods: {
-    loadExpense() {
-      axios.get(`/expenses/${this.expenseId}`)
+    loadIncome() {
+      axios.get(`/incomes/${this.incomeId}`)
         .then(response => {
-          this.expense = response.data;
+          this.income = response.data;
           this.receiptPreview = response.data.receipt ? axios.defaults.baseURL + '/storage/' + response.data.receipt : null;
         })
         .catch(error => {
-          console.error('Erro ao carregar despesa:', error);
+          console.error('Erro ao carregar a receita:', error);
         });
     },
     onFileChange(event) {
       const file = event.target.files[0];
       if (file) {
         toast.success("Imagem aceite!");
-        this.expense.receipt = file;
+        this.income.receipt = file;
         this.receiptPreview = URL.createObjectURL(file);
         this.processImage(file);
       }
@@ -213,11 +142,11 @@ export default {
           }
         });
         toast.remove(toastId);
-        // Extraindo e formatando o valor
-        this.expense.amount = this.formatAmountValue(this.extractTotal(result.data.text));
+        // Extrai e formata o valor
+        this.income.amount = this.formatAmountValue(this.extractTotal(result.data.text));
         const extractedDate = this.extractDate(result.data.text);
         if (extractedDate) {
-          this.expense.date = this.formatDate(extractedDate);
+          this.income.date = this.formatDate(extractedDate);
         }
         toast.success("Imagem processada com sucesso!");
       } catch (error) {
@@ -229,7 +158,7 @@ export default {
     },
     extractTotal(text) {
       const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-      const candidateKeywords = ['total', 'pagar', 'pagamento'];
+      const candidateKeywords = ['total', 'recebido', 'valor'];
       const excludedKeywords = ['iban', 'swift', 'bic'];
       const candidates = lines.filter(line => {
         const lower = line.toLowerCase();
@@ -243,15 +172,6 @@ export default {
         candidateLine = nonSubtotal.length > 0 ? nonSubtotal[nonSubtotal.length - 1] : candidates[candidates.length - 1];
         const regex = /(?:r\$|\$|€|£|eur)?\s*(\d+(?:[,.]\d+)?)/i;
         const match = candidateLine.match(regex);
-        if (match && match[1]) {
-          return this.stripSymbols(this.cleanValue(match[1]));
-        }
-      }
-      
-      const subtotalLine = lines.find(line => line.toLowerCase().includes('subtotal'));
-      if (subtotalLine) {
-        const regex = /(?:r\$|\$|€|£|eur)?\s*(\d+(?:[,.]\d+)?)/i;
-        const match = subtotalLine.match(regex);
         if (match && match[1]) {
           return this.stripSymbols(this.cleanValue(match[1]));
         }
@@ -292,69 +212,59 @@ export default {
     stripSymbols(value) {
       return value.replace(/[^0-9.,]/g, '');
     },
-    selectCategory(category) {
-      this.expense.category_id = category.id;
-      this.searchQuery = category.name;
-    },
-    selectCategoryFromModal(category) {
-      this.expense.category_id = category.id;
-      this.searchQuery = category.name;
-      this.showModal = false;
-    },
     formatAmount() {
-      let num = parseFloat(this.expense.amount.replace(',', '.'));
+      let num = parseFloat(this.income.amount.replace(',', '.'));
       if (!isNaN(num)) {
-        this.expense.amount = num.toFixed(2);
+        this.income.amount = num.toFixed(2);
       } else {
-        this.expense.amount = '0.00';
+        this.income.amount = '0.00';
       }
     },
     formatAmountValue(value) {
       let num = parseFloat(value.replace(',', '.'));
       return !isNaN(num) ? num.toFixed(2) : '0.00';
     },
-    submitExpense() {
-      if (!this.expense.date || !this.expense.amount || !this.expense.category_id) {
-        this.errorMessage = 'Os campos Data, Valor e Categoria são obrigatórios.';
+    submitIncome() {
+      if (!this.income.date || !this.income.amount || !this.income.source) {
+        this.errorMessage = 'Os campos Data, Valor e Fonte são obrigatórios.';
         toast.error(this.errorMessage);
         return;
       }
       
       this.formatAmount();
-      if (this.expense.recurring_interval === '0') {
-        this.expense.recurring_interval = null;
+      if (this.income.recurring_interval === '0') {
+        this.income.recurring_interval = null;
       }
       
       this.errorMessage = '';
       const formData = new FormData();
-      formData.append('category_id', this.expense.category_id);
-      formData.append('amount', this.expense.amount);
-      formData.append('description', this.expense.description);
-      formData.append('date', this.expense.date);
-      formData.append('recurring_interval', this.expense.recurring_interval);
-      formData.append('recurring_interval_unit', this.expense.recurring_interval_unit);
+      formData.append('source', this.income.source);
+      formData.append('amount', this.income.amount);
+      formData.append('date', this.income.date);
+      formData.append('recurring_interval', this.income.recurring_interval);
+      formData.append('recurring_interval_unit', this.income.recurring_interval_unit);
       
-      if (this.expense.receipt) {
-        formData.append('receipt', this.expense.receipt);
+      if (this.income.receipt) {
+        formData.append('receipt', this.income.receipt);
       }
       
       if (this.isEditMode) {
-        axios.put(`/expenses/${this.expenseId}`, formData, {
+        axios.put(`/incomes/${this.incomeId}`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         }).then(response => {
-          toast.success("Despesa atualizada com sucesso!");
+          toast.success("Receita atualizada com sucesso!");
         }).catch(error => {
-          this.errorMessage = 'Erro ao atualizar despesa. Verifique os dados e tente novamente.';
+          this.errorMessage = 'Erro ao atualizar receita. Verifique os dados e tente novamente.';
           toast.error(this.errorMessage);
         });
       } else {
-        axios.post('/expenses', formData, {
+        axios.post('/incomes', formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         }).then(response => {
-          toast.success("Despesa registada com sucesso!");
-          this.$emit("ExpensesList", null);
+          toast.success("Receita registada com sucesso!");
+          this.$emit("IncomesList", null);
         }).catch(error => {
-          this.errorMessage = 'Erro ao submeter despesa. Verifique os dados e tente novamente.';
+          this.errorMessage = 'Erro ao submeter receita. Verifique os dados e tente novamente.';
           toast.error(this.errorMessage);
         });
       }

@@ -30,15 +30,22 @@
         <Notifications />
       </div>
       <div v-else-if="currentSection === 'addExpenses'">
-        <addExpenses :expenseId="id" @ExpensesList = "handleExpensesList"/>
+        <addExpenses :expenseId="id" @ExpensesList="handleExpensesList" />
       </div>
       <div v-else-if="currentSection === 'ExpensesList'">
-        <ExpensesList @ExpenseView="handleExpenseView" @addexpense="handleExpensEdit"/>
+        <ExpensesList @ExpenseView="handleExpenseView" @addexpense="handleExpensEdit" />
       </div>
-      <div v-else-if="currentSection === 'ExpenseView'" >
-        <ExpenseView 
-         @BackExpense="handleExpensesList"
-         @editExpense="handleExpensEdit" :expenseId="id"/>
+      <div v-else-if="currentSection === 'ExpenseView'">
+        <ExpenseView @BackExpense="handleExpensesList" @editExpense="handleExpensEdit" :expenseId="id" />
+      </div>
+      <div v-else-if="currentSection === 'addIncome'">
+        <addIncome :IncomeId="id" @IncomeList="handleIncomeList" />
+      </div>
+      <div v-else-if="currentSection === 'IncomeList'">
+        <IncomeList @IncomeView="handleIncomeView" @addIncome="handleIncomeEdit" />
+      </div>
+      <div v-else-if="currentSection === 'IncomeView'">
+        <IncomeView @BackIncome="handleIncomeList" @editIncome="handleIncomeEdit" :IncomeId="id" />
       </div>
       <div v-else-if="currentSection === 'dashboardadmin'">
         <DashboardAdmin />
@@ -72,6 +79,9 @@ import DashboardAdmin from './components/DashboardAdmin.vue';
 import DashboardClient from './components/DashboardClient.vue';
 import ExpensesList from './components/expenses/ExpensesList.vue';
 import ExpenseView from './components/expenses/ExpenseView.vue';
+import addIncome from './components/income/addIncome.vue';
+import IncomeList from './components/income/IncomeList.vue';
+import IncomeView from './components/income/IncomeView.vue';
 import { toast } from 'vue3-toastify';
 
 export default {
@@ -88,13 +98,16 @@ export default {
     addExpenses,
     ExpensesList,
     ExpenseView,
+    addIncome,
+    IncomeList,
+    IncomeView,
   },
   data() {
     return {
       isLoggedIn: false,
       isRegistering: false,
       currentSection: 'login',
-      id:null,
+      id: null,
     };
   },
   computed: {
@@ -130,6 +143,7 @@ export default {
     handleUpdateCancel() {
       this.currentSection = 'profile';
     },
+    // Expenses
     handleExpensesList() {
       this.$refs.expenseList.loadExpenses(true);
       //this.currentSection = 'ExpensesList';
@@ -141,6 +155,23 @@ export default {
     handleExpensEdit(id) {
       this.id = id;
       this.currentSection = 'addExpenses';
+    },
+    // Income
+    // TODO: 
+    handleIncomeList() {
+      console.log('handleIncomeList');
+      this.$refs.incomeList.loadIncome(true);
+      //this.currentSection = 'IncomeList';
+    },
+    handleIncomeView(id) {
+      console.log('handleIncomeView');
+      this.id = id;
+      this.currentSection = 'IncomeView';
+    },
+    handleIncomeEdit(id) {
+      console.log('handleIncomeEdit');
+      this.id = id;
+      this.currentSection = 'addIncome';
     },
   },
 };

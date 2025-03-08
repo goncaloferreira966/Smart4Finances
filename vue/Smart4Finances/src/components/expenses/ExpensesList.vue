@@ -13,9 +13,8 @@
           </select>
         </div>
         <div class="mr-5 ml-2">
-            <input type="number" v-model="filters.minPrice" placeholder="Preço mínimo" class="mr-2 p-2 border rounde
-          d" />
-          <input type="number" v-model="filters.maxPrice" placeholder="Preço máximo" class="p-2 border rounded" />
+            <input type="number" v-model="filters.minPrice" placeholder="Preço mínimo" class="mr-2 p-2 border rounded" style="width: 15vh;"/>
+          <input type="number" v-model="filters.maxPrice" placeholder="Preço máximo" class="p-2 border rounded" style="width: 15vh;"/>
         </div>
         <div class="flex mb-2 mr-5 ml-2">
           <input type="date" v-model="filters.startDate" class="mr-2 p-2 border rounded" />

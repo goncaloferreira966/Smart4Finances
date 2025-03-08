@@ -73,7 +73,6 @@ class IncomeController extends Controller
         // Trata o upload do recibo, se enviado
         if ($request->hasFile('receipt')) {
             $path = $request->file('receipt')->store('receipts', 'public');
-            Log::info('Caminho do recibo: ' . $path);
             $data['receipt'] = $path;
         }
 

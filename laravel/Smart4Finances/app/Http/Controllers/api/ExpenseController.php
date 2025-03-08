@@ -71,7 +71,6 @@ class ExpenseController extends Controller
         // Trata o upload do recibo, se enviado, sem fazer merge no request
         if ($request->hasFile('receipt')) {
             $path = $request->file('receipt')->store('receipts', 'public');
-            Log::info('Caminho do receipt: ' . $path);
             $data['receipt'] = $path;
         }
 

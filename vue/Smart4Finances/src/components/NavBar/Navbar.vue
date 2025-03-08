@@ -27,8 +27,13 @@
             </button>
           </li>
           <li>
+            <button @click="$emit('navigate', 'IncomeList')" class="hover:text-gray-200">
+              <i class="bi bi-plus-circle"></i> Receitas
+            </button>
+          </li>
+          <li>
             <button @click="$emit('navigate', 'ExpensesList')" class="hover:text-gray-200">
-              <i class="bi bi-plus-circle"></i> Despesas
+              <i class="bi bi-dash-circle"></i> Despesas
             </button>
           </li>
           <li>
