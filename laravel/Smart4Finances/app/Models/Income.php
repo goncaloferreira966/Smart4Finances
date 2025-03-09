@@ -22,7 +22,6 @@ class Income extends Model
 
     // Converte os campos para os tipos apropriados
     protected $casts = [
-        'date'   => 'date',
         'amount' => 'decimal:2',
     ];
 

@@ -113,7 +113,6 @@ export default {
         startDate: this.filters.startDate,
         endDate: this.filters.endDate
       };
-      console.log('passei aqui');
       axios.get('/expenses', { params })
         .then(response => {
           // O payload retornado contém a propriedade "data" com as despesas
@@ -150,7 +149,6 @@ export default {
     },
     // Função debounced para evitar múltiplas requisições consecutivas enquanto o usuário interage com os filtros
     applyFiltersDebounced: debounce(function () {
-      console.log('Aplicando filtros...');
       this.applyFilters();
     }, 500),
     addexpense() {

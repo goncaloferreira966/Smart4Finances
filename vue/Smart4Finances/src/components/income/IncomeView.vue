@@ -5,7 +5,8 @@
       <p><strong>Data:</strong> {{ income.date }}</p>
       <p><strong>Fonte:</strong> {{ income.source }}</p>
       <p><strong>Valor:</strong> {{ income.amount }}</p>
-      <p><strong>Intervalo Recorrente:</strong>
+      <p v-if="income.recurring_interval != 'null'">
+        <strong>Intervalo Recorrente:</strong>
         <span v-if="income.recurring_interval">
           {{ income.recurring_interval }} {{ income.recurring_interval_unit }}
         </span>
@@ -34,7 +35,7 @@
 import axios from 'axios';
 export default {
   props: {
-    incomeId: {
+    IncomeId: {
       type: Number,
       required: true
     }
@@ -49,7 +50,7 @@ export default {
   },
   methods: {
     loadIncome() {
-      axios.get(`/incomes/${this.incomeId}`)
+      axios.get(`/incomes/${this.IncomeId}`)
         .then(response => {
           this.income = response.data;
         })
@@ -61,6 +62,7 @@ export default {
       return import.meta.env.VITE_API_DOMAIN + '/storage/' + receiptPath;
     },
     editIncome() {
+      console.log('Editando receita', this.income.id);
       this.$emit('editIncome', this.income.id);
     },
     backList() {

@@ -159,17 +159,14 @@ export default {
     // Income
     // TODO: 
     handleIncomeList() {
-      console.log('handleIncomeList');
       this.$refs.incomeList.loadIncome(true);
       //this.currentSection = 'IncomeList';
     },
     handleIncomeView(id) {
-      console.log('handleIncomeView');
       this.id = id;
       this.currentSection = 'IncomeView';
     },
     handleIncomeEdit(id) {
-      console.log('handleIncomeEdit');
       this.id = id;
       this.currentSection = 'addIncome';
     },

@@ -174,7 +174,6 @@ export default {
       .catch(error => {
         console.error('Erro ao buscar categorias:', error);
       });
-      console.log(this.expenseId);
     if (this.expenseId) {
       this.isEditMode = true;
       this.loadExpense();
@@ -185,7 +184,16 @@ export default {
       axios.get(`/expenses/${this.expenseId}`)
         .then(response => {
           this.expense = response.data;
-          this.receiptPreview = response.data.receipt ? axios.defaults.baseURL + '/storage/' + response.data.receipt : null;
+          console.log(this.expense);
+          this.receiptPreview = response.data.receipt ? import.meta.env.VITE_API_DOMAIN + '/storage/' + response.data.receipt : null;
+          this.expense.recurring_interval = response.data.recurring_interval != 'null' ? response.data.recurring_interval : '0';
+          // Se as categorias já foram carregadas, atualiza o searchQuery
+          if (this.categories.length > 0) {
+            const cat = this.categories.find(c => c.id == this.expense.category_id);
+            if (cat) {
+              this.searchQuery = cat.name;
+            }
+          }
         })
         .catch(error => {
           console.error('Erro ao carregar despesa:', error);

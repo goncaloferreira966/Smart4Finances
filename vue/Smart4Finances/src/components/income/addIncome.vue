@@ -63,7 +63,7 @@ import { toast } from 'vue3-toastify';
 
 export default {
   props: {
-    incomeId: {
+    IncomeId: {
       type: Number,
       default: null
     }
@@ -104,17 +104,18 @@ export default {
     }
   },
   mounted() {
-    if (this.incomeId) {
+    if (this.IncomeId) {
       this.isEditMode = true;
       this.loadIncome();
     }
   },
   methods: {
     loadIncome() {
-      axios.get(`/incomes/${this.incomeId}`)
+      axios.get(`/incomes/${this.IncomeId}`)
         .then(response => {
           this.income = response.data;
-          this.receiptPreview = response.data.receipt ? axios.defaults.baseURL + '/storage/' + response.data.receipt : null;
+          this.receiptPreview = response.data.receipt ? import.meta.env.VITE_API_DOMAIN + '/storage/' + response.data.receipt : null;
+          this.income.recurring_interval = response.data.recurring_interval != 'null' ? response.data.recurring_interval : '0';
         })
         .catch(error => {
           console.error('Erro ao carregar a receita:', error);
@@ -249,7 +250,8 @@ export default {
       }
       
       if (this.isEditMode) {
-        axios.put(`/incomes/${this.incomeId}`, formData, {
+
+        axios.put(`/incomes/${this.IncomeId}`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         }).then(response => {
           toast.success("Receita atualizada com sucesso!");

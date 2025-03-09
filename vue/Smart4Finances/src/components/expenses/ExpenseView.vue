@@ -6,7 +6,7 @@
       <p><strong>Categoria:</strong> {{ getCategoryName(expense.category_id) }}</p>
       <p><strong>Valor:</strong> {{ expense.amount }}</p>
       <p><strong>Descrição:</strong> {{ expense.description }}</p>
-      <p><strong>Intervalo Recorrente:</strong> 
+      <p v-if="expense.recurring_interval != 'null'"><strong>Intervalo Recorrente:</strong> 
         <span v-if="expense.recurring_interval">
           {{ expense.recurring_interval }} {{ expense.recurring_interval_unit }}
         </span>
@@ -57,7 +57,6 @@ export default {
       });
     },
     loadExpense() {
-      console.log('Loading expense', this.expenseId);
       axios.get(`/expenses/${this.expenseId}`).then(response => {
         this.expense = response.data;
       }).catch(error => {

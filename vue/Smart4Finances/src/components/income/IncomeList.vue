@@ -133,8 +133,8 @@ export default {
     addIncome() {
       this.$emit("addIncome", null);
     },
-    viewIncome(incomeId) {
-      this.$emit("IncomeView", incomeId);
+    viewIncome(IncomeId) {
+      this.$emit("IncomeView", IncomeId);
     }
   }
 };
