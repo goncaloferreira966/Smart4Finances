@@ -5,6 +5,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\User;
+use App\Models\Income;
+use App\Models\Expense;
+use App\Models\Investment;
 use App\Services\Base64Services;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Validator;
@@ -55,6 +58,11 @@ class StatisticsController extends Controller
             ->groupBy('month')
             ->orderBy('month')
             ->pluck('total', 'month');
+
+        $incomeBySource = $queryIncome->selectRaw('source, SUM(amount) as total')
+            ->groupBy('source')
+            ->orderByDesc('total')
+            ->pluck('total', 'source');
         
         $expenseByMonth = $queryExpense->selectRaw('MONTH(date) as month, SUM(amount) as total')
             ->groupBy('month')
@@ -67,17 +75,25 @@ class StatisticsController extends Controller
             ->orderByDesc('total')
             ->pluck('total', 'name');
         
-        $investmentTrend = $queryInvestment->selectRaw('MONTH(created_at) as month, SUM(amount) as total')
+        $investmentByMonth = $queryInvestment->selectRaw('MONTH(created_at) as month, SUM(amount) as total')
             ->groupBy('month')
             ->orderBy('month')
             ->pluck('total', 'month');
+
+        $investmentsByType = $queryInvestment->selectRaw('type, SUM(amount) as total')
+            ->groupBy('type')
+            ->orderByDesc('total')
+            ->pluck('total', 'type');
         
         return response()->json([
             'incomeByMonth' => $incomeByMonth,
+            'incomeBySource' => $incomeBySource,
             'expenseByMonth' => $expenseByMonth,
             'expensesByCategory' => $expensesByCategory,
-            'investmentTrend' => $investmentTrend,
+            'investmentByMonth' => $investmentByMonth,
+            'investmentsByType' => $investmentsByType,
         ]);
     }
 
 }
+ 
