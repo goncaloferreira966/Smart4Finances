@@ -1,8 +1,8 @@
 <template>
-  <div ref="content" class="container mt-4 mb-5">
-    <h2 class="card-title" style="color: black;">Dashboard Financeiro</h2>
+  <div  class="container mt-4 mb-5">
+    <h2 class="card-title" style="color: black;">Dashboard</h2>
 
-    <div class=" space-x-4 mb-6 stats mt-4">
+    <div ref="content" class=" space-x-4 mb-6 stats mt-4">
       <div class="flex space-x-4 mb-6 ">
         <input v-model="year" type="number" class="border p-2" placeholder="Ano" />
         <select v-model="month" class="border p-2">
