@@ -13,6 +13,8 @@
           Filtrar</button>
         <button @click="exportToPDF" class="bg-green-500 text-white p-2 rounded"> <i class="bi bi-share-fill"></i>
           Exportar</button>
+          <button class="bg-yellow-500 text-white p-2 rounded"> <i class="bi bi-envelope"></i>
+            Partilhar por E-mail</button>
 
       </div>
 

@@ -22,13 +22,13 @@
           </p>
           <div class="container mt-2">
             <div class="col-md-12 mt-4">
-              <button @click="handleEditUser()" style="background-color: black; border: 0; color: #DAA520;"
+              <button @click="handleEditUser()" style="background-color: black; border: 0; color: white;"
                       type="submit" class="btn btn-info w-100">
                 <i class="bi bi-pencil"></i> Editar Perfil
               </button>
             </div>
             <div v-if="userRole !== 'A'" class="col-md-12 mt-4 mb-2">
-              <button @click="deleteUser()" style="border: 0; color: #DAA520;" type="submit"
+              <button @click="deleteUser()" style="border: 0; color: white;" type="submit"
                       class="btn btn-danger w-100">
                 <i class="bi bi-trash-fill"></i> Apagar Perfil
               </button>

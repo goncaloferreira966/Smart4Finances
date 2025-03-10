@@ -32,7 +32,7 @@
             class="form-control w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             required />
         </div>
-        <button style="background-color: black;color: #DAA520 ;" type="submit"
+        <button style="background-color: black;color: white ;" type="submit"
           class="w-full bg-blue-500 hover:bg-blue-600 font-bold py-2 px-4 rounded">
           Registar
         </button>
