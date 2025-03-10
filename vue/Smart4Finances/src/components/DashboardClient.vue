@@ -105,7 +105,7 @@ export default {
 
         doc.addPage(); // Isso vai para a segunda página
 
-        const imgWidth = 190; // Defina a largura desejada
+        const imgWidth = 220; // Define a largura desejada
         const imgHeight = (canvas.height * imgWidth) / canvas.width; // Mantém a proporção
 
         doc.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
