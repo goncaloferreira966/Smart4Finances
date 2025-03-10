@@ -1,4 +1,4 @@
-<template >
+<template>
   <div ref="content" class="container mt-4 mb-5">
     <h2 class="card-title" style="color: black;">Dashboard Financeiro</h2>
 
@@ -67,6 +67,7 @@ import { GChart } from "vue-google-charts";
 import axios from "axios";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import logo from '@/assets/logo.png'; // Imagem no Vue
 
 
 export default {
@@ -78,7 +79,7 @@ export default {
       html2canvas(content, {
         allowTaint: true,
         useCORS: true, // Permite capturar gráficos do Google Charts (por causa da política de CORS)
-        scale: 5, // Aumenta a qualidade da imagem gerada
+        scale: 2, // Aumenta a qualidade da imagem gerada
       }).then((canvas) => {
         const imgData = canvas.toDataURL("image/png");
 
@@ -88,6 +89,19 @@ export default {
           unit: "mm",
           format: "a4",
         });
+
+        // Definindo a capa preta
+        doc.setFillColor(0, 0, 0);
+        doc.rect(0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height, 'F');
+
+        // Adicionando o logotipo
+        const logoWidth = 250;
+        const logoHeight = 200;
+        const logoX = (doc.internal.pageSize.width - logoWidth) / 2; // Centralizado
+        const logoY = 30;
+        doc.addImage(logo, 'PNG', logoX, logoY, logoWidth, logoHeight);
+
+        doc.addPage(); // Isso vai para a segunda página
 
         const imgWidth = 190; // Defina a largura desejada
         const imgHeight = (canvas.height * imgWidth) / canvas.width; // Mantém a proporção
