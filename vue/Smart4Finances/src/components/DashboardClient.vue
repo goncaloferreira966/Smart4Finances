@@ -33,7 +33,7 @@
       <div class="row mt-5">
         <div class="col-md-6">
           <GChart v-if="investmentData.length" type="ColumnChart" :data="investmentData"
-            :options="chartOptions('Despesas Mensais (€)')" />
+            :options="chartOptions('Investimnetos Mensais (€)')" />
 
         </div>
 
