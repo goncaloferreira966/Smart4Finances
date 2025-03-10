@@ -1,5 +1,5 @@
-<template>
-  <div class="container mt-4 mb-5">
+<template >
+  <div ref="content" class="container mt-4 mb-5">
     <h2 class="card-title" style="color: black;">Dashboard Financeiro</h2>
 
     <div class=" space-x-4 mb-6 stats mt-4">
@@ -11,7 +11,8 @@
         </select>
         <button @click="fetchData" class="bg-blue-500 text-white p-2 rounded"> <i class="bi bi-funnel"></i>
           Filtrar</button>
-        <button @click="exportToPDF"  class="bg-green-500 text-white p-2 rounded"> <i class="bi bi-share-fill"></i> Exportar</button>
+        <button @click="exportToPDF" class="bg-green-500 text-white p-2 rounded"> <i class="bi bi-share-fill"></i>
+          Exportar</button>
 
       </div>
 
@@ -64,8 +65,40 @@
 import { ref, onMounted } from "vue";
 import { GChart } from "vue-google-charts";
 import axios from "axios";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+
 
 export default {
+  methods: {
+    exportToPDF() {
+      const content = this.$refs.content;
+
+      // Captura o conteúdo da página como imagem
+      html2canvas(content, {
+        allowTaint: true,
+        useCORS: true, // Permite capturar gráficos do Google Charts (por causa da política de CORS)
+        scale: 5, // Aumenta a qualidade da imagem gerada
+      }).then((canvas) => {
+        const imgData = canvas.toDataURL("image/png");
+
+        // Cria um novo documento PDF
+        const doc = new jsPDF({
+          orientation: "portrait", // ou "landscape" se preferir
+          unit: "mm",
+          format: "a4",
+        });
+
+        const imgWidth = 190; // Defina a largura desejada
+        const imgHeight = (canvas.height * imgWidth) / canvas.width; // Mantém a proporção
+
+        doc.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+
+        // Salva o PDF
+        doc.save("Smart4Finances_Relatório_Financeiro.pdf");
+      });
+    },
+  },
   components: { GChart },
   setup() {
     const year = ref(new Date().getFullYear());

@@ -17,6 +17,8 @@
     "bootstrap-vue": "^2.23.1",
     "chart.js": "^4.4.8",
     "date-fns": "^4.1.0",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.0",
     "lodash.debounce": "^4.0.8",
     "pinia": "^3.0.1",
     "socket.io-client": "^4.8.1",
