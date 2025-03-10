@@ -11,7 +11,7 @@
         </select>
         <button @click="fetchData" class="bg-blue-500 text-white p-2 rounded"> <i class="bi bi-funnel"></i>
           Filtrar</button>
-        <button class="bg-green-500 text-white p-2 rounded"> <i class="bi bi-share-fill"></i> Exportar</button>
+        <button @click="exportToPDF"  class="bg-green-500 text-white p-2 rounded"> <i class="bi bi-share-fill"></i> Exportar</button>
 
       </div>
 
@@ -38,24 +38,24 @@
 
         <div class="col-md-6">
           <GChart v-if="incomeBySource.length" type="PieChart" :data="incomeBySource"
-          :options="chartOptions('Distribuição de Rendimento por Fonte (%)')" />
+            :options="chartOptions('Distribuição de Rendimento por Fonte (%)')" />
 
         </div>
       </div>
 
       <div class="row mt-5">
         <div class="col-md-6">
-         
+
           <GChart v-if="expenseCategories.length" type="PieChart" :data="expenseCategories"
-          :options="chartOptions('Distribuição de Despesas por Categoria (%)')" />
+            :options="chartOptions('Distribuição de Despesas por Categoria (%)')" />
         </div>
 
         <div class="col-md-6">
           <GChart v-if="investmentByType.length" type="PieChart" :data="investmentByType"
-        :options="chartOptions('Distribuição de Investimentos por Tipo (%)')" />
+            :options="chartOptions('Distribuição de Investimentos por Tipo (%)')" />
 
         </div>
-      </div> 
+      </div>
     </div>
   </div>
 </template>
@@ -76,6 +76,7 @@ export default {
     const expenseCategories = ref([]);
     const investmentByType = ref([]);
     const incomeBySource = ref([]);
+    const lineChartData = ref([]);
 
     const fetchData = async () => {
       try {
@@ -84,10 +85,19 @@ export default {
         });
         incomeData.value = formatChartData(response.data.incomeByMonth, "Mês", "Receita");
         expenseData.value = formatChartData(response.data.expenseByMonth, "Mês", "Despesa");
-        investmentData.value =  formatChartData(response.data.investmentByMonth, "Mês", "Investimento");
+        investmentData.value = formatChartData(response.data.investmentByMonth, "Mês", "Investimento");
         expenseCategories.value = formatChartData(response.data.expensesByCategory, "Categoria", "Total");
         investmentByType.value = formatChartData(response.data.investmentsByType, "Tipo", "Valor Investido");
         incomeBySource.value = formatChartData(response.data.incomeBySource, "Fonte", "Valor");
+
+        lineChartData.value = formatLineChartData(
+          response.data.incomeByMonth,
+          response.data.expenseByMonth,
+          response.data.investmentByMonth
+        );
+
+        console.log(lineChartData.value);
+
       } catch (error) {
         console.error("Erro ao selecionar dados", error);
       }
@@ -98,6 +108,29 @@ export default {
       for (const key in data) {
         formatted.push([key, parseFloat(data[key])]); // Converte os valores para número
       }
+      return formatted;
+    };
+
+    const formatLineChartData = (income, expenses, investments) => {
+      const formatted = [["Mês", "Receita", "Despesa", "Investimento"]];
+
+      // Obter todos os meses únicos
+      const allMonths = new Set([
+        ...Object.keys(income),
+        ...Object.keys(expenses),
+        ...Object.keys(investments),
+      ]);
+
+      // Construir os dados no formato necessário
+      allMonths.forEach((month) => {
+        formatted.push([
+          `Mês ${month}`,
+          parseFloat(income[month] || 0),   // Receita ou 0 se não houver
+          parseFloat(expenses[month] || 0), // Despesa ou 0 se não houver
+          parseFloat(investments[month] || 0) // Investimento ou 0 se não houver
+        ]);
+      });
+
       return formatted;
     };
 
