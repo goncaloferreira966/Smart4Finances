@@ -1,5 +1,5 @@
 <template>
-  <div  class="container mt-4 mb-5">
+  <div class="container mt-4 mb-5">
     <h2 class="card-title" style="color: black;">Dashboard</h2>
 
     <div ref="content" class=" space-x-4 mb-6 stats mt-4">
@@ -7,14 +7,25 @@
         <input v-model="year" type="number" class="border p-2" placeholder="Ano" />
         <select v-model="month" class="border p-2">
           <option :value="null">Todos os meses</option>
-          <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
+          <option value="1">Janeiro</option>
+          <option value="2">Fevereiro</option>
+          <option value="3">Março</option>
+          <option value="4">Abril</option>
+          <option value="5">Maio</option>
+          <option value="6">Junho</option>
+          <option value="7">Julho</option>
+          <option value="8">Agosto</option>
+          <option value="9">Setembro</option>
+          <option value="10">Outubro</option>
+          <option value="11">Novembro</option>
+          <option value="12">Dezembro</option>
         </select>
         <button @click="fetchData" class="bg-blue-500 text-white p-2 rounded"> <i class="bi bi-funnel"></i>
           Filtrar</button>
         <button @click="exportToPDF" class="bg-green-500 text-white p-2 rounded"> <i class="bi bi-share-fill"></i>
           Exportar</button>
-          <button class="bg-yellow-500 text-white p-2 rounded"> <i class="bi bi-envelope"></i>
-            Partilhar por E-mail</button>
+        <button class="bg-yellow-500 text-white p-2 rounded"> <i class="bi bi-envelope"></i>
+          Partilhar por E-mail</button>
 
       </div>
 
