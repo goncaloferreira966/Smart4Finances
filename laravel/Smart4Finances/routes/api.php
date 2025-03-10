@@ -69,4 +69,7 @@ Route::middleware(['auth:api'])->group(function () {
     //Endpoints para dashboard do admin
     Route::get('/admin-statistics', [StatisticsController::class, 'index']);
 
+    //Endpoints para dashboard do Cliente
+    Route::get('/client-statistics', [StatisticsController::class, 'clientStatistics']);
+
 });

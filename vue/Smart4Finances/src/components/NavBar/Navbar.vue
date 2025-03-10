@@ -21,19 +21,19 @@
               <i class="bi bi-people"></i> Administração
             </button>
           </li>
-          <li>
-            <button @click="$emit('navigate', 'notifications')" class="hover:text-gray-200">
-              <i class="bi bi-bell"></i> Notificações
-            </button>
-          </li>
-          <li>
+          <li v-if="userRole !== 'A'">
             <button @click="$emit('navigate', 'IncomeList')" class="hover:text-gray-200">
               <i class="bi bi-plus-circle"></i> Receitas
             </button>
           </li>
-          <li>
+          <li v-if="userRole !== 'A'">
             <button @click="$emit('navigate', 'ExpensesList')" class="hover:text-gray-200">
               <i class="bi bi-dash-circle"></i> Despesas
+            </button>
+          </li>
+          <li>
+            <button @click="$emit('navigate', 'notifications')" class="hover:text-gray-200">
+              <i class="bi bi-bell"></i> Notificações
             </button>
           </li>
           <li>
