@@ -2,6 +2,8 @@
 // Importação dos controllers da API
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendReport;
 use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\UserController;
 use App\Http\Controllers\api\StatisticsController;
@@ -46,6 +48,19 @@ Route::middleware(['auth:api'])->group(function () {
             return response()->json(['message' => 'Notification marked as read.']);
         }
         return response()->json(['error' => 'Notification not found.'], 404);
+    });
+
+    Route::post('/send-email', function (Request $request) {
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $path = $file->storeAs('pdfs', 'relatorio.pdf');
+    
+            Mail::to('goncalosantosferreira@hotmail.com')->send(new SendReport($path));
+    
+            return response()->json(["message" => "Email enviado com sucesso!"]);
+        }
+    
+        return response()->json(["error" => "Arquivo não encontrado"], 400);
     });
 
     // Endpoints para usuários (DAD)
