@@ -6,29 +6,35 @@
     <div class="mb-4">
       <div class="flex mb-2">
         <div class="mr-5 ml-2">
-          <label class="block ">Categoria:</label>
+          <label class="block">Categoria:</label>
           <select v-model="filters.category" class="mb-2">
             <option value="">Todas</option>
             <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
           </select>
         </div>
         <div class="mr-5 ml-2">
-            <input type="number" v-model="filters.minPrice" placeholder="Preço mínimo" class="mr-2 p-2 border rounded" style="width: 15vh;"/>
+          <input type="number" v-model="filters.minPrice" placeholder="Preço mínimo" class="mr-2 p-2 border rounded" style="width: 15vh;"/>
           <input type="number" v-model="filters.maxPrice" placeholder="Preço máximo" class="p-2 border rounded" style="width: 15vh;"/>
         </div>
         <div class="flex mb-2 mr-5 ml-2">
-          <input type="date" v-model="filters.startDate" class="mr-2 p-2 border rounded" />
-          <input type="date" v-model="filters.endDate" class="p-2 border rounded" />
+          <input type="date" v-model="filters.startDate" class="mr-2 p-2 border rounded"/>
+          <input type="date" v-model="filters.endDate" class="p-2 border rounded"/>
         </div>
       </div>
-      <button @click="addexpense" class="bg-green-500 text-white px-4 py-2 rounded"><i class="bi bi-plus-lg"></i></button>
-      <!-- Botão de filtro removido para aplicação automática -->
+      <button @click="addexpense" class="bg-green-500 text-white px-4 py-2 rounded">
+        <i class="bi bi-plus-lg"></i>
+      </button>
+      <!-- Botão global de deletar aparece se houver alguma despesa selecionada -->
+      <button v-if="selectedExpenses.length > 0" @click="deleteSelectedExpenses" class="bg-red-500 text-white px-4 py-2 rounded ml-2">
+        <i class="bi bi-trash"></i> Eleminar Selecionados
+      </button>
     </div>
 
     <!-- Tabela de despesas -->
-    <table class="w-full border">
+    <table class="w-full">
       <thead>
         <tr>
+          <th class="border px-2 py-1"></th>
           <th class="border px-2 py-1">Data</th>
           <th class="border px-2 py-1">Categoria</th>
           <th class="border px-2 py-1">Valor</th>
@@ -38,13 +44,21 @@
       </thead>
       <tbody>
         <tr v-for="expense in expenses" :key="expense.id">
-          <td class="border px-2 py-1">{{ expense.date }}</td>
-          <td class="border px-2 py-1">{{ getCategoryName(expense.category_id) }}</td>
-          <td class="border px-2 py-1">{{ expense.amount }}</td>
-          <td class="border px-2 py-1">{{ expense.description }}</td>
-          <td class="border px-2 py-1">
-            <button @click="viewExpense(expense.id)" class="bg-blue-500 text-white px-2 py-1 rounded">
-               <i class="bi bi-eye-fill"></i>
+          <td class="px-2 py-1 text-center">
+            <input type="checkbox" :value="expense.id" v-model="selectedExpenses"/>
+          </td>
+          <td class="px-2 py-1">{{ expense.date }}</td>
+          <td class="px-2 py-1">{{ getCategoryName(expense.category_id) }}</td>
+          <td class="px-2 py-1">{{ expense.amount }}</td>
+          <td class="px-2 py-1">{{ truncate(expense.description, 20) }}</td>
+          <td class="px-2 py-1">
+            <!-- Botão de delete individual -->
+            <button @click="deleteExpense(expense.id)" class="bg-red-500 text-white px-2 py-1 rounded">
+              <i class="bi bi-trash"></i>
+            </button>
+            <!-- Botão de visualizar -->
+            <button @click="viewExpense(expense.id)" class="bg-blue-500 text-white px-2 py-1 rounded ml-1">
+              <i class="bi bi-eye-fill"></i>
             </button>
           </td>
         </tr>
@@ -52,6 +66,17 @@
     </table>
 
     <div v-if="loadingMore" class="mt-4 text-center">Carregando mais...</div>
+
+    <!-- Modal de confirmação de exclusão -->
+    <div v-if="showDeleteModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+      <div class="bg-white p-6 rounded-lg">
+        <p class="mb-4">Tem certeza que deseja deletar a(s) despesa(s) selecionada(s)?</p>
+        <div class="flex justify-end">
+          <button @click="cancelDeletion" class="bg-gray-500 text-white px-4 py-2 rounded mr-2">Cancelar</button>
+          <button @click="confirmDeletion" class="bg-red-500 text-white px-4 py-2 rounded">Confirmar</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -73,7 +98,10 @@ export default {
         maxPrice: '',
         startDate: '',
         endDate: ''
-      }
+      },
+      selectedExpenses: [],
+      showDeleteModal: false,
+      deletionTarget: null // para deleção individual; se null, a deleção será múltipla
     };
   },
   created() {
@@ -85,7 +113,6 @@ export default {
     window.removeEventListener('scroll', this.handleScroll);
   },
   watch: {
-    // Sempre que algum filtro mudar, dispara a função de aplicar filtros automaticamente
     'filters.category': 'applyFiltersDebounced',
     'filters.minPrice': 'applyFiltersDebounced',
     'filters.maxPrice': 'applyFiltersDebounced',
@@ -103,6 +130,7 @@ export default {
       if (reset) {
         this.page = 1;
         this.expenses = [];
+        this.selectedExpenses = [];
       }
       const params = {
         page: this.page,
@@ -115,19 +143,13 @@ export default {
       };
       axios.get('/expenses', { params })
         .then(response => {
-          // O payload retornado contém a propriedade "data" com as despesas
           const payload = response.data;
           const newExpenses = payload.data;
           if (newExpenses && newExpenses.length > 0) {
             this.expenses = this.expenses.concat(newExpenses);
             this.page++;
           }
-          // Opcional: Se a página atual for maior que a última página, podemos parar o infinite scroll
-          if (this.page > payload.last_page) {
-            this.loadingMore = false;
-          } else {
-            this.loadingMore = false;
-          }
+          this.loadingMore = false;
         })
         .catch(error => {
           console.error(error);
@@ -143,11 +165,9 @@ export default {
         this.loadExpenses();
       }
     },
-    // Função chamada para aplicar os filtros reiniciando a listagem
     applyFilters() {
       this.loadExpenses(true);
     },
-    // Função debounced para evitar múltiplas requisições consecutivas enquanto o usuário interage com os filtros
     applyFiltersDebounced: debounce(function () {
       this.applyFilters();
     }, 500),
@@ -160,11 +180,73 @@ export default {
     },
     viewExpense(expenseId) {
       this.$emit("ExpenseView", expenseId);
+    },
+    // Delete individual: define a target e abre a modal
+    deleteExpense(expenseId) {
+      this.deletionTarget = expenseId;
+      this.showDeleteModal = true;
+    },
+    // Delete múltipla: abre a modal se houver despesas selecionadas
+    deleteSelectedExpenses() {
+      if (this.selectedExpenses.length > 0) {
+        this.deletionTarget = null; // indica deleção múltipla
+        this.showDeleteModal = true;
+      }
+    },
+    cancelDeletion() {
+      this.showDeleteModal = false;
+      this.deletionTarget = null;
+    },
+    truncate(text, maxLength) {
+      if (!text) return '';
+      return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+    },
+    confirmDeletion() {
+      if (this.deletionTarget) {
+        // Exclusão individual
+        axios.delete(`/expenses/${this.deletionTarget}`)
+          .then(() => {
+            this.expenses = this.expenses.filter(exp => exp.id !== this.deletionTarget);
+            this.selectedExpenses = this.selectedExpenses.filter(id => id !== this.deletionTarget);
+            this.showDeleteModal = false;
+            this.deletionTarget = null;
+          })
+          .catch(error => {
+            console.error(error);
+            this.showDeleteModal = false;
+            this.deletionTarget = null;
+          });
+      } else if (this.selectedExpenses.length > 0) {
+        // Exclusão múltipla
+        const deletePromises = this.selectedExpenses.map(id => axios.delete(`/expenses/${id}`));
+        Promise.all(deletePromises)
+          .then(() => {
+            this.expenses = this.expenses.filter(exp => !this.selectedExpenses.includes(exp.id));
+            this.selectedExpenses = [];
+            this.showDeleteModal = false;
+          })
+          .catch(error => {
+            console.error(error);
+            this.showDeleteModal = false;
+          });
+      }
     }
   }
 };
 </script>
 
 <style scoped>
-/* Ajuste os estilos conforme necessário */
+/* Estilos para o modal */
+.fixed {
+  position: fixed;
+}
+.inset-0 {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+.bg-opacity-50 {
+  background-color: rgba(0, 0, 0, 0.5);
+}
 </style>

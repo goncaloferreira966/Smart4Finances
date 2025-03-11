@@ -20,13 +20,17 @@
       <button @click="addIncome" class="bg-green-500 text-white px-4 py-2 rounded">
         <i class="bi bi-plus-lg"></i>
       </button>
-      <!-- Botão de filtro removido para aplicação automática -->
+      <!-- Botão global de deleção para os selecionados -->
+      <button v-if="selectedIncomes.length > 0" @click="deleteSelectedIncomes" class="bg-red-500 text-white px-4 py-2 rounded ml-2">
+        <i class="bi bi-trash"></i> Eleminar Selecionados
+      </button>
     </div>
 
     <!-- Tabela de receitas -->
-    <table class="w-full border">
+    <table class="w-full">
       <thead>
         <tr>
+          <th class="px-2 py-1 text-center"></th>
           <th class="border px-2 py-1">Data</th>
           <th class="border px-2 py-1">Fonte</th>
           <th class="border px-2 py-1">Valor</th>
@@ -35,11 +39,19 @@
       </thead>
       <tbody>
         <tr v-for="income in incomes" :key="income.id">
-          <td class="border px-2 py-1">{{ income.date }}</td>
-          <td class="border px-2 py-1">{{ income.source }}</td>
-          <td class="border px-2 py-1">{{ income.amount }}</td>
-          <td class="border px-2 py-1">
-            <button @click="viewIncome(income.id)" class="bg-blue-500 text-white px-2 py-1 rounded">
+          <td class="px-2 py-1 text-center">
+            <input type="checkbox" :value="income.id" v-model="selectedIncomes"/>
+          </td>
+          <td class="px-2 py-1">{{ income.date }}</td>
+          <td class="px-2 py-1">{{ income.source }}</td>
+          <td class="px-2 py-1">{{ income.amount }}</td>
+          <td class="px-2 py-1">
+            <!-- Botão de delete individual -->
+            <button @click="deleteIncome(income.id)" class="bg-red-500 text-white px-2 py-1 rounded">
+              <i class="bi bi-trash"></i>
+            </button>
+            <!-- Botão de visualizar -->
+            <button @click="viewIncome(income.id)" class="bg-blue-500 text-white px-2 py-1 rounded ml-1">
               <i class="bi bi-eye-fill"></i>
             </button>
           </td>
@@ -48,6 +60,17 @@
     </table>
 
     <div v-if="loadingMore" class="mt-4 text-center">Carregando mais...</div>
+
+    <!-- Modal de confirmação de exclusão -->
+    <div v-if="showDeleteModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+      <div class="bg-white p-6 rounded-lg">
+        <p class="mb-4">Tem certeza que deseja deletar a(s) receita(s) selecionada(s)?</p>
+        <div class="flex justify-end">
+          <button @click="cancelDeletion" class="bg-gray-500 text-white px-4 py-2 rounded mr-2">Cancelar</button>
+          <button @click="confirmDeletion" class="bg-red-500 text-white px-4 py-2 rounded">Confirmar</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -68,7 +91,10 @@ export default {
         maxPrice: '',
         startDate: '',
         endDate: ''
-      }
+      },
+      selectedIncomes: [],
+      showDeleteModal: false,
+      deletionTarget: null // Se definido, é exclusão individual; caso contrário, será exclusão múltipla
     };
   },
   created() {
@@ -90,6 +116,7 @@ export default {
       if (reset) {
         this.page = 1;
         this.incomes = [];
+        this.selectedIncomes = [];
       }
       const params = {
         page: this.page,
@@ -133,13 +160,71 @@ export default {
     addIncome() {
       this.$emit("addIncome", null);
     },
-    viewIncome(IncomeId) {
-      this.$emit("IncomeView", IncomeId);
+    viewIncome(incomeId) {
+      this.$emit("IncomeView", incomeId);
+    },
+    // Abre modal para exclusão individual
+    deleteIncome(incomeId) {
+      this.deletionTarget = incomeId;
+      this.showDeleteModal = true;
+    },
+    // Abre modal para exclusão múltipla
+    deleteSelectedIncomes() {
+      if (this.selectedIncomes.length > 0) {
+        this.deletionTarget = null; // indica deleção múltipla
+        this.showDeleteModal = true;
+      }
+    },
+    cancelDeletion() {
+      this.showDeleteModal = false;
+      this.deletionTarget = null;
+    },
+    confirmDeletion() {
+      if (this.deletionTarget) {
+        // Exclusão individual
+        axios.delete(`/incomes/${this.deletionTarget}`)
+          .then(() => {
+            this.incomes = this.incomes.filter(inc => inc.id !== this.deletionTarget);
+            this.selectedIncomes = this.selectedIncomes.filter(id => id !== this.deletionTarget);
+            this.showDeleteModal = false;
+            this.deletionTarget = null;
+          })
+          .catch(error => {
+            console.error(error);
+            this.showDeleteModal = false;
+            this.deletionTarget = null;
+          });
+      } else if (this.selectedIncomes.length > 0) {
+        // Exclusão múltipla
+        const deletePromises = this.selectedIncomes.map(id => axios.delete(`/incomes/${id}`));
+        Promise.all(deletePromises)
+          .then(() => {
+            this.incomes = this.incomes.filter(inc => !this.selectedIncomes.includes(inc.id));
+            this.selectedIncomes = [];
+            this.showDeleteModal = false;
+          })
+          .catch(error => {
+            console.error(error);
+            this.showDeleteModal = false;
+          });
+      }
     }
   }
 };
 </script>
 
 <style scoped>
-/* Ajusta os estilos conforme necessário */
+/* Estilos para o modal */
+.fixed {
+  position: fixed;
+}
+.inset-0 {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+.bg-opacity-50 {
+  background-color: rgba(0, 0, 0, 0.5);
+}
 </style>
