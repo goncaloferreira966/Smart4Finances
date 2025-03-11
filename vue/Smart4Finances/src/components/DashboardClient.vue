@@ -30,6 +30,13 @@
       </div>
 
       <div class="row">
+        <div class="col-md-12">
+          <GChart type="LineChart" :data="lineChartData"
+            :options="chartOptions('Receitas, Despesas e Investimentos Mensais (€)')" />
+        </div>
+      </div>
+
+      <div class="row mt-1">
         <div class="col-md-6">
           <GChart v-if="incomeData.length" type="ColumnChart" :data="incomeData"
             :options="chartOptions('Receitas Mensais (€)')" />
@@ -43,7 +50,7 @@
         </div>
       </div>
 
-      <div class="row mt-5">
+      <div class="row mt-1">
         <div class="col-md-6">
           <GChart v-if="investmentData.length" type="ColumnChart" :data="investmentData"
             :options="chartOptions('Investimnetos Mensais (€)')" />
@@ -57,7 +64,7 @@
         </div>
       </div>
 
-      <div class="row mt-5">
+      <div class="row mt-1">
         <div class="col-md-6">
 
           <GChart v-if="expenseCategories.length" type="PieChart" :data="expenseCategories"
@@ -100,7 +107,7 @@ export default {
         const doc = new jsPDF({
           orientation: "portrait", // ou "landscape" se preferir
           unit: "mm",
-          format: "a4",
+          format: "a3",
         });
 
         // Definindo a capa preta
@@ -111,7 +118,7 @@ export default {
         const logoWidth = 250;
         const logoHeight = 200;
         const logoX = (doc.internal.pageSize.width - logoWidth) / 2; // Centralizado
-        const logoY = 30;
+        const logoY = 100; //Distancia do logo smart4fiances do topo da página da capa (como se fosse mt-x)
         doc.addImage(logo, 'PNG', logoX, logoY, logoWidth, logoHeight);
 
         doc.addPage(); // Isso vai para a segunda página
@@ -119,7 +126,7 @@ export default {
         const imgWidth = 220; // Define a largura desejada
         const imgHeight = (canvas.height * imgWidth) / canvas.width; // Mantém a proporção
 
-        doc.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+        doc.addImage(imgData, "PNG", 40, 40, imgWidth, imgHeight);
 
         // Salva o PDF
         doc.save("Smart4Finances_Relatório_Financeiro.pdf");
@@ -215,7 +222,9 @@ export default {
       investmentByType,
       incomeBySource,
       fetchData,
-      chartOptions
+      chartOptions,
+      lineChartData,
+
     };
   },
 };
