@@ -57,6 +57,10 @@ MAIL_ENCRYPTION=tls
 MAIL_FROM_ADDRESS=Smart4Finances@gmail.com
 MAIL_FROM_NAME="Smart4Finances"
 
+#    e-mail:     Smart4Finances@gmail.com    
+#    password:     *Smart4Finances*
+
+
 AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=
 AWS_DEFAULT_REGION=us-east-1

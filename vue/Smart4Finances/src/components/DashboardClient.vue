@@ -100,6 +100,7 @@ export default {
         allowTaint: true,
         useCORS: true, // Permite capturar gráficos do Google Charts (por causa da política de CORS)
         scale: 2, // Aumenta a qualidade da imagem gerada
+        //(se for para enviar email, meter scale 1 porque o 2 é demasiado grande torna o ficheiro grande)
       }).then((canvas) => {
         const imgData = canvas.toDataURL("image/png");
 
@@ -162,9 +163,6 @@ export default {
           response.data.expenseByMonth,
           response.data.investmentByMonth
         );
-
-        console.log(lineChartData.value);
-
       } catch (error) {
         console.error("Erro ao selecionar dados", error);
       }
@@ -212,16 +210,19 @@ export default {
 
     const sendEmail = async () => {
       try {
-    
 
-        const pdf = new jsPDF();
+        const pdf = new jsPDF({
+          orientation: "portrait", // ou "landscape" se preferir
+          unit: "mm",
+          format: "a3",
+        });
 
         const pdfBlob = pdf.output("blob");
 
         const formData = new FormData();
         formData.append("file", pdfBlob, "relatorio.pdf");
 
-        await axios.post("/send-email", {
+        await axios.post("/send-email",formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
 
