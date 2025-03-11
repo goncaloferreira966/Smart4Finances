@@ -145,8 +145,7 @@ export default {
     },
     // Expenses
     handleExpensesList() {
-      this.$refs.expenseList.loadExpenses(true);
-      //this.currentSection = 'ExpensesList';
+      this.currentSection = 'ExpensesList';
     },
     handleExpenseView(id) {
       this.id = id;
@@ -159,8 +158,7 @@ export default {
     // Income
     // TODO: 
     handleIncomeList() {
-      this.$refs.incomeList.loadIncome(true);
-      //this.currentSection = 'IncomeList';
+      this.currentSection = 'IncomeList';
     },
     handleIncomeView(id) {
       this.id = id;
