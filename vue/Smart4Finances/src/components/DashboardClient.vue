@@ -182,11 +182,11 @@ export default {
       const formatted = [["Mês", "Receita", "Despesa", "Investimento"]];
 
       // Obter todos os meses únicos
-      const allMonths = new Set([
+      const allMonths = [...new Set([
         ...Object.keys(income),
         ...Object.keys(expenses),
         ...Object.keys(investments),
-      ]);
+      ])].map(Number).sort((a, b) => a - b); // Ordena os meses numericamente (erro corrigido)
 
       // Construir os dados no formato necessário
       allMonths.forEach((month) => {
