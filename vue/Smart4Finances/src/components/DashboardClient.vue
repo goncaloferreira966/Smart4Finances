@@ -24,7 +24,7 @@
           Filtrar</button>
         <button @click="exportToPDF" class="bg-green-500 text-white p-2 rounded"> <i class="bi bi-share-fill"></i>
           Exportar</button>
-        <button class="bg-yellow-500 text-white p-2 rounded"> <i class="bi bi-envelope"></i>
+        <button @click="sendEmail" class="bg-yellow-500 text-white p-2 rounded"> <i class="bi bi-envelope"></i>
           Partilhar por E-mail</button>
 
       </div>
@@ -210,6 +210,28 @@ export default {
       backgroundColor: "transparent", // Fundo transparente
     });
 
+    const sendEmail = async () => {
+      try {
+    
+
+        const pdf = new jsPDF();
+
+        const pdfBlob = pdf.output("blob");
+
+        const formData = new FormData();
+        formData.append("file", pdfBlob, "relatorio.pdf");
+
+        await axios.post("/send-email", {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        alert("Email enviado com sucesso!");
+      } catch (error) {
+        console.error("Erro ao enviar email", error);
+      }
+    };
+
+
     onMounted(fetchData);
 
     return {
@@ -224,7 +246,7 @@ export default {
       fetchData,
       chartOptions,
       lineChartData,
-
+      sendEmail,
     };
   },
 };
