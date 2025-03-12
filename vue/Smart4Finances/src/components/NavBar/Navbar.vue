@@ -3,13 +3,18 @@
     <div class="container mx-auto flex justify-between items-center">
       <h1 class="text-xl font-bold">
         
-        <li  style=" list-style: none;" v-if="userRole !== 'C'">
+        <li style=" list-style: none;" v-if="userRole !== 'C'">
             <button @click="$emit('navigate', 'dashboardadmin')" class="hover:text-gray-200">
               <i class="bi bi-coin"></i> Smart4Finances
             </button>
           </li>
-          <li style=" list-style: none;" v-if="userRole !== 'A'">
+          <li style=" list-style: none;" v-else-if="userRole !== 'A'">
             <button @click="$emit('navigate', 'dashboardclient')" class="hover:text-gray-200">
+              <i class="bi bi-coin"></i> Smart4Finances
+            </button>
+          </li>
+          <li style=" list-style: none;" v-else>
+            <button @click="$emit('navigate', 'login')" class="hover:text-gray-200">
               <i class="bi bi-coin"></i> Smart4Finances
             </button>
           </li>

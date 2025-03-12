@@ -22,7 +22,7 @@
       </form>
       <p class="mt-4 text-center">
         <a href="#" @click.prevent="goToForgotPassword" class="text-blue-500 hover:underline">
-          Esqueceu a senha?
+          Esqueceu-se da password?
         </a>
       </p>
       <!-- Mensagem de erro (opcional) -->

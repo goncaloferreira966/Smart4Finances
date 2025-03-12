@@ -1,6 +1,6 @@
 <template>
   <div class="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg" style="margin-top: 7vh; margin-bottom: 7vh; min-width: 100vh;">
-    <h2>Recuperar Senha</h2>
+    <h2>Recuperar Password</h2>
     <form @submit.prevent="submit">
       <label for="email">Digite o seu e-mail:</label>
       <br>
@@ -8,14 +8,14 @@
         id="email"
         type="email"
         v-model="email"
-        placeholder="Seu e-mail"
+        placeholder="O seu e-mail"
         required
         class="p-2 border rounded w-full mb-4 focus:outline-none focus:ring-2 focus:ring-yellow-500"
         style="width: 30vh;"
       />
       <br>
       <button class="bg-green-500 text-white px-4 py-2 rounded mb-4" type="submit" :disabled="loading">
-        <span v-if="loading">Enviando...</span>
+        <span v-if="loading">A Enviar...</span>
         <span v-else>Enviar</span>
       </button>
     </form>

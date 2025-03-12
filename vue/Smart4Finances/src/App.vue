@@ -127,7 +127,7 @@ export default {
     },
     logout() {
       this.isLoggedIn = false;
-      toast.success("Logout realizado com sucesso!");
+      //toast.success("Logout realizado com sucesso!");
     },
     navigateTo(section) {
       this.currentSection = section;
@@ -135,7 +135,7 @@ export default {
     handleRegisterSuccess() {
       this.isRegistering = false;
       this.currentSection = 'login';
-      toast.success("Registro realizado com sucesso! Faça login.");
+      toast.success("Registo realizado com sucesso! Faça login.");
     },
     handleEditUser() {
       this.isRegistering = false;

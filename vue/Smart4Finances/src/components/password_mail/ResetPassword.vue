@@ -1,6 +1,6 @@
 <template>
     <div class="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg" style="margin-top: 7vh; margin-bottom: 7vh; min-width: 100vh;">
-      <h2>Redefinir Senha</h2>
+      <h2>Redefinir Password</h2>
       <form @submit.prevent="submit">
         <!-- Campo oculto para o token -->
         <input type="hidden" v-model="token" />
@@ -9,16 +9,16 @@
           <input id="email" type="email" v-model="email" required />
         </div>
         <div>
-          <label for="password">Nova Senha:</label>
+          <label for="password">Nova Password:</label>
           <input id="password" type="password" v-model="password" required />
         </div>
         <div>
-          <label for="password_confirmation">Confirmar Senha:</label>
+          <label for="password_confirmation">Confirmar Password:</label>
           <input id="password_confirmation" type="password" v-model="password_confirmation" required />
         </div>
         <button type="submit" :disabled="loading">
-          <span v-if="loading">Redefinindo...</span>
-          <span v-else>Redefinir Senha</span>
+          <span v-if="loading">A Redifinir...</span>
+          <span v-else>Redefinir Password</span>
         </button>
       </form>
       <p v-if="message">{{ message }}</p>
@@ -53,18 +53,18 @@
         this.loading = true;
         this.message = '';
         try {
-          // Envia os dados para a rota de reset de senha no back-end
+          // Envia os dados para a rota de reset de Password no back-end
           await axios.post('/api/password/reset', {
             token: this.token,
             email: this.email,
             password: this.password,
             password_confirmation: this.password_confirmation,
           });
-          toast.success('Senha redefinida com sucesso!');
+          toast.success('Password redefinida com sucesso!');
           // Redireciona para a página de login (ou onde desejar) usando window.location
           window.location.href = '/login';
         } catch (error) {
-          this.message = 'Erro ao redefinir a senha. Verifique os dados e tente novamente.';
+          this.message = 'Erro ao redefinir a Password. Verifique os dados e tente novamente.';
           toast.error(this.message);
         } finally {
           this.loading = false;
