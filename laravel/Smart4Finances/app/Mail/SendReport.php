@@ -21,6 +21,6 @@ class SendReport extends Mailable
     {
         return $this->subject("Relatório Smart4Finances")
             ->view("emails.report")
-            ->attach(storage_path("app/" . $this->path));
+            ->attach(storage_path("app/private/" . $this->path));
     }
 }

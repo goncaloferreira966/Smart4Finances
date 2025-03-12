@@ -2,7 +2,7 @@
   <div class="container mt-4 mb-5">
     <h2 class="card-title" style="color: black;">Dashboard</h2>
 
-    <div ref="content" class=" space-x-4 mb-6 stats mt-4">
+    <div id="content" ref="content" class=" space-x-4 mb-6 stats mt-4">
       <div class="flex space-x-4 mb-6 ">
         <input v-model="year" type="number" class="border p-2" placeholder="Ano" />
         <select v-model="month" class="border p-2">
@@ -213,22 +213,50 @@ export default {
 
     const sendEmail = async () => {
       try {
+        const content = document.querySelector("#content"); 
+        html2canvas(content, {
+          allowTaint: true,
+          useCORS: true,
+          scale: 1, // Para envio por e-mail, manter a escala menor para reduzir o tamanho do arquivo
+        }).then((canvas) => {
+          const imgData = canvas.toDataURL("image/png");
+          const doc = new jsPDF({
+            orientation: "portrait",
+            unit: "mm",
+            format: "a3",
+          });
 
-        const pdf = new jsPDF({
-          orientation: "portrait", // ou "landscape" se preferir
-          unit: "mm",
-          format: "a3",
+          // Criar capa preta com logotipo
+          doc.setFillColor(0, 0, 0);
+          doc.rect(0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height, "F");
+
+          const logoWidth = 250;
+          const logoHeight = 200;
+          const logoX = (doc.internal.pageSize.width - logoWidth) / 2;
+          const logoY = 100;
+          doc.addImage(logo, "PNG", logoX, logoY, logoWidth, logoHeight);
+
+          doc.addPage();
+
+          const imgWidth = 220;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          doc.addImage(imgData, "PNG", 40, 40, imgWidth, imgHeight);
+
+          const pdfBlob = doc.output("blob"); // Gera um blob do PDF
+
+          const formData = new FormData();
+          formData.append("file", pdfBlob, "relatorio.pdf");
+
+          axios.post("/send-email", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          })
+            .then(() => {
+              toast.success("E-mail enviado com sucesso!");
+            })
+            .catch(() => {
+              toast.error("Erro ao enviar e-mail.");
+            });
         });
-
-        const pdfBlob = pdf.output("blob");
-
-        const formData = new FormData();
-        formData.append("file", pdfBlob, "relatorio.pdf");
-
-        await axios.post("/send-email",formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        toast.success("E-mail enviado com sucesso!");
       } catch (error) {
         toast.error("Erro ao enviar o E-mail");
         console.error("Erro ao enviar email", error);
