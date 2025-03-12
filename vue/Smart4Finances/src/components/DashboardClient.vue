@@ -157,9 +157,9 @@ export default {
         incomeData.value = formatChartData(response.data.incomeByMonth, "Mês", "Receita");
         expenseData.value = formatChartData(response.data.expenseByMonth, "Mês", "Despesa");
         investmentData.value = formatChartData(response.data.investmentByMonth, "Mês", "Investimento");
-        expenseCategories.value = formatChartData(response.data.expensesByCategory, "Categoria", "Total");
-        investmentByType.value = formatChartData(response.data.investmentsByType, "Tipo", "Valor Investido");
-        incomeBySource.value = formatChartData(response.data.incomeBySource, "Fonte", "Valor");
+        expenseCategories.value = formatPieChartData(response.data.expensesByCategory, "Categoria", "Total");
+        investmentByType.value = formatPieChartData(response.data.investmentsByType, "Tipo", "Valor Investido");
+        incomeBySource.value = formatPieChartData(response.data.incomeBySource, "Fonte", "Valor");
 
         lineChartData.value = formatLineChartData(
           response.data.incomeByMonth,
@@ -173,6 +173,20 @@ export default {
 
     const formatChartData = (data, label1, label2) => {
       const formatted = [[label1, label2]];
+
+      if (Object.keys(data).length === 0) {
+        formatted.push(["Sem dados", 0]); // Adiciona um valor padrão
+      } else {
+        for (const key in data) {
+          formatted.push([key, parseFloat(data[key])]); // Converte os valores para número
+        }
+      }
+
+      return formatted;
+    };
+
+    const formatPieChartData = (data, label1, label2) => {
+      const formatted = [[label1, label2]];
       for (const key in data) {
         formatted.push([key, parseFloat(data[key])]); // Converte os valores para número
       }
@@ -182,22 +196,24 @@ export default {
     const formatLineChartData = (income, expenses, investments) => {
       const formatted = [["Mês", "Receita", "Despesa", "Investimento"]];
 
-      // Obter todos os meses únicos
       const allMonths = [...new Set([
         ...Object.keys(income),
         ...Object.keys(expenses),
         ...Object.keys(investments),
-      ])].map(Number).sort((a, b) => a - b); // Ordena os meses numericamente (erro corrigido)
+      ])].map(Number).sort((a, b) => a - b);
 
-      // Construir os dados no formato necessário
-      allMonths.forEach((month) => {
-        formatted.push([
-          `Mês ${month}`,
-          parseFloat(income[month] || 0),   // Receita ou 0 se não houver
-          parseFloat(expenses[month] || 0), // Despesa ou 0 se não houver
-          parseFloat(investments[month] || 0) // Investimento ou 0 se não houver
-        ]);
-      });
+      if (allMonths.length === 0) {
+        formatted.push(["Sem dados", 0, 0, 0]); // Placeholder quando não há dados
+      } else {
+        allMonths.forEach((month) => {
+          formatted.push([
+            `Mês ${month}`,
+            parseFloat(income[month] || 0),
+            parseFloat(expenses[month] || 0),
+            parseFloat(investments[month] || 0)
+          ]);
+        });
+      }
 
       return formatted;
     };
@@ -213,7 +229,7 @@ export default {
 
     const sendEmail = async () => {
       try {
-        const content = document.querySelector("#content"); 
+        const content = document.querySelector("#content");
         html2canvas(content, {
           allowTaint: true,
           useCORS: true,
@@ -278,6 +294,7 @@ export default {
       incomeBySource,
       fetchData,
       chartOptions,
+      formatPieChartData,
       lineChartData,
       sendEmail,
     };
