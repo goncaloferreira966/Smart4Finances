@@ -55,7 +55,7 @@ Route::middleware(['auth:api'])->group(function () {
             $file = $request->file('file');
             $path = $file->storeAs('pdfs', 'relatorio.pdf');
     
-            Mail::to('goncalosantosferreira@hotmail.com')->send(new SendReport($path));
+            Mail::to(auth()->user()->email)->send(new SendReport($path));
     
             return response()->json(["message" => "Email enviado com sucesso!"]);
         }
