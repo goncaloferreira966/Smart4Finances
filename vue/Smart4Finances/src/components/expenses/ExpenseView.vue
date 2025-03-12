@@ -22,7 +22,7 @@
       <br>
       <button @click="backList" class="mt-4 bg-red-500 text-white px-4 py-2 rounded">
         <i class="bi bi-arrow-left-short"></i>
-        Back
+        Voltar
       </button>
     </div>
     <div v-else>

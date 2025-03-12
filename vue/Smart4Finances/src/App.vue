@@ -3,15 +3,18 @@
     <!-- Exibir o componente Login apenas se o usuário não estiver logado -->
     <!--<NavbarLoginRegister :activeForm="currentSection" @navigate="navigateTo" @logout="logout" />-->
     <Navbar :isLoggedIn="isLoggedIn" :activeForm="currentSection" @navigate="navigateTo" @logout="logout" />
-    <div v-if="!isLoggedIn" :activeForm="currentSection">
+    <div v-if="!isLoggedIn">
       <div v-if="currentSection === 'login'">
-        <Login @login-success="handleLoginSuccess" />
+        <Login @login-success="handleLoginSuccess" @navigate="navigateTo" />
       </div>
       <div v-else-if="currentSection === 'register'">
-        <Register @register-success="handleRegisterSuccess" />
+        <Register @register-success="handleRegisterSuccess" @navigate="navigateTo" />
+      </div>
+      <div v-else-if="currentSection === 'forgotPassword'">
+        <ForgotPassword @navigate="navigateTo" />
       </div>
       <div v-else>
-        <Login @login-success="handleLoginSuccess" />
+        <Login @login-success="handleLoginSuccess" @navigate="navigateTo" />
       </div>
     </div>
 
@@ -82,11 +85,13 @@ import ExpenseView from './components/expenses/ExpenseView.vue';
 import addIncome from './components/income/addIncome.vue';
 import IncomeList from './components/income/IncomeList.vue';
 import IncomeView from './components/income/IncomeView.vue';
+import ForgotPassword from './components/password_mail/forgotPassword.vue';
 import { toast } from 'vue3-toastify';
 
 export default {
   components: {
     Login,
+    ForgotPassword,
     Navbar,
     Register,
     Profile,
@@ -145,8 +150,7 @@ export default {
     },
     // Expenses
     handleExpensesList() {
-      this.$refs.expenseList.loadExpenses(true);
-      //this.currentSection = 'ExpensesList';
+      this.currentSection = 'ExpensesList';
     },
     handleExpenseView(id) {
       this.id = id;
@@ -159,8 +163,7 @@ export default {
     // Income
     // TODO: 
     handleIncomeList() {
-      this.$refs.incomeList.loadIncome(true);
-      //this.currentSection = 'IncomeList';
+      this.currentSection = 'IncomeList';
     },
     handleIncomeView(id) {
       this.id = id;

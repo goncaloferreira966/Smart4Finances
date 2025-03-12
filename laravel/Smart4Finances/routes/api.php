@@ -10,7 +10,7 @@ use App\Http\Controllers\api\StatisticsController;
 use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\api\ExpenseController;
 use App\Http\Controllers\Api\IncomeController;
-
+use App\Http\Controllers\Auth\ResetPasswordController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -24,7 +24,7 @@ use App\Http\Controllers\Api\IncomeController;
 // Rotas públicas
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/usersPost', [UserController::class, 'store']);
-
+Route::post('/password/reset', [ResetPasswordController::class, 'reset']);
 
 // Rotas protegidas por middleware de autenticação
 Route::middleware(['auth:api'])->group(function () {

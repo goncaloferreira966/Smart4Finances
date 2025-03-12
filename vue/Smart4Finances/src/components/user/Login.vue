@@ -20,6 +20,12 @@
           Entrar
         </button>
       </form>
+      <p class="mt-4 text-center">
+        <a href="#" @click.prevent="goToForgotPassword" class="text-blue-500 hover:underline">
+          Esqueceu a senha?
+        </a>
+      </p>
+      <!-- Mensagem de erro (opcional) -->
       <!--<p v-if="errorMessage" class="text-red-500 text-sm mt-4">{{ errorMessage }}</p>-->
     </div>
   </div>
@@ -31,6 +37,7 @@ import { toast } from 'vue3-toastify';
 import { useAuthStore } from "@/stores/auth";
 
 export default {
+  name: 'Login',
   data() {
     return {
       username: "",
@@ -59,7 +66,6 @@ export default {
         axios.defaults.headers.common.Authorization = 'Bearer ' + token;
         const user = await authStore.loginWithToken(token);
         if (user) {
-         // toast.success("Login automático bem-sucedido! 🚀");
           this.$emit('login-success');
         } else {
           throw new Error('Usuário não encontrado');
@@ -67,7 +73,6 @@ export default {
       } catch (error) {
         console.error(error);
         toast.error("Erro ao realizar login automático.");
-        //this.errorMessage = "Erro ao realizar login automático.";
       }
     },
     async handleLogin() {
@@ -78,18 +83,25 @@ export default {
           password: this.password,
         });
         if (user) {
-          //toast.success("Login realizado com sucesso! ✅");
           this.$emit("login-success");
         } else {
-          //this.errorMessage = "Credenciais Inválidas.";
           toast.error("Credenciais Inválidas ❌");
         }
       } catch (error) {
         console.error(error);
-        //this.errorMessage = "Erro inesperado no login.";
         toast.error("Erro inesperado no login ❌");
       }
     },
+    goToForgotPassword() {
+      // Emite um evento para navegar para a seção "forgotPassword"
+      this.$emit('navigate', 'forgotPassword');
+    }
   },
 };
 </script>
+
+<style scoped>
+.login-container {
+  background-color: #f7f7f7;
+}
+</style>
