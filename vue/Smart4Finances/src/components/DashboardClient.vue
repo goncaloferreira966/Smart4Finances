@@ -23,9 +23,9 @@
         <button @click="fetchData" class="bg-blue-500 text-white p-2 rounded"> <i class="bi bi-funnel"></i>
           Filtrar</button>
         <button @click="exportToPDF" class="bg-green-500 text-white p-2 rounded"> <i class="bi bi-share-fill"></i>
-          Exportar</button>
+          Exportar PDF</button>
         <button @click="sendEmail" class="bg-yellow-500 text-white p-2 rounded"> <i class="bi bi-envelope"></i>
-          Partilhar por E-mail</button>
+          Partilhar PDF por E-mail</button>
 
       </div>
 
@@ -217,7 +217,8 @@ export default {
         html2canvas(content, {
           allowTaint: true,
           useCORS: true,
-          scale: 1, // Para envio por e-mail, manter a escala menor para reduzir o tamanho do arquivo
+          //1.2 está no limite máximo do que o gmail permite de mb por email de forma gratuita
+          scale: 1.2, // Para envio por e-mail, manter a escala menor para reduzir o tamanho do arquivo
         }).then((canvas) => {
           const imgData = canvas.toDataURL("image/png");
           const doc = new jsPDF({

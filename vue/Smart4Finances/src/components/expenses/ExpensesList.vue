@@ -1,6 +1,6 @@
 <template>
   <div class="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg" style="margin-top: 7vh; margin-bottom: 7vh; min-width: 100vh;">
-    <h2 class="text-2xl font-bold mb-4" style="color: black;">Minhas Despesas</h2>
+    <h2 class="text-2xl font-bold mb-4" style="color: black;">As Minhas Despesas</h2>
 
     <!-- Filtros -->
     <div class="mb-4">
