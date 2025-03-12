@@ -2,7 +2,17 @@
   <nav class="navbar bg-blue-500 p-4 text-#DAA520 shadow-md">
     <div class="container mx-auto flex justify-between items-center">
       <h1 class="text-xl font-bold">
-        <i class="bi bi-coin"></i> Smart4Finances
+        
+        <li  style=" list-style: none;" v-if="userRole !== 'C'">
+            <button @click="$emit('navigate', 'dashboardadmin')" class="hover:text-gray-200">
+              <i class="bi bi-coin"></i> Smart4Finances
+            </button>
+          </li>
+          <li style=" list-style: none;" v-if="userRole !== 'A'">
+            <button @click="$emit('navigate', 'dashboardclient')" class="hover:text-gray-200">
+              <i class="bi bi-coin"></i> Smart4Finances
+            </button>
+          </li>
       </h1>
       <ul class="flex space-x-4">
         <template v-if="isLoggedIn">

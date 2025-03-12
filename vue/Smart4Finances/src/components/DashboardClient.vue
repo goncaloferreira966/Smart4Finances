@@ -88,6 +88,7 @@ import axios from "axios";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import logo from '@/assets/logo.png'; // Imagem no Vue
+import { toast } from 'vue3-toastify';
 
 
 export default {
@@ -129,8 +130,10 @@ export default {
 
         doc.addImage(imgData, "PNG", 40, 40, imgWidth, imgHeight);
 
-        // Salva o PDF
+        // Guarda o PDF
         doc.save("Smart4Finances_Relatório_Financeiro.pdf");
+        toast.success("Relatório descarregado com sucesso!");
+
       });
     },
   },
@@ -225,9 +228,9 @@ export default {
         await axios.post("/send-email",formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-
-        alert("Email enviado com sucesso!");
+        toast.success("E-mail enviado com sucesso!");
       } catch (error) {
+        toast.error("Erro ao enviar o E-mail");
         console.error("Erro ao enviar email", error);
       }
     };
