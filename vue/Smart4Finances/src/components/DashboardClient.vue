@@ -246,7 +246,7 @@ export default {
           const pdfBlob = doc.output("blob"); // Gera um blob do PDF
 
           const formData = new FormData();
-          formData.append("file", pdfBlob, "relatorio.pdf");
+          formData.append("file", pdfBlob, "Smart4Finances_Relatório_Financeiro.pdf");
 
           axios.post("/send-email", formData, {
             headers: { "Content-Type": "multipart/form-data" },

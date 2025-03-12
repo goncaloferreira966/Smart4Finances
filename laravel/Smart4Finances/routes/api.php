@@ -53,7 +53,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/send-email', function (Request $request) {
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            $path = $file->storeAs('pdfs', 'relatorio.pdf', 'local');        
+            $path = $file->storeAs('pdfs', 'Smart4Finances_Relatório_Financeiro.pdf', 'local');        
     
             Mail::to(auth()->user()->email)->send(new SendReport($path));
     

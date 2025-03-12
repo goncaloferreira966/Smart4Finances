@@ -5,6 +5,7 @@
 </head>
 <body>
     <p>Caríssimo(a) Cliente,</p>
+    <br>
     <p>Segue em anexo o Relatório Smart4Finances por si solicitado.</p>
     <p>Muito Obrigado pela sua Preferência!</p>
     <br>
