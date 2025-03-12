@@ -18,7 +18,7 @@
             <i class="bi bi-person-fill-gear"></i><strong> Tipo de Utilizador:</strong> Administrador
           </p>
           <p v-if="userRole !== 'A'" class="card-text mt-4">
-            <strong><i class="bi bi-coin"></i> Saldo:</strong> {{ user.data.value }}€
+            <!--<strong><i class="bi bi-coin"></i> Saldo:</strong> {{ user.data.value }}€-->
           </p>
           <div class="container mt-2">
             <div class="col-md-12 mt-4">
