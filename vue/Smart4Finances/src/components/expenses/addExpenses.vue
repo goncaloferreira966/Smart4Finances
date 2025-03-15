@@ -1,49 +1,50 @@
 <template>
-  <div class="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg" style="margin-top: 7vh; margin-bottom: 7vh; min-width: 50vh;">
+  <div class="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg"
+    style="margin-top: 7vh; margin-bottom: 7vh; min-width: 50vh;">
     <h2 class="text-2xl font-bold mb-4">{{ isEditMode ? 'Editar Despesa' : 'Registar Despesa' }}</h2>
-    
+
     <label class="block mb-2">Carregar Recibo:</label>
     <input type="file" @change="onFileChange" accept="image/*" class="mb-4" />
-    
+
     <div v-if="receiptPreview" class="mb-4">
       <img :src="receiptPreview" alt="Recibo" class="w-full rounded cursor-pointer" @click="openImageModal" />
     </div>
-    
+
     <form @submit.prevent="submitExpense">
       <label class="block mb-2">Categoria:</label>
-      <input type="text" v-model="searchQuery" placeholder="Pesquisar categoria..." class="w-full p-2 border rounded mb-2" />
+      <input type="text" v-model="searchQuery" placeholder="Pesquisar categoria..."
+        class="w-full p-2 border rounded mb-2" />
       <div class="border rounded mb-4" style="max-height: 200px; overflow-y: auto;">
-        <div v-for="category in filteredCategories" :key="category.id" 
-             class="p-2 cursor-pointer hover:bg-gray-200"
-             @click="selectCategory(category)">
+        <div v-for="category in filteredCategories" :key="category.id" class="p-2 cursor-pointer hover:bg-gray-200"
+          @click="selectCategory(category)">
           {{ category.name }}
         </div>
         <div v-if="filteredCategories.length === 0" class="p-2 text-gray-500">
           Nenhuma categoria encontrada.
         </div>
       </div>
-      
+
       <button type="button" @click="showModal = true" style="background-color:black; color:#DAA520"
-              class="mb-4 py-2 px-4 rounded hover:bg-gray-600">
+        class="mb-4 py-2 px-4 rounded hover:bg-gray-600">
         Ver todas as categorias
       </button>
-      
+
       <!-- Select oculto para manter o valor selecionado -->
       <select v-model="expense.category_id" class="hidden">
         <option v-for="category in categories" :key="category.id" :value="category.id">
           {{ category.name }}
         </option>
       </select>
-      
+
       <label class="block mb-2">Valor:</label>
       <input type="text" v-model="expense.amount" @blur="formatAmount" class="w-full p-2 border rounded mb-4" />
-      
+
       <label class="block mb-2">Descrição:</label>
       <input type="text" v-model="expense.description" class="w-full p-2 border rounded mb-4" />
-      
+
       <label class="block mb-2">Data:</label>
       <input type="date" v-model="expense.date" class="w-full p-2 border rounded mb-4" />
-      
+
       <label class="block mb-2">Intervalo Recorrente (opcional):</label>
       <div class="flex mb-4">
         <input type="text" v-model="expense.recurring_interval" placeholder="0" class="flex-1 p-2 border rounded-l" />
@@ -54,22 +55,26 @@
           <option value="anual">Anual</option>
         </select>
       </div>
-      
+
       <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 bthouver">
         <i class="bi bi-check2-circle"></i>
         {{ isEditMode ? 'Atualizar' : 'Confirmar' }}
       </button>
     </form>
-    
+    <button @click="isEditMode ? viewExpense(expense.id) : ExpensesList()" class="mt-4 w-full bg-red-500 text-white py-2 rounded hover:bg-black">
+      <i class="bi bi-arrow-left-short"></i>
+      Voltar
+    </button>
+
     <!-- Modal para seleção de categoria -->
     <div v-if="showModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div class="bg-white p-6 rounded-lg w-11/12 max-w-md">
         <h3 class="text-xl font-bold mb-4">Selecione uma Categoria</h3>
-        <input type="text" v-model="modalSearchQuery" placeholder="Pesquisar categoria..." class="w-full p-2 border rounded mb-2" />
+        <input type="text" v-model="modalSearchQuery" placeholder="Pesquisar categoria..."
+          class="w-full p-2 border rounded mb-2" />
         <div class="border rounded mb-4" style="max-height: 300px; overflow-y: auto;">
-          <div v-for="category in modalFilteredCategories" :key="category.id" 
-               class="p-2 cursor-pointer hover:bg-gray-200"
-               @click="selectCategoryFromModal(category)">
+          <div v-for="category in modalFilteredCategories" :key="category.id"
+            class="p-2 cursor-pointer hover:bg-gray-200" @click="selectCategoryFromModal(category)">
             {{ category.name }}
           </div>
           <div v-if="modalFilteredCategories.length === 0" class="p-2 text-gray-500">
@@ -77,29 +82,25 @@
           </div>
         </div>
         <button @click="showModal = false" style="background-color:black; color:#DAA520"
-                class="w-full py-2 rounded hover:bg-gray-600">
+          class="w-full py-2 rounded hover:bg-gray-600">
           Fechar
         </button>
       </div>
     </div>
-    
+
     <!-- Modal de visualização da imagem -->
     <div v-if="showImageModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50"
-         @wheel.prevent="onWheel"
-         @mousedown="onMouseDown"
-         @mousemove="onMouseMove"
-         @mouseup="onMouseUp"
-         @mouseleave="onMouseUp">
-      <div class="relative p-2 rounded overflow-hidden" style="background: transparent; max-width: 90vw; max-height: 90vh;">
-        <img :src="receiptPreview" alt="Recibo Detalhado"
-             :style="imageStyle"
-             class="select-none" />
+      @wheel.prevent="onWheel" @mousedown="onMouseDown" @mousemove="onMouseMove" @mouseup="onMouseUp"
+      @mouseleave="onMouseUp">
+      <div class="relative p-2 rounded overflow-hidden"
+        style="background: transparent; max-width: 90vw; max-height: 90vh;">
+        <img :src="receiptPreview" alt="Recibo Detalhado" :style="imageStyle" class="select-none" />
       </div>
       <button @click="closeImageModal" class="absolute top-4 right-4 px-4 py-2 bg-red-500 text-white rounded">
         Fechar
       </button>
     </div>
-    
+
   </div>
 </template>
 
@@ -111,7 +112,7 @@ import { toast } from 'vue3-toastify';
 export default {
   props: {
     expenseId: {
-      type:  Number,
+      type: Number,
       default: null
     }
   },
@@ -184,7 +185,6 @@ export default {
       axios.get(`/expenses/${this.expenseId}`)
         .then(response => {
           this.expense = response.data;
-          console.log(this.expense);
           this.receiptPreview = response.data.receipt ? import.meta.env.VITE_API_DOMAIN + '/storage/' + response.data.receipt : null;
           this.expense.recurring_interval = response.data.recurring_interval != 'null' ? response.data.recurring_interval : '0';
           // Se as categorias já foram carregadas, atualiza o searchQuery
@@ -242,9 +242,9 @@ export default {
       const candidates = lines.filter(line => {
         const lower = line.toLowerCase();
         return candidateKeywords.some(k => lower.includes(k)) &&
-               !excludedKeywords.some(e => lower.includes(e));
+          !excludedKeywords.some(e => lower.includes(e));
       });
-      
+
       let candidateLine;
       if (candidates.length > 0) {
         const nonSubtotal = candidates.filter(line => !line.toLowerCase().includes('subtotal'));
@@ -255,7 +255,7 @@ export default {
           return this.stripSymbols(this.cleanValue(match[1]));
         }
       }
-      
+
       const subtotalLine = lines.find(line => line.toLowerCase().includes('subtotal'));
       if (subtotalLine) {
         const regex = /(?:r\$|\$|€|£|eur)?\s*(\d+(?:[,.]\d+)?)/i;
@@ -264,7 +264,7 @@ export default {
           return this.stripSymbols(this.cleanValue(match[1]));
         }
       }
-      
+
       for (let i = lines.length - 1; i >= 0; i--) {
         const lower = lines[i].toLowerCase();
         if (!excludedKeywords.some(e => lower.includes(e))) {
@@ -275,7 +275,7 @@ export default {
           }
         }
       }
-      
+
       return '0.00';
     },
     extractDate(text) {
@@ -327,12 +327,12 @@ export default {
         toast.error(this.errorMessage);
         return;
       }
-      
+
       this.formatAmount();
       if (this.expense.recurring_interval === '0') {
         this.expense.recurring_interval = null;
       }
-      
+
       this.errorMessage = '';
       const formData = new FormData();
       formData.append('category_id', this.expense.category_id);
@@ -341,16 +341,17 @@ export default {
       formData.append('date', this.expense.date);
       formData.append('recurring_interval', this.expense.recurring_interval);
       formData.append('recurring_interval_unit', this.expense.recurring_interval_unit);
-      
+
       if (this.expense.receipt) {
         formData.append('receipt', this.expense.receipt);
       }
-      
+
       if (this.isEditMode) {
         axios.put(`/expenses/${this.expenseId}`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
+          headers: { 'Content-Type': 'application/json' }
         }).then(response => {
           toast.success("Despesa atualizada com sucesso!");
+          this.$emit("ExpensesList", null);
         }).catch(error => {
           this.errorMessage = 'Erro ao atualizar despesa. Verifique os dados e tente novamente.';
           toast.error(this.errorMessage);
@@ -410,6 +411,12 @@ export default {
     },
     onMouseUp() {
       this.isDragging = false;
+    },
+    viewExpense(expenseId) {
+      this.$emit("ExpenseView", expenseId);
+    },
+    ExpensesList() {
+      this.$emit("ExpensesList", null);
     }
   }
 };

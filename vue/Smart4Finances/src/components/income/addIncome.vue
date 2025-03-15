@@ -35,6 +35,10 @@
         {{ isEditMode ? 'Atualizar' : 'Confirmar' }}
       </button>
     </form>
+    <button @click="isEditMode ? viewExpense(income.id) : IncomeList()" class="mt-4 bg-red-500 text-white px-4 py-2 rounded">
+      <i class="bi bi-arrow-left-short"></i>
+      Voltar
+    </button>
     
     <!-- Modal de visualização da imagem -->
     <div v-if="showImageModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50"
@@ -58,6 +62,7 @@
 
 <script>
 import axios from 'axios';
+import { Toast } from 'bootstrap';
 import Tesseract from 'tesseract.js';
 import { toast } from 'vue3-toastify';
 
@@ -118,7 +123,7 @@ export default {
           this.income.recurring_interval = response.data.recurring_interval != 'null' ? response.data.recurring_interval : '0';
         })
         .catch(error => {
-          console.error('Erro ao carregar a receita:', error);
+          toast.error('Erro ao carregar a receita. Tente novamente mais tarde.');
         });
     },
     onFileChange(event) {
@@ -151,7 +156,6 @@ export default {
         }
         toast.success("Imagem processada com sucesso!");
       } catch (error) {
-        console.error('Erro ao processar imagem:', error);
         toast.remove(toastId);
         toast.error("Erro ao processar imagem");
       }
@@ -252,9 +256,11 @@ export default {
       if (this.isEditMode) {
 
         axios.put(`/incomes/${this.IncomeId}`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
+          headers: { 'Content-Type': 'application/json' }
         }).then(response => {
           toast.success("Receita atualizada com sucesso!");
+          this.$emit("IncomeList", null);
+          console.log('Aqui');
         }).catch(error => {
           this.errorMessage = 'Erro ao atualizar receita. Verifique os dados e tente novamente.';
           toast.error(this.errorMessage);
@@ -264,7 +270,7 @@ export default {
           headers: { 'Content-Type': 'multipart/form-data' }
         }).then(response => {
           toast.success("Receita registada com sucesso!");
-          this.$emit("IncomesList", null);
+          this.$emit("IncomeList", null);
         }).catch(error => {
           this.errorMessage = 'Erro ao submeter receita. Verifique os dados e tente novamente.';
           toast.error(this.errorMessage);
@@ -314,7 +320,13 @@ export default {
     },
     onMouseUp() {
       this.isDragging = false;
-    }
+    },
+    viewExpense(incomeId) {
+      this.$emit("IncomeView", incomeId);
+    },  
+    IncomeList() {
+      this.$emit("IncomeList", null);
+    }, 
   }
 };
 </script>

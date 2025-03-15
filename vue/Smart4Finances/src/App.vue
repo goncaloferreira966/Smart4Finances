@@ -33,7 +33,7 @@
         <Notifications />
       </div>
       <div v-else-if="currentSection === 'addExpenses'">
-        <addExpenses :expenseId="id" @ExpensesList="handleExpensesList" />
+        <addExpenses :expenseId="id" @ExpensesList="handleExpensesList" @ExpenseView="handleExpenseView"/>
       </div>
       <div v-else-if="currentSection === 'ExpensesList'">
         <ExpensesList @ExpenseView="handleExpenseView" @addexpense="handleExpensEdit" />
@@ -42,7 +42,7 @@
         <ExpenseView @BackExpense="handleExpensesList" @editExpense="handleExpensEdit" :expenseId="id" />
       </div>
       <div v-else-if="currentSection === 'addIncome'">
-        <addIncome :IncomeId="id" @IncomeList="handleIncomeList" />
+        <addIncome :IncomeId="id" @IncomeList="handleIncomeList" @IncomeView="handleIncomeView"/>
       </div>
       <div v-else-if="currentSection === 'IncomeList'">
         <IncomeList @IncomeView="handleIncomeView" @addIncome="handleIncomeEdit" />
