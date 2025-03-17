@@ -15,12 +15,12 @@
       <div v-if="income.receipt">
         <img :src="receiptUrl(income.receipt)" alt="Recibo" class="w-full max-w-md mt-4"/>
       </div>
-      <button @click="editIncome" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
+      <button @click="editIncome" class="w-full mt-4 bg-blue-500 text-white px-4 py-2 rounded">
         <i class="bi bi-pen"></i>
         Editar Receita
       </button>
       <br>
-      <button @click="backList" class="mt-4 bg-red-500 text-white px-4 py-2 rounded">
+      <button @click="backList" class="w-full mt-4 bg-red-500 text-white px-4 py-2 rounded">
         <i class="bi bi-arrow-left-short"></i>
         Voltar
       </button>

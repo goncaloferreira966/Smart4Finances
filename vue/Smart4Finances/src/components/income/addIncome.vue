@@ -35,7 +35,7 @@
         {{ isEditMode ? 'Atualizar' : 'Confirmar' }}
       </button>
     </form>
-    <button @click="isEditMode ? viewExpense(income.id) : IncomeList()" class="mt-4 bg-red-500 text-white px-4 py-2 rounded">
+    <button @click="isEditMode ? viewExpense(income.id) : IncomeList()" class="w-full mt-4 bg-red-500 text-white px-4 py-2 rounded">
       <i class="bi bi-arrow-left-short"></i>
       Voltar
     </button>
