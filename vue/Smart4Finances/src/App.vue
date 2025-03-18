@@ -1,10 +1,13 @@
 <template>
   <div id="app">
-    <!-- Exibir o componente Login apenas se o usuário não estiver logado -->
-    <!--<NavbarLoginRegister :activeForm="currentSection" @navigate="navigateTo" @logout="logout" />-->
     <Navbar :isLoggedIn="isLoggedIn" :activeForm="currentSection" @navigate="navigateTo" @logout="logout" />
+    
+    <!-- Área pública -->
     <div v-if="!isLoggedIn">
-      <div v-if="currentSection === 'login'">
+      <div v-if="currentSection === 'resetPassword'">
+        <ResetPassword :token="resetToken" :email="resetEmail" @navigate="navigateTo" />
+      </div>
+      <div v-else-if="currentSection === 'login'">
         <Login @login-success="handleLoginSuccess" @navigate="navigateTo" />
       </div>
       <div v-else-if="currentSection === 'register'">
@@ -18,7 +21,7 @@
       </div>
     </div>
 
-    <!-- Conteúdo da aplicação principal -->
+    <!-- Área protegida -->
     <div v-else>
       <div v-if="currentSection === 'profile'">
         <Profile @editer="handleEditUser" @logout="logout" />
@@ -86,12 +89,14 @@ import addIncome from './components/income/addIncome.vue';
 import IncomeList from './components/income/IncomeList.vue';
 import IncomeView from './components/income/IncomeView.vue';
 import ForgotPassword from './components/password_mail/forgotPassword.vue';
+import ResetPassword from './components/password_mail/ResetPassword.vue';
 import { toast } from 'vue3-toastify';
 
 export default {
   components: {
     Login,
     ForgotPassword,
+    ResetPassword,
     Navbar,
     Register,
     Profile,
@@ -113,12 +118,27 @@ export default {
       isRegistering: false,
       currentSection: 'login',
       id: null,
+      resetToken: null,
+      resetEmail: null,
     };
   },
   computed: {
     currentYear() {
       return new Date().getFullYear();
     },
+  },
+  mounted() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    const email = urlParams.get('email');
+
+    if (token && email) {
+      this.resetToken = token;
+      this.resetEmail = email;
+      this.currentSection = 'resetPassword';
+      // Limpar URL após capturar os parâmetros
+      window.history.replaceState({}, document.title, '/');
+    }
   },
   methods: {
     handleLoginSuccess() {
@@ -127,7 +147,6 @@ export default {
     },
     logout() {
       this.isLoggedIn = false;
-      //toast.success("Logout realizado com sucesso!");
     },
     navigateTo(section) {
       this.currentSection = section;
@@ -148,7 +167,6 @@ export default {
     handleUpdateCancel() {
       this.currentSection = 'profile';
     },
-    // Expenses
     handleExpensesList() {
       this.currentSection = 'ExpensesList';
     },
@@ -160,8 +178,6 @@ export default {
       this.id = id;
       this.currentSection = 'addExpenses';
     },
-    // Income
-    // TODO: 
     handleIncomeList() {
       this.currentSection = 'IncomeList';
     },
