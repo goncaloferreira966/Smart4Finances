@@ -54,7 +54,7 @@
         this.message = '';
         try {
           // Envia os dados para a rota de reset de Password no back-end
-          await axios.post('/api/password/reset', {
+          await axios.post('/reset-password', {
             token: this.token,
             email: this.email,
             password: this.password,

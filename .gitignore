@@ -6,3 +6,4 @@ laravel/Smart4Finances/app/Http/Controllers/api/AuthController.php
 laravel/Smart4Finances/app/Http/Controllers/api/AuthController.php
 laravel/Smart4Finances/app/Http/Controllers/api/AuthController.php
 laravel/Smart4Finances/app/Http/Controllers/api/AuthController.php
+laravel/Smart4Finances/database/migrations/2025_03_18_110652_create_notifications_table.php
