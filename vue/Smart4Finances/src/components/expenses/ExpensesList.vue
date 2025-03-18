@@ -49,7 +49,7 @@
           </td>
           <td class="px-2 py-1">{{ expense.date }}</td>
           <td class="px-2 py-1">{{ getCategoryName(expense.category_id) }}</td>
-          <td class="px-2 py-1">{{ expense.amount }}</td>
+          <td class="px-2 py-1">{{ expense.amount + " "+coin}}</td>
           <td class="px-2 py-1">{{ truncate(expense.description, 20) }}</td>
           <td class="px-2 py-1">
             <!-- Botão de delete individual -->
@@ -83,10 +83,12 @@
 <script>
 import axios from 'axios';
 import debounce from 'lodash.debounce';
+import { useAuthStore } from "@/stores/auth";
 
 export default {
   data() {
     return {
+      coin: "",
       expenses: [],
       categories: [],
       page: 1,
@@ -107,6 +109,8 @@ export default {
   created() {
     this.loadCategories();
     this.loadExpenses();
+    const authStore = useAuthStore();
+    this.coin = (authStore.user?.data?.coin);  
     window.addEventListener('scroll', this.handleScroll);
   },
   beforeUnmount() {

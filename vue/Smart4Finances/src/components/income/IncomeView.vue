@@ -4,7 +4,7 @@
     <div v-if="income">
       <p><strong>Data:</strong> {{ income.date }}</p>
       <p><strong>Fonte:</strong> {{ income.source }}</p>
-      <p><strong>Valor:</strong> {{ income.amount }}</p>
+      <p><strong>Valor:</strong> {{ income.amount  + " " + coin }}</p>
       <p v-if="income.recurring_interval != 'null'">
         <strong>Intervalo Recorrente:</strong>
         <span v-if="income.recurring_interval">
@@ -33,6 +33,8 @@
 
 <script>
 import axios from 'axios';
+import { useAuthStore } from "@/stores/auth";
+
 export default {
   props: {
     IncomeId: {
@@ -42,11 +44,14 @@ export default {
   },
   data() {
     return {
-      income: null
+      income: null,
+      coin: "",
     };
   },
   created() {
     this.loadIncome();
+    const authStore = useAuthStore();
+    this.coin = (authStore.user?.data?.coin);  
   },
   methods: {
     loadIncome() {
