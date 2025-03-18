@@ -27,6 +27,9 @@ return new class extends Migration
             //  Balance/value
             $table->decimal('value', 10, 2)->default(0);
 
+            // Currency - Accepts USD, €, and other currencies
+            $table->enum('coin', ['$', '€', '£', 'R$'])->default('$');
+
             // custom data
             $table->json('custom')->nullable();
 

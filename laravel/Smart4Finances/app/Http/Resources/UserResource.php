@@ -25,6 +25,7 @@ class UserResource extends JsonResource
             'deleted_at' => $this->deleted_at,
             'value' => $this->value,
             'photoFileName' => $this->photo_filename ? '/storage/photos/' . $this->photo_filename : null,
+            'coin' => $this->coin,
         ];
     }
 }

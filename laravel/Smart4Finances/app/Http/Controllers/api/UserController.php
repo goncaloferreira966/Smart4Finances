@@ -35,6 +35,7 @@ class UserController extends Controller
             'email' => 'nullable|email|unique:users,email,' . $id,
             'password' => 'nullable|string|min:3', // Apenas se a senha for informada
             'photo_filename' => 'nullable|file|mimes:jpeg,png,jpg|max:10240', // Aceita imagens de até 10MB
+            'coin' => 'nullable|in:$,€,R$,£',
         ]);
 
         if ($validator->fails()) {
@@ -74,6 +75,11 @@ class UserController extends Controller
                 $user->password = Hash::make($request->input('password'));
             }
 
+            // Atualizar o campo coin, se fornecido
+            if ($request->has('coin')) {
+                $user->coin = $request->input('coin');
+            }
+
             // Guardar as alterações
             $user->notify(new CustomNotification("Parabéns! Você editou o seu perfil com Sucesso!"));
 
@@ -103,6 +109,7 @@ class UserController extends Controller
             'value' => 'nullable|integer|min:0', // Opcional
             'blocked' => 'nullable|boolean', // Opcional
             'custom' => 'nullable|json', // Deve ser um JSON válido
+            'coin' => 'nullable|in:$,€,R$,£',
         ]);
 
         if ($validator->fails()) {
@@ -127,6 +134,7 @@ class UserController extends Controller
             // Criar utilizador
             $user = User::create([
                 'name' => $request->input('name'),
+                'coin' => $request->input('coin','$'),
                 'nickname' => $request->input('nickname'),
                 'email' => $request->input('email'),
                 'password' => Hash::make($request->input('password')),

@@ -11,6 +11,7 @@
                alt="User Photo" class="card-img-top rounded-circle mt-4" />
           <p class="card-text mt-4"><strong><i class="bi bi-envelope"></i> E-mail:</strong> {{ user.data.email }}</p>
           <p class="card-text mt-4"><strong><i class="bi bi-person-circle"></i> Nickname:</strong> {{ user.data.nickname }}</p>
+          <p class="card-text mt-4"><strong><i class="bi bi-currency-exchange"></i> Moeda:</strong> {{ user.data.coin }}</p>
           <p class="card-text mt-4" v-if="user.data.type === 'C'">
             <i class="bi bi-person-badge"></i><strong> Tipo de Utilizador:</strong> Cliente
           </p>

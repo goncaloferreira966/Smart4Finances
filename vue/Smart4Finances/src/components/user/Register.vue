@@ -26,6 +26,16 @@
           <input type="file" id="photo_filename" @change="handleFileUpload" accept=".png, .jpeg, .jpg"
             class="form-control w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
+        <div class="mb-4">
+            <label for="coin" class="block text-gray-700 font-semibold mb-2">Moeda</label>
+            <select required id="coin" v-model="coin" class="form-control w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">Selecione uma moeda</option>
+              <option value="$">Dólar (USD)</option>
+              <option value="€">Euro (EUR)</option>
+              <option value="R$">Real (BRL)</option>
+              <option value="£">Libra (GBP)</option>
+            </select>
+        </div>
         <div class="mb-6">
           <label for="password" class="block text-gray-700 font-semibold mb-2">Password</label>
           <input type="password" id="password" v-model="password"
@@ -53,6 +63,7 @@ export default {
       email: "",
       nickname: "",
       password: "",
+      coin: "",
       photo_filename: null,
       errorMessage: "",
     };
@@ -66,6 +77,7 @@ export default {
           formData.append("email", this.email);
           formData.append("nickname", this.nickname);
           formData.append("password", this.password);
+          formData.append("coin", this.coin);
           if (this.photo_filename) {
             formData.append("photo_filename", this.photo_filename);
           }
