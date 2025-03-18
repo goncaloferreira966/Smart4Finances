@@ -47,7 +47,7 @@ export default {
       this.message = '';
       try {
         // Envia o e-mail para recuperação de senha (confirme que a rota está correta)
-        await axios.post('/password/email', { email: this.email });
+        await axios.post('/forgot-password', { email: this.email });
         toast.success("Link de redefinição enviado para seu e-mail!");
         // Após sucesso, volta para a tela de login
         this.backToLogin();
