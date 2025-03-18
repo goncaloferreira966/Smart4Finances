@@ -1,7 +1,6 @@
 <template>
   <div class="container mt-4 mb-5">
     <h2 class="card-title" style="color: black;">Dashboard</h2>
-
     <div id="content" ref="content" class=" space-x-4 mb-6 stats mt-4">
       <div class="flex space-x-4 mb-6 ">
         <input v-model="year" type="number" class="border p-2" placeholder="Ano" />
@@ -32,20 +31,20 @@
       <div class="row">
         <div class="col-md-12">
           <GChart type="LineChart" :data="lineChartData"
-            :options="chartOptions('Receitas, Despesas e Investimentos Mensais (€)')" />
+            :options="chartOptions(chartTitles.lineChart)" />
         </div>
       </div>
 
       <div class="row mt-1">
         <div class="col-md-6">
           <GChart v-if="incomeData.length" type="ColumnChart" :data="incomeData"
-            :options="chartOptions('Receitas Mensais (€)')" />
+          :options="chartOptions(chartTitles.incomeChart)" />
 
         </div>
 
         <div class="col-md-6">
           <GChart v-if="expenseData.length" type="ColumnChart" :data="expenseData"
-            :options="chartOptions('Despesas Mensais (€)')" />
+          :options="chartOptions(chartTitles.expenseChart)" />
 
         </div>
       </div>
@@ -53,7 +52,7 @@
       <div class="row mt-1">
         <div class="col-md-6">
           <GChart v-if="investmentData.length" type="ColumnChart" :data="investmentData"
-            :options="chartOptions('Investimnetos Mensais (€)')" />
+          :options="chartOptions(chartTitles.investmentChart)" />
 
         </div>
 
@@ -82,14 +81,14 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { GChart } from "vue-google-charts";
 import axios from "axios";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import logo from '@/assets/logo.png'; // Imagem no Vue
 import { toast } from 'vue3-toastify';
-
+import { useAuthStore } from "@/stores/auth";
 
 export default {
   methods: {
@@ -148,6 +147,15 @@ export default {
     const investmentByType = ref([]);
     const incomeBySource = ref([]);
     const lineChartData = ref([]);
+    const authStore = useAuthStore();
+    const coin = ref(authStore.user?.data?.coin);  
+
+    const chartTitles = computed(() => ({
+    lineChart: `Receitas, Despesas e Investimentos Mensais (${coin.value})`,
+    incomeChart: `Receitas Mensais (${coin.value})`,
+    expenseChart: `Despesas Mensais (${coin.value})`,
+    investmentChart: `Investimentos Mensais (${coin.value})`
+  }));
 
     const fetchData = async () => {
       try {
@@ -219,7 +227,7 @@ export default {
     };
 
     const chartOptions = (title) => ({
-      title,
+      title: `${title}`,
       width: '100%',
       height: window.innerWidth < 768 ? 300 : 500, // Altura dinâmica baseada na largura do ecra
       legend: { position: "bottom" },
@@ -297,6 +305,8 @@ export default {
       formatPieChartData,
       lineChartData,
       sendEmail,
+      coin,
+      chartTitles,
     };
   },
 };

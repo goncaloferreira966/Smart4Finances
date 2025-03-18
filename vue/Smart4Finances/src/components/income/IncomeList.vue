@@ -44,7 +44,7 @@
           </td>
           <td class="px-2 py-1">{{ income.date }}</td>
           <td class="px-2 py-1">{{ income.source }}</td>
-          <td class="px-2 py-1">{{ income.amount }}</td>
+          <td class="px-2 py-1">{{ income.amount + " " + coin}}</td>
           <td class="px-2 py-1">
             <!-- Botão de delete individual -->
             <button @click="deleteIncome(income.id)" class="bg-red-500 text-white px-2 py-1 rounded">
@@ -77,10 +77,12 @@
 <script>
 import axios from 'axios';
 import debounce from 'lodash.debounce';
+import { useAuthStore } from "@/stores/auth";
 
 export default {
   data() {
     return {
+      coin: "",
       incomes: [],
       page: 1,
       perPage: 15,
@@ -100,6 +102,8 @@ export default {
   created() {
     this.loadIncomes();
     window.addEventListener('scroll', this.handleScroll);
+    const authStore = useAuthStore();
+    this.coin = (authStore.user?.data?.coin);  
   },
   beforeUnmount() {
     window.removeEventListener('scroll', this.handleScroll);
