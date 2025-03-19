@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <Navbar :isLoggedIn="isLoggedIn" :activeForm="currentSection" @navigate="navigateTo" @logout="logout" />
-    
+
     <!-- Área pública -->
     <div v-if="!isLoggedIn">
       <div v-if="currentSection === 'resetPassword'">
@@ -15,6 +15,15 @@
       </div>
       <div v-else-if="currentSection === 'forgotPassword'">
         <ForgotPassword @navigate="navigateTo" />
+      </div>
+      <div v-else-if="currentSection === 'emailConfirmed'">
+        <EmailConfirmed @navigate="navigateTo" />
+      </div>
+      <div v-else-if="currentSection === 'emailVerificationError'">
+        <EmailVerificationError @navigate="navigateTo" />
+      </div>
+      <div v-else-if="currentSection === 'emailAlreadyVerified'">
+        <EmailAlreadyVerified @navigate="navigateTo" />
       </div>
       <div v-else>
         <Login @login-success="handleLoginSuccess" @navigate="navigateTo" />
@@ -90,6 +99,9 @@ import IncomeList from './components/income/IncomeList.vue';
 import IncomeView from './components/income/IncomeView.vue';
 import ForgotPassword from './components/password_mail/forgotPassword.vue';
 import ResetPassword from './components/password_mail/ResetPassword.vue';
+import EmailConfirmed from './components/user/EmailConfirmed.vue';
+import EmailVerificationError from './components/user/EmailVerificationError.vue';
+import EmailAlreadyVerified from './components/user/EmailAlreadyVerified.vue';
 import { toast } from 'vue3-toastify';
 
 export default {
@@ -111,6 +123,9 @@ export default {
     addIncome,
     IncomeList,
     IncomeView,
+    EmailConfirmed,
+    EmailVerificationError,
+    EmailAlreadyVerified,
   },
   data() {
     return {
@@ -136,7 +151,22 @@ export default {
       this.resetToken = token;
       this.resetEmail = email;
       this.currentSection = 'resetPassword';
-      // Limpar URL após capturar os parâmetros
+      window.history.replaceState({}, document.title, '/');
+    }
+
+    if (urlParams.get('email_verified') === 'true') {
+      localStorage.removeItem('AccessToken');
+      this.currentSection = 'emailConfirmed';
+      window.history.replaceState({}, document.title, '/');
+    }
+
+    if (urlParams.get('email_verified') === 'invalid') {
+      this.currentSection = 'emailVerificationError';
+      window.history.replaceState({}, document.title, '/');
+    }
+
+    if (urlParams.get('email_verified') === 'already') {
+      this.currentSection = 'emailAlreadyVerified';
       window.history.replaceState({}, document.title, '/');
     }
   },
@@ -154,7 +184,7 @@ export default {
     handleRegisterSuccess() {
       this.isRegistering = false;
       this.currentSection = 'login';
-      toast.success("Registo realizado com sucesso! Faça login.");
+      toast.success("Registo realizado com sucesso! Verifique o seu e-mail.");
     },
     handleEditUser() {
       this.isRegistering = false;

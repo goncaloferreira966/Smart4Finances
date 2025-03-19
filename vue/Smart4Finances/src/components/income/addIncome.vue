@@ -260,7 +260,6 @@ export default {
         }).then(response => {
           toast.success("Receita atualizada com sucesso!");
           this.$emit("IncomeList", null);
-          console.log('Aqui');
         }).catch(error => {
           this.errorMessage = 'Erro ao atualizar receita. Verifique os dados e tente novamente.';
           toast.error(this.errorMessage);

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Notifications\CustomNotification;
-
+use App\Notifications\EmailConfirmationNotification;
 class UserController extends Controller
 {
     public function update(Request $request, $id)
@@ -98,17 +98,17 @@ class UserController extends Controller
     }
 
     public function store(Request $request)
-    {
+    {   
         // Validação dos dados
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'nickname' => 'required|string|max:20|unique:users,nickname',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:3',
-            'photo_filename' => 'nullable|file|mimes:jpeg,png,jpg|max:10240', // Aceita imagens de até 10MB
-            'value' => 'nullable|integer|min:0', // Opcional
-            'blocked' => 'nullable|boolean', // Opcional
-            'custom' => 'nullable|json', // Deve ser um JSON válido
+            'photo_filename' => 'nullable|file|mimes:jpeg,png,jpg|max:10240',
+            'value' => 'nullable|integer|min:0',
+            'blocked' => 'nullable|boolean',
+            'custom' => 'nullable|json',
             'coin' => 'nullable|in:$,€,R$,£',
         ]);
 
@@ -122,33 +122,32 @@ class UserController extends Controller
         try {
             $photoPath = null;
             if ($request->hasFile('photo_filename') && $request->file('photo_filename')->isValid()) {
-                // Armazenar a imagem no diretório public/photos
                 $photoPath = $request->file('photo_filename')->store('photos', 'public');
-            } else {
-                $photoPath = null; // Caso não tenha sido enviado um arquivo
             }
 
-            // Verifica se já existe algum usuário na bd
             $isFirstUser = User::count() === 0;
 
-            // Criar utilizador
             $user = User::create([
                 'name' => $request->input('name'),
-                'coin' => $request->input('coin','$'),
+                'coin' => $request->input('coin', '$'),
                 'nickname' => $request->input('nickname'),
                 'email' => $request->input('email'),
                 'password' => Hash::make($request->input('password')),
-                'type' => $isFirstUser ? 'A' : 'C', // Primeiro user será admin, os demais serão clientes
-                'photo_filename' => $photoPath ? basename($photoPath) : null, // Guarda o nome do arquivo
-                'value' => $request->input('value', 0), // Valor padrão
-                'blocked' => $request->input('blocked', 0), // Valor padrão
+                'type' => $isFirstUser ? 'A' : 'C',
+                'photo_filename' => $photoPath ? basename($photoPath) : null,
+                'value' => $request->input('value', 0),
+                'blocked' => $request->input('blocked', 0),
                 'custom' => $request->input('custom', null),
             ]);
 
+            // Aqui é onde deves disparar a notificação
+            $user->notify(new EmailConfirmationNotification());
+
             return response()->json([
-                'message' => 'Utilizador criado com sucesso!',
+                'message' => 'Utilizador criado com sucesso! Verifique o seu e-mail para confirmar a conta.',
                 'user' => $user,
             ], Response::HTTP_CREATED);
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Erro ao criar utilizador',

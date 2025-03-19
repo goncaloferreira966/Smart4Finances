@@ -25,8 +25,11 @@
           Esqueceu-se da password?
         </a>
       </p>
-      <!-- Mensagem de erro (opcional) -->
-      <!--<p v-if="errorMessage" class="text-red-500 text-sm mt-4">{{ errorMessage }}</p>-->
+      <p v-if="showResend" class="mt-2 text-center">
+        <a href="#" @click.prevent="resendEmail" class="text-blue-500 hover:underline">
+          Reenviar e-mail de confirmação
+        </a>
+      </p>
     </div>
   </div>
 </template>
@@ -43,6 +46,7 @@ export default {
       username: "",
       password: "",
       errorMessage: "",
+      showResend: false,
     };
   },
   mounted() {
@@ -82,7 +86,14 @@ export default {
           username: this.username,
           password: this.password,
         });
+
         if (user) {
+          console.log(user.data.email_verified_at);
+          if (!user.data.email_verified_at) {
+            toast.error("E-mail não verificado. Por favor, confirme o seu e-mail antes de fazer login.");
+            this.showResend = true;
+            return;
+          }
           this.$emit("login-success");
         } else {
           toast.error("Credenciais Inválidas ❌");
@@ -92,8 +103,18 @@ export default {
         toast.error("Erro inesperado no login ❌");
       }
     },
+    async resendEmail() {
+      try {
+        await axios.post('/email/resend', {}, {
+          headers: { Authorization: 'Bearer ' + localStorage.getItem('AccessToken') }
+        });
+        toast.success('E-mail de confirmação reenviado com sucesso!');
+        this.showResend = false;
+      } catch (err) {
+        toast.error('Erro ao reenviar e-mail. Faça login novamente ou contacte o suporte.');
+      }
+    },
     goToForgotPassword() {
-      // Emite um evento para navegar para a seção "forgotPassword"
       this.$emit('navigate', 'forgotPassword');
     }
   },

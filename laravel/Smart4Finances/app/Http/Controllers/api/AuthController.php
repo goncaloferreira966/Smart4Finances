@@ -33,24 +33,26 @@ class AuthController extends Controller
     {
         $user = User::where('email', $request->username)->first();
 
-        // Verificar se o usuário existe e está bloqueado
         if (!$user) {
             return response()->json(['message' => 'User não encontrado'], 404);
         }
-    
-        // Se o usuário estiver bloqueado, retornar erro sem interferir no fluxo de autenticação
+
         if ($user->blocked) {
-            return response()->json(['message' => 'Conta bloqueada'], 403); // Retornar 403 para contas bloqueadas
+            return response()->json(['message' => 'Conta bloqueada'], 403);
         }
-    
 
         try {
-            request()->request->add($this->passportAuthenticationData(
-            $request->username, $request->password));
-            $request = Request::create(PASSPORT_SERVER_URL . '/oauth/token', 'POST');
-            $response = Route::dispatch($request);
-            $errorCode = $response->getStatusCode();
-            $auth_server_response = json_decode((string) $response->content(), true);             
+            request()->request->add($this->passportAuthenticationData($request->username, $request->password));
+            $proxyRequest = Request::create(PASSPORT_SERVER_URL . '/oauth/token', 'POST');
+            $passportResponse = Route::dispatch($proxyRequest);
+            $errorCode = $passportResponse->getStatusCode();
+            $auth_server_response = json_decode((string) $passportResponse->content(), true);
+
+            // Só adiciona o email_verified_at
+            if ($errorCode === 200) {
+                $auth_server_response['email_verified_at'] = $user->email_verified_at;
+            }
+
             return response()->json($auth_server_response, $errorCode);
         } catch (\Exception $e) {
             return response()->json([
@@ -60,14 +62,14 @@ class AuthController extends Controller
         }
     }
 
+
+
     public function logout(Request $request)
     {
         $accessToken = $request->user()->token();
-        $token = $request->user()->tokens->find($accessToken);
-        $token->revoke();
-        $token->delete();
-        return response(['msg' => 'Token revoked'], 200);
-    }   
+        $accessToken->revoke();
+        return response(['msg' => 'Token revogado com sucesso!'], 200);
+    }
 
     private function revokeCurrentToken(User $user)
     {

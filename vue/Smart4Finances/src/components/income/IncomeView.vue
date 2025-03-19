@@ -67,7 +67,6 @@ export default {
       return import.meta.env.VITE_API_DOMAIN + '/storage/' + receiptPath;
     },
     editIncome() {
-      console.log('Editando receita', this.income.id);
       this.$emit('editIncome', this.income.id);
     },
     backList() {

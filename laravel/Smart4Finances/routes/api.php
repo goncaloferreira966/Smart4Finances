@@ -12,6 +12,7 @@ use App\Http\Controllers\api\ExpenseController;
 use App\Http\Controllers\Api\IncomeController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\EmailVerificationController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -27,6 +28,8 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/usersPost', [UserController::class, 'store']);
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail']);
 Route::post('/reset-password', [ResetPasswordController::class, 'reset']);
+Route::get('/email/verify/{id}', [EmailVerificationController::class, 'verify'])->name('verification.verify');
+Route::post('/email/resend', [EmailVerificationController::class, 'resend'])->middleware('auth:api');
 
 // Rotas protegidas por middleware de autenticação
 Route::middleware(['auth:api'])->group(function () {
