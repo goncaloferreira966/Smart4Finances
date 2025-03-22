@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
+use App\Mail\ConfirmEmailMailable;
 
 class EmailVerificationController extends Controller
 {
@@ -31,9 +34,16 @@ class EmailVerificationController extends Controller
             return response()->json(['message' => 'E-mail já confirmado.'], 400);
         }
 
-        $request->user()->sendEmailVerificationNotification();
+        // Gerar o URL com assinatura
+        $url = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(60),
+            ['id' => $request->user()->id]
+        );
+
+        // Enviar diretamente com Mailable
+        Mail::to($request->user()->email)->send(new ConfirmEmailMailable($request->user(), $url));
 
         return response()->json(['message' => 'Novo e-mail de verificação enviado com sucesso!']);
     }
-
 }

@@ -5,6 +5,8 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\URL;
+use App\Mail\ConfirmEmailMailable;
+use Illuminate\Support\Facades\Mail;
 
 class EmailConfirmationNotification extends Notification
 {
@@ -17,18 +19,18 @@ class EmailConfirmationNotification extends Notification
     {
         $url = $this->verificationUrl($notifiable);
 
-        return (new \Illuminate\Notifications\Messages\MailMessage)
+        return (new MailMessage)
             ->subject('🚀 Confirmação de E-mail - Smart4Finances')
             ->view('emails.confirm-email', [
                 'user' => $notifiable,
-                'url' => $url
+                'url'  => $url,
             ]);
     }
 
     protected function verificationUrl($notifiable)
     {
         $temporarySignedURL = URL::temporarySignedRoute(
-            'verification.verify', // vamos criar esta rota a seguir
+            'verification.verify',
             Carbon::now()->addMinutes(60),
             ['id' => $notifiable->getKey()]
         );
