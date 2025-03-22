@@ -11,6 +11,7 @@
               <th>Email</th>
               <th>Nickname</th>
               <th>Tipo</th>
+              <th>E-mail Verificado</th>
               <th>Ações</th>
             </tr>
           </thead>
@@ -22,6 +23,8 @@
               <td>{{ user.nickname }}</td>
               <td v-if="user.type === 'C'"><i class="bi bi-person"></i> Cliente</td>
               <td v-else><i class="bi bi-person-fill-gear"></i> Administrador</td>
+              <td v-if="user.email_verified_at"><i style="color: green;" class="bi bi-check-circle-fill"></i></td>
+              <td v-else><i style="color: red;" class="bi bi-x-circle-fill"></i></td>
               <td v-if="user.id !== getUserIdFromToken()">
                 <div v-if="user.type !== 'A'">
                   <button
