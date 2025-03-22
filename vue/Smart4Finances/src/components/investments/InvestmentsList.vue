@@ -1,57 +1,58 @@
 <template>
-  <div class="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg" style="margin-top: 7vh; margin-bottom: 7vh; min-width: 100vh;">
-    <h2 class="text-2xl font-bold mb-4" style="color: black;">As Minhas Receitas</h2>
+  <div class="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg"
+    style="margin-top: 7vh; margin-bottom: 7vh; min-width: 100vh;">
+    <h2 class="text-2xl font-bold mb-4" style="color: black;">Os Meus Investimentos</h2>
 
     <!-- Filtros -->
     <div class="mb-4">
       <div class="flex mb-2">
         <div class="mr-5 ml-2">
-          <input type="text" v-model="filters.source" placeholder="Pesquisar fonte..." class="mb-2 p-2 border rounded" />
-        </div>
-        <div class="mr-5 ml-2">
-          <input type="number" v-model="filters.minPrice" placeholder="Valor mínimo" class="mr-2 p-2 border rounded" style="width: 15vh;"/>
-          <input type="number" v-model="filters.maxPrice" placeholder="Valor máximo" class="p-2 border rounded" style="width: 15vh;"/>
+          <input type="number" v-model="filters.minPrice" placeholder="Valor mínimo" class="mr-2 p-2 border rounded"
+            style="width: 15vh;" />
+          <input type="number" v-model="filters.maxPrice" placeholder="Valor máximo" class="p-2 border rounded"
+            style="width: 15vh;" />
         </div>
         <div class="flex mb-2 mr-5 ml-2">
           <input type="date" v-model="filters.startDate" class="mr-2 p-2 border rounded" />
           <input type="date" v-model="filters.endDate" class="p-2 border rounded" />
         </div>
       </div>
-      <button @click="addIncome" class="bg-green-500 text-white px-4 py-2 rounded">
+      <button @click="addInvestment" class="bg-green-500 text-white px-4 py-2 rounded">
         <i class="bi bi-plus-lg"></i>
       </button>
-      <!-- Botão global de deleção para os selecionados -->
-      <button v-if="selectedIncomes.length > 0" @click="deleteSelectedIncomes" class="bg-red-500 text-white px-4 py-2 rounded ml-2">
+      <button v-if="selectedInvestments.length > 0" @click="deleteSelectedInvestments" class="bg-red-500 text-white px-4 py-2 rounded ml-2">
         <i class="bi bi-trash"></i> Eleminar Selecionados
       </button>
     </div>
 
-    <!-- Tabela de receitas -->
+    <!-- Tabela de investimentos -->
     <table class="w-full">
       <thead>
         <tr>
-          <th class="px-2 py-1 text-center"></th>
+          <th class="border px-2 py-1"></th>
           <th class="border px-2 py-1">Data</th>
-          <th class="border px-2 py-1">Fonte</th>
           <th class="border px-2 py-1">Valor</th>
+          <th class="border px-2 py-1">Tipo</th>
+          <th class="border px-2 py-1">ROI</th>
           <th class="border px-2 py-1">Ações</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="income in incomes" :key="income.id">
+        <tr v-for="investment in investments" :key="investment.id">
           <td class="px-2 py-1 text-center">
-            <input type="checkbox" :value="income.id" v-model="selectedIncomes"/>
+            <input type="checkbox" :value="investment.id" v-model="selectedInvestments"/>
           </td>
-          <td class="px-2 py-1">{{ income.date }}</td>
-          <td class="px-2 py-1">{{ income.source }}</td>
-          <td class="px-2 py-1">{{ income.amount + " " + coin}}</td>
+          <td class="px-2 py-1">{{ formatDate(investment.created_at) }}</td>
+          <td class="px-2 py-1">{{ investment.amount + ' ' + coin }}</td>
+          <td class="px-2 py-1">{{ investment.type }}</td>
+          <td class="px-2 py-1">{{ investment.roi }} %</td>
           <td class="px-2 py-1">
             <!-- Botão de delete individual -->
-            <button @click="deleteIncome(income.id)" class="bg-red-500 text-white px-2 py-1 rounded">
+            <button @click="deleteInvestment(investment.id)" class="bg-red-500 text-white px-2 py-1 rounded">
               <i class="bi bi-trash"></i>
             </button>
             <!-- Botão de visualizar -->
-            <button @click="viewIncome(income.id)" class="bg-blue-500 text-white px-2 py-1 rounded ml-1">
+            <button @click="viewInvestment(investment.id)" class="bg-blue-500 text-white px-2 py-1 rounded ml-1">
               <i class="bi bi-eye-fill"></i>
             </button>
           </td>
@@ -64,7 +65,7 @@
     <!-- Modal de confirmação de exclusão -->
     <div v-if="showDeleteModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div class="bg-white p-6 rounded-lg">
-        <p class="mb-4">Tem certeza que deseja apagar a(s) receita(s) selecionada(s)?</p>
+        <p class="mb-4">Tem certeza que deseja apagar o(s) investimentos(s) selecionado(s)?</p>
         <div class="flex justify-end">
           <button @click="cancelDeletion" class="bg-gray-500 text-white px-4 py-2 rounded mr-2">Cancelar</button>
           <button @click="confirmDeletion" class="bg-red-500 text-white px-4 py-2 rounded">Confirmar</button>
@@ -77,66 +78,63 @@
 <script>
 import axios from 'axios';
 import debounce from 'lodash.debounce';
-import { useAuthStore } from "@/stores/auth";
+import { useAuthStore } from '@/stores/auth';
 
 export default {
   data() {
     return {
-      coin: "",
-      incomes: [],
+      coin: '',
+      investments: [],
       page: 1,
-      perPage: 15,
+      selectedInvestments: [],
+      perPage: 10,
       loadingMore: false,
       filters: {
-        source: '',
         minPrice: '',
         maxPrice: '',
         startDate: '',
-        endDate: ''
+        endDate: '',
       },
-      selectedIncomes: [],
       showDeleteModal: false,
-      deletionTarget: null // Se definido, é exclusão individual; caso contrário, será exclusão múltipla
+      deletionTarget: null
     };
   },
   created() {
-    this.loadIncomes();
-    window.addEventListener('scroll', this.handleScroll);
+    this.loadInvestments();
     const authStore = useAuthStore();
-    this.coin = (authStore.user?.data?.coin);  
+    this.coin = authStore.user?.data?.coin;
+    window.addEventListener('scroll', this.handleScroll);
   },
   beforeUnmount() {
     window.removeEventListener('scroll', this.handleScroll);
   },
   watch: {
-    'filters.source': 'applyFiltersDebounced',
     'filters.minPrice': 'applyFiltersDebounced',
     'filters.maxPrice': 'applyFiltersDebounced',
     'filters.startDate': 'applyFiltersDebounced',
     'filters.endDate': 'applyFiltersDebounced'
   },
   methods: {
-    loadIncomes(reset = false) {
+    loadInvestments(reset = false) {
       if (reset) {
         this.page = 1;
-        this.incomes = [];
-        this.selectedIncomes = [];
+        this.investments = [];
+        this.selectedInvestments = [];
       }
       const params = {
         page: this.page,
         perPage: this.perPage,
-        source: this.filters.source,
         minPrice: this.filters.minPrice,
         maxPrice: this.filters.maxPrice,
         startDate: this.filters.startDate,
         endDate: this.filters.endDate
       };
-      axios.get('/incomes', { params })
+      axios.get('/investments', { params })
         .then(response => {
           const payload = response.data;
-          const newIncomes = payload.data;
-          if (newIncomes && newIncomes.length > 0) {
-            this.incomes = this.incomes.concat(newIncomes);
+          const newInvestments = payload.data;
+          if (newInvestments && newInvestments.length > 0) {
+            this.investments = this.investments.concat(newInvestments);
             this.page++;
           }
           this.loadingMore = false;
@@ -152,30 +150,39 @@ export default {
       const pageHeight = document.documentElement.scrollHeight;
       if (scrollY + visible >= pageHeight - 100 && !this.loadingMore) {
         this.loadingMore = true;
-        this.loadIncomes();
+        this.loadInvestments();
       }
     },
+    formatDate(dateString) {
+      const date = new Date(Date.parse(dateString));
+      if (isNaN(date)) return 'Data inválida';
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    },
     applyFilters() {
-      this.loadIncomes(true);
+      this.loadInvestments(true);
     },
     applyFiltersDebounced: debounce(function () {
       this.applyFilters();
     }, 500),
-    addIncome() {
-      this.$emit("addIncome", null);
+    truncate(text, maxLength) {
+      if (!text) return '';
+      return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
     },
-    viewIncome(incomeId) {
-      this.$emit("IncomeView", incomeId);
+    viewInvestment(investmentId) {
+      this.$emit("InvestmentView", investmentId);
     },
-    // Abre modal para exclusão individual
-    deleteIncome(incomeId) {
-      this.deletionTarget = incomeId;
+
+    // Delete individual: define a target e abre a modal
+    deleteInvestment(investmentId) {
+      this.deletionTarget = investmentId;
       this.showDeleteModal = true;
     },
-    // Abre modal para exclusão múltipla
-    deleteSelectedIncomes() {
-      if (this.selectedIncomes.length > 0) {
-        this.deletionTarget = null; // indica deleção múltipla
+    deleteSelectedInvestments() {
+      if (this.selectedInvestments.length > 0) {
+        this.deletionTarget = null; // indica múltipla
         this.showDeleteModal = true;
       }
     },
@@ -186,10 +193,10 @@ export default {
     confirmDeletion() {
       if (this.deletionTarget) {
         // Exclusão individual
-        axios.delete(`/incomes/${this.deletionTarget}`)
+        axios.delete(`/investments/${this.deletionTarget}`)
           .then(() => {
-            this.incomes = this.incomes.filter(inc => inc.id !== this.deletionTarget);
-            this.selectedIncomes = this.selectedIncomes.filter(id => id !== this.deletionTarget);
+            this.investments = this.investments.filter(exp => exp.id !== this.deletionTarget);
+            this.selectedInvestments = this.selectedInvestments.filter(id => id !== this.deletionTarget);
             this.showDeleteModal = false;
             this.deletionTarget = null;
           })
@@ -198,13 +205,13 @@ export default {
             this.showDeleteModal = false;
             this.deletionTarget = null;
           });
-      } else if (this.selectedIncomes.length > 0) {
+      } else if (this.selectedInvestments.length > 0) {
         // Exclusão múltipla
-        const deletePromises = this.selectedIncomes.map(id => axios.delete(`/incomes/${id}`));
+        const deletePromises = this.selectedInvestments.map(id => axios.delete(`/investments/${id}`));
         Promise.all(deletePromises)
           .then(() => {
-            this.incomes = this.incomes.filter(inc => !this.selectedIncomes.includes(inc.id));
-            this.selectedIncomes = [];
+            this.investments = this.investments.filter(exp => !this.selectedInvestments.includes(exp.id));
+            this.selectedInvestments = [];
             this.showDeleteModal = false;
           })
           .catch(error => {
@@ -216,19 +223,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-/* Estilos para o modal */
-.fixed {
-  position: fixed;
-}
-.inset-0 {
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-}
-.bg-opacity-50 {
-  background-color: rgba(0, 0, 0, 0.5);
-}
-</style>

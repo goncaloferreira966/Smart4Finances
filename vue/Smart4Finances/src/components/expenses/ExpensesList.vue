@@ -65,12 +65,12 @@
       </tbody>
     </table>
 
-    <div v-if="loadingMore" class="mt-4 text-center">Carregando mais...</div>
+    <div v-if="loadingMore" class="mt-4 text-center">A Carregar mais...</div>
 
     <!-- Modal de confirmação de exclusão -->
     <div v-if="showDeleteModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div class="bg-white p-6 rounded-lg">
-        <p class="mb-4">Tem certeza que deseja deletar a(s) despesa(s) selecionada(s)?</p>
+        <p class="mb-4">Tem certeza que deseja apagar a(s) despesa(s) selecionada(s)?</p>
         <div class="flex justify-end">
           <button @click="cancelDeletion" class="bg-gray-500 text-white px-4 py-2 rounded mr-2">Cancelar</button>
           <button @click="confirmDeletion" class="bg-red-500 text-white px-4 py-2 rounded">Confirmar</button>
@@ -103,7 +103,7 @@ export default {
       },
       selectedExpenses: [],
       showDeleteModal: false,
-      deletionTarget: null // para deleção individual; se null, a deleção será múltipla
+      deletionTarget: null
     };
   },
   created() {
