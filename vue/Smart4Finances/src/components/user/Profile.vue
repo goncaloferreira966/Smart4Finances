@@ -12,12 +12,6 @@
           <p class="card-text mt-4"><strong><i class="bi bi-envelope"></i> E-mail:</strong> {{ user.data.email }}</p>
           <p class="card-text mt-4"><strong><i class="bi bi-person-circle"></i> Nickname:</strong> {{ user.data.nickname }}</p>
           <p class="card-text mt-4"><strong><i class="bi bi-currency-exchange"></i> Moeda:</strong> {{ user.data.coin }}</p>
-          <p class="card-text mt-4" v-if="user.data.type === 'C'">
-            <i class="bi bi-person-badge"></i><strong> Tipo de Utilizador:</strong> Cliente
-          </p>
-          <p class="card-text mt-4" v-else>
-            <i class="bi bi-person-fill-gear"></i><strong> Tipo de Utilizador:</strong> Administrador
-          </p>
           <p v-if="userRole !== 'A'" class="card-text mt-4">
             <!--<strong><i class="bi bi-coin"></i> Saldo:</strong> {{ user.data.value }}€-->
           </p>
