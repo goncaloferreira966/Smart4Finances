@@ -75,7 +75,7 @@
         <InvestmentView @BackInvestment="handleInvestmentList" @editInvestment="handleInvestmentEdit" :investmentId="id"/>
       </div>
       <div v-else-if="currentSection === 'addInvestment'">
-        <addInvestment @InvestmentList="handleInvestmentList"/>
+        <addInvestment @InvestmentList="handleInvestmentList" @InvestmentView="handleInvestmentView" :investmentId="id"/>
       </div>
     </div>
 
