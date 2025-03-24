@@ -69,10 +69,13 @@
         <DashboardClient />
       </div>
       <div v-else-if="currentSection === 'InvestmentList'">
-        <InvestmentsList @InvestmentView="handleInvestmentView"/>
+        <InvestmentsList @InvestmentView="handleInvestmentView" @addInvestment="handleInvestmentEdit"/>
       </div>
       <div v-else-if="currentSection === 'InvestmentView'">
-        <InvestmentView @BackInvestment="handleInvestmentList" :investmentId="id" />
+        <InvestmentView @BackInvestment="handleInvestmentList" @editInvestment="handleInvestmentEdit" :investmentId="id"/>
+      </div>
+      <div v-else-if="currentSection === 'addInvestment'">
+        <addInvestment @InvestmentList="handleInvestmentList"/>
       </div>
     </div>
 
@@ -110,6 +113,8 @@ import EmailVerificationError from './components/user/EmailVerificationError.vue
 import EmailAlreadyVerified from './components/user/EmailAlreadyVerified.vue';
 import InvestmentsList from './components/investments/InvestmentsList.vue';
 import InvestmentView from './components/investments/InvestmentView.vue';
+import addInvestment from './components/investments/addInvestment.vue';
+
 import { toast } from 'vue3-toastify';
 
 export default {
@@ -136,6 +141,7 @@ export default {
     EmailAlreadyVerified,
     InvestmentsList,
     InvestmentView,
+    addInvestment,
   },
   data() {
     return {
@@ -221,6 +227,10 @@ export default {
     handleExpensEdit(id) {
       this.id = id;
       this.currentSection = 'addExpenses';
+    },
+    handleInvestmentEdit(id){
+      this.id = id;
+      this.currentSection = 'addInvestment';
     },
     handleIncomeList() {
       this.currentSection = 'IncomeList';

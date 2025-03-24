@@ -219,7 +219,10 @@ export default {
             this.showDeleteModal = false;
           });
       }
-    }
+    },
+    addInvestment(){
+      this.$emit("addInvestment");
+    },
   }
 };
 </script>

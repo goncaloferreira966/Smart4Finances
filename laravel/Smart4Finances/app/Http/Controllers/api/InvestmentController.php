@@ -69,4 +69,55 @@ class InvestmentController extends Controller
 
         return response()->json(['message' => 'Investimento removido com sucesso']);
     }
+
+
+    // Cria um novo investimento
+    public function store(Request $request)
+    {
+        // Validação dos dados
+        $request->validate([
+            'type'  => 'required|string|max:255',
+            'amount' => 'required|numeric|min:0',
+            'roi'    => 'nullable|numeric|min:0|max:100'
+        ]);
+
+        // Obtém os dados do request
+        $data = $request->all();
+        $data['user_id'] = auth()->id();
+
+        // Cria o investimento
+        $investment = Investment::create($data);
+
+        return response()->json($investment, 201);
+    }
+
+    // Atualiza um investimento existente
+    public function update(Request $request, $id)
+    {
+        // Procura o investimento
+        $investment = Investment::find($id);
+        if (!$investment) {
+            return response()->json(['error' => 'Investimento não encontrado'], 404);
+        }
+
+        // Verifica se o investimento pertence ao usuário logado
+        if ($investment->user_id != auth()->id()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        // Validação dos dados
+        $request->validate([
+            'type'  => 'sometimes|string|max:255',
+            'amount' => 'sometimes|numeric|min:0',
+            'roi'    => 'sometimes|numeric|min:0|max:100'
+        ]);
+
+        // Atualiza os dados informados
+        $investment->update($request->only(['type', 'amount', 'roi', 'date']));
+
+        return response()->json([
+            'message' => 'Investimento atualizado com sucesso!',
+            'investment' => $investment,
+        ], 200);
+    }
 }
