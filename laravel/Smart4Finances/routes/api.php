@@ -31,6 +31,9 @@ Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink
 Route::post('/reset-password', [ResetPasswordController::class, 'reset']);
 Route::get('/email/verify/{id}', [EmailVerificationController::class, 'verify'])->name('verification.verify');
 Route::post('/email/resend', [EmailVerificationController::class, 'resend'])->middleware('auth:api');
+Route::post('/password/validate-token', [ForgotPasswordController::class, 'validateResetToken']);
+
+
 
 // Rotas protegidas por middleware de autenticação
 Route::middleware(['auth:api'])->group(function () {

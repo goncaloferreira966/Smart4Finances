@@ -108,14 +108,15 @@ import IncomeList from './components/income/IncomeList.vue';
 import IncomeView from './components/income/IncomeView.vue';
 import ForgotPassword from './components/password_mail/forgotPassword.vue';
 import ResetPassword from './components/password_mail/ResetPassword.vue';
-import EmailConfirmed from './components/user/EmailConfirmed.vue';
-import EmailVerificationError from './components/user/EmailVerificationError.vue';
-import EmailAlreadyVerified from './components/user/EmailAlreadyVerified.vue';
 import InvestmentsList from './components/investments/InvestmentsList.vue';
 import InvestmentView from './components/investments/InvestmentView.vue';
 import addInvestment from './components/investments/addInvestment.vue';
 
+import EmailConfirmed from './components/password_mail/EmailConfirmed.vue';
+import EmailVerificationError from './components/password_mail/EmailVerificationError.vue';
+import EmailAlreadyVerified from './components/password_mail/EmailAlreadyVerified.vue';
 import { toast } from 'vue3-toastify';
+import axios from 'axios';
 
 export default {
   components: {
@@ -162,12 +163,27 @@ export default {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
     const email = urlParams.get('email');
-
+    console.log(token);
     if (token && email) {
-      this.resetToken = token;
-      this.resetEmail = email;
-      this.currentSection = 'resetPassword';
-      window.history.replaceState({}, document.title, '/');
+      axios.post('/password/validate-token', {
+        token,
+        email
+      },{headers: { 'Content-Type': 'multipart/form-data' }})
+      .then((response) => {
+        if (response.data.valid) {
+          this.resetToken = token;
+          this.resetEmail = email;
+          this.currentSection = 'resetPassword';
+        } else {
+          this.currentSection = 'emailVerificationError';
+        }
+        window.history.replaceState({}, document.title, '/');
+      })
+      .catch(() => {
+        console.log('error');
+        this.currentSection = 'emailVerificationError';
+        window.history.replaceState({}, document.title, '/');
+      });
     }
 
     if (urlParams.get('email_verified') === 'true') {
