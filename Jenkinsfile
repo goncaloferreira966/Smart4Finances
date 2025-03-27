@@ -6,42 +6,56 @@ pipeline {
     }
     stages {
         stage('Build Laravel') {
-    steps {
-        dir('laravel/Smart4Finances') {
-            // Corrigir URLs localhost
-            sh "find . -type f -exec sed -i 's|http://localhost:5173|https://cmartins.pt|g' {} +"
+            steps {
+                dir('laravel/Smart4Finances') {
+                    // Garante que existe um .env
+                    sh 'cp .env.jenkins .env || true'
+                    
+                    // Substitui localhost:5173 por domínio
+                    sh "find . -type f -exec sed -i 's|http://localhost:5173|https://cmartins.pt|g' {} +"
 
-            // Continuar com o build
-            sh 'cp .env.jenkins .env'
-            sh 'composer install --no-dev --prefer-dist'
+                    // Instalação e build
+                    sh 'composer install --no-dev --prefer-dist'
+                }
+            }
         }
-    }
-}
+
         stage('Build Vue') {
             steps {
                 dir('vue/Smart4Finances') {
-                    sh 'echo VITE_API_DOMAIN=https://laravel.cmartins.pt > .env'
-                    sh 'echo VITE_WS_CONNECTION=https://laravel.cmartins.pt >> .env'
+                    // Injeta variáveis de ambiente no .env.local
+                    sh 'echo VITE_API_DOMAIN=https://laravel.cmartins.pt > .env.local'
+                    sh 'echo VITE_WS_CONNECTION=https://laravel.cmartins.pt >> .env.local'
+
+                    // Build Vue
                     sh 'npm install'
                     sh 'npm run build'
                 }
             }
         }
+
         stage('Deploy Laravel') {
             steps {
                 dir('laravel/Smart4Finances') {
-                    sh "rsync -avz --delete ./ ${LARAVEL_DIR}"
+                    // Sincroniza ficheiros para o host
+                    sh "rsync -avz --no-perms --no-owner --no-group --delete ./ ${LARAVEL_DIR}"
+
+                    // Corrige permissões das pastas necessárias
+                    sh "chown -R www-data:www-data ${LARAVEL_DIR}/storage ${LARAVEL_DIR}/bootstrap/cache || true"
                 }
             }
         }
+
         stage('Deploy Vue') {
             steps {
                 dir('vue/Smart4Finances') {
-                    sh "rsync -avz --delete dist/ ${VUE_DIR}"
+                    // Sincroniza build Vue para o host
+                    sh "rsync -avz --no-perms --no-owner --no-group --delete dist/ ${VUE_DIR}"
                 }
             }
         }
     }
+
     post {
         success {
             echo '✅ Deploy concluído com sucesso!'
