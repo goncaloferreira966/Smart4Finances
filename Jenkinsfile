@@ -8,17 +8,14 @@ pipeline {
         stage('Build Laravel') {
             steps {
                 dir('laravel/Smart4Finances') {
-                    // Copia o ficheiro de ambiente adequado
                     sh 'cp .env.jenkins .env'
                     sh 'composer install --no-dev --prefer-dist'
-                    // Removemos a migração, já que tens as tabelas criadas
                 }
             }
         }
         stage('Build Vue') {
             steps {
                 dir('vue/Smart4Finances') {
-                    // Define as variáveis de ambiente para o Vite
                     sh 'echo VITE_API_DOMAIN=https://laravel.cmartins.pt > .env'
                     sh 'echo VITE_WS_CONNECTION=https://laravel.cmartins.pt >> .env'
                     sh 'npm install'
@@ -29,18 +26,16 @@ pipeline {
         stage('Deploy Laravel') {
             steps {
                 dir('laravel/Smart4Finances') {
-                    // Copia o código para a pasta de deploy
-                    sh 'rsync -avz --delete --no-group --no-owner ./ ${LARAVEL_DIR}'
-                    // Ajusta as permissões para que o servidor web possa escrever
-                    sh 'chown -R www-data:www-data ${LARAVEL_DIR}/storage ${LARAVEL_DIR}/bootstrap/cache'
-                    sh 'chmod -R 775 ${LARAVEL_DIR}/storage ${LARAVEL_DIR}/bootstrap/cache'
+                    sh "rsync -avz --delete ./ ${LARAVEL_DIR}"
+                    sh "chown -R www-data:www-data ${LARAVEL_DIR}/storage ${LARAVEL_DIR}/bootstrap/cache"
+                    sh "chmod -R 775 ${LARAVEL_DIR}/storage ${LARAVEL_DIR}/bootstrap/cache"
                 }
             }
         }
         stage('Deploy Vue') {
             steps {
                 dir('vue/Smart4Finances') {
-                    sh 'rsync -avz --delete --no-group --no-owner dist/ ${VUE_DIR}'
+                    sh "rsync -avz --delete dist/ ${VUE_DIR}"
                 }
             }
         }
