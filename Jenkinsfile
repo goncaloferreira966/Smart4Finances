@@ -38,7 +38,8 @@ pipeline {
             steps {
                 dir('laravel/Smart4Finances') {
                     // Sincroniza ficheiros para o host
-                    sh "rsync -avz --no-perms --no-owner --no-group --delete ./ ${LARAVEL_DIR}"
+                    sh "rsync -avz --no-perms --no-owner --no-group --chmod=Du=rwx,Dg=rx,Do=rx,Fu=rw,Fg=r,Fo=r --delete ./ ${LARAVEL_DIR}"
+
 
                     // Corrige permissões das pastas necessárias
                     sh "chown -R www-data:www-data ${LARAVEL_DIR}/storage ${LARAVEL_DIR}/bootstrap/cache || true"
@@ -50,7 +51,8 @@ pipeline {
             steps {
                 dir('vue/Smart4Finances') {
                     // Sincroniza build Vue para o host
-                    sh "rsync -avz --no-perms --no-owner --no-group --delete dist/ ${VUE_DIR}"
+                    sh "rsync -avz --no-perms --no-owner --no-group --chmod=Du=rwx,Dg=rx,Do=rx,Fu=rw,Fg=r,Fo=r --delete dist/ ${VUE_DIR}"
+
                 }
             }
         }
