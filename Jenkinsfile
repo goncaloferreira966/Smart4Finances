@@ -8,6 +8,7 @@ pipeline {
         stage('Build Laravel') {
             steps {
                 dir('laravel/Smart4Finances') {
+                    sh 'cp .env.jenkins .env'
                     sh 'composer install --no-dev --prefer-dist'
                 }
             }
