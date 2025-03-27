@@ -18,6 +18,8 @@ pipeline {
             steps {
                 dir('vue/Smart4Finances') {
                     sh 'npm install'
+                    sh 'echo "VITE_API_DOMAIN=https://laravel.cmartins.pt" > .env'
+                    sh 'echo "VITE_WS_CONNECTION=https://laravel.cmartins.pt" >> .env'
                     sh 'npm run build'
                 }
             }
