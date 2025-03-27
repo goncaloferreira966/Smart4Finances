@@ -9,7 +9,7 @@ pipeline {
             steps {
                 dir('laravel/Smart4Finances') {
                     sh 'composer install --no-dev --prefer-dist'
-                    sh 'php artisan migrate --force'
+                    sh 'php artisan migrate --force --env=production'
                 }
             }
         }
