@@ -28,10 +28,10 @@ pipeline {
     steps {
         dir('laravel/Smart4Finances') {
             sh """
-                sudo rsync -avz --delete ./ ${LARAVEL_DIR}
-                sudo chown -R www-data:www-data ${LARAVEL_DIR}
-                sudo chmod -R 755 ${LARAVEL_DIR}
-                sudo chmod -R 775 ${LARAVEL_DIR}/storage ${LARAVEL_DIR}/bootstrap/cache
+                rsync -avz --delete ./ ${LARAVEL_DIR}
+                chown -R www-data:www-data ${LARAVEL_DIR}
+                chmod -R 755 ${LARAVEL_DIR}
+                chmod -R 775 ${LARAVEL_DIR}/storage ${LARAVEL_DIR}/bootstrap/cache
             """
         }
     }
@@ -42,8 +42,8 @@ pipeline {
         dir('vue/Smart4Finances') {
             sh """
                 rsync -avz --delete dist/ ${VUE_DIR}
-                sudo chown -R www-data:www-data ${VUE_DIR}
-                sudo chmod -R 755 ${VUE_DIR}
+                chown -R www-data:www-data ${VUE_DIR}
+                chmod -R 755 ${VUE_DIR}
             """
         }
     }
