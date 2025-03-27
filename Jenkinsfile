@@ -25,27 +25,30 @@ pipeline {
             }
         }
         stage('Deploy Laravel') {
-            steps {
-                dir('laravel/Smart4Finances') {
-                    sh """
-                        sudo chown -R 1000:1000 ${LARAVEL_DIR} || true
-                        sudo chmod -R 775 ${LARAVEL_DIR} || true
-                        rsync -avz --delete ./ ${LARAVEL_DIR}
-                    """
-                }
-            }
+    steps {
+        dir('laravel/Smart4Finances') {
+            sh """
+                sudo rsync -avz --delete ./ ${LARAVEL_DIR}
+                sudo chown -R www-data:www-data ${LARAVEL_DIR}
+                sudo chmod -R 755 ${LARAVEL_DIR}
+                sudo chmod -R 775 ${LARAVEL_DIR}/storage ${LARAVEL_DIR}/bootstrap/cache
+            """
         }
+    }
+}
+
         stage('Deploy Vue') {
-            steps {
-                dir('vue/Smart4Finances') {
-                    sh """
-                        sudo chown -R 1000:1000 ${VUE_DIR} || true
-                        sudo chmod -R 775 ${VUE_DIR} || true
-                        rsync -avz --delete dist/ ${VUE_DIR}
-                    """
-                }
-            }
+    steps {
+        dir('vue/Smart4Finances') {
+            sh """
+                rsync -avz --delete dist/ ${VUE_DIR}
+                sudo chown -R www-data:www-data ${VUE_DIR}
+                sudo chmod -R 755 ${VUE_DIR}
+            """
         }
+    }
+}
+
     }
     post {
         success {
