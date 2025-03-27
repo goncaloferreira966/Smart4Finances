@@ -7,9 +7,8 @@ pipeline {
     }
     stages {
         stage('Checkout') {
-            steps {
-                // Faz o clone do repositório
-                git 'https://github.com/goncaloferreira966/Smart4Finances.git'
+        steps {
+                git credentialsId: 'github-token', url: 'https://github.com/goncaloferreira966/Smart4Finances.git'
             }
         }
         stage('Build Laravel') {
