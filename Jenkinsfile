@@ -6,13 +6,17 @@ pipeline {
     }
     stages {
         stage('Build Laravel') {
-            steps {
-                dir('laravel/Smart4Finances') {
-                    sh 'cp .env.jenkins .env'
-                    sh 'composer install --no-dev --prefer-dist'
-                }
-            }
+    steps {
+        dir('laravel/Smart4Finances') {
+            // Corrigir URLs localhost
+            sh "find . -type f -exec sed -i 's|http://localhost:5173|https://cmartins.pt|g' {} +"
+
+            // Continuar com o build
+            sh 'cp .env.jenkins .env'
+            sh 'composer install --no-dev --prefer-dist'
         }
+    }
+}
         stage('Build Vue') {
             steps {
                 dir('vue/Smart4Finances') {
