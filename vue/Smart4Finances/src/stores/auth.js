@@ -40,7 +40,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     const login = async (credentials) => {
-
         try {
             const responseLogin = await axios.post('/login', credentials)
             token.value = responseLogin.data.access_token;
@@ -51,10 +50,10 @@ export const useAuthStore = defineStore('auth', () => {
             user.value = responseUser.data
             return user.value
         } catch (e) {
-            clearUser()
-            return false
+            clearUser();
+            throw e; // Lança a exceção para que o componente possa capturá-la e tratar os erros
         }
-    }
+        }
 
     // Login usando o token armazenado no localStorage
     const loginWithToken = async () => {

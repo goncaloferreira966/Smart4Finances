@@ -41,6 +41,10 @@ class AuthController extends Controller
             return response()->json(['message' => 'Conta bloqueada'], 403);
         }
 
+        if (!$user->email_verified_at) {
+            return response()->json(['message' => 'Email não verificado. Por favor, verifique o seu e-mail para confirmar a conta.'], 402);
+        }
+
         try {
             request()->request->add($this->passportAuthenticationData($request->username, $request->password));
             $proxyRequest = Request::create(PASSPORT_SERVER_URL . '/oauth/token', 'POST');
@@ -59,7 +63,7 @@ class AuthController extends Controller
                 'message' => 'Authentication has failed!',
                 'error' => $e->getMessage()
             ], 401);
-        }
+        }   
     }
 
 

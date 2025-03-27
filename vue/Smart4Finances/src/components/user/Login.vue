@@ -81,26 +81,43 @@ export default {
     },
     async handleLogin() {
       const authStore = useAuthStore();
+      console.log('login');
       try {
-        const user = await authStore.login({
+        const response = await authStore.login({
           username: this.username,
           password: this.password,
         });
-
-        if (user) {
-          console.log(user.data.email_verified_at);
-          if (!user.data.email_verified_at) {
+        console.log('Response: '+ response);
+        if (!response) {
+          // Se a função de login retornar false, aborta
+          return;
+        }
+        // Se o login for bem-sucedido, emite o evento de sucesso.
+        this.$emit("login-success");
+      } catch (error) {
+        if (error.response) {
+          // Se o backend retorna 403: conta bloqueada
+          if (error.response.status === 403) {
+            toast.error("Conta bloqueada. Por favor, entre em contacto com o suporte.");
+          }
+          // Se retorna 401: email não verificado
+          else if (error.response.status === 402) {
             toast.error("E-mail não verificado. Por favor, confirme o seu e-mail antes de fazer login.");
             this.showResend = true;
-            return;
           }
-          this.$emit("login-success");
+          // Outros erros retornados pelo backend
+          else {
+            const data = error.response.data;
+            if (data.message) {
+              toast.error(data.message);
+            } else {
+              toast.error("Ocorreu um erro durante o login.");
+            }
+          }
         } else {
-          toast.error("Credenciais Inválidas ❌");
+          // Caso não haja resposta (erro de conexão, etc.)
+          toast.error("Erro de conexão com o servidor. Tente novamente mais tarde.");
         }
-      } catch (error) {
-        console.error(error);
-        toast.error("Erro inesperado no login ❌");
       }
     },
     async resendEmail() {
