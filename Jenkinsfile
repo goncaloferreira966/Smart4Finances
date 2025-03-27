@@ -1,9 +1,11 @@
 pipeline {
     agent any
+
     environment {
         LARAVEL_DIR = '/var/www/laravel.cmartins.pt/html'
         VUE_DIR = '/var/www/cmartins.pt/html'
     }
+
     stages {
         stage('Build Laravel') {
             steps {
@@ -13,10 +15,10 @@ pipeline {
                 }
             }
         }
+
         stage('Build Vue') {
             steps {
                 dir('vue/Smart4Finances') {
-                    // adiciona as variáveis ao .env antes do build
                     sh 'echo VITE_API_DOMAIN=https://laravel.cmartins.pt > .env'
                     sh 'echo VITE_WS_CONNECTION=https://laravel.cmartins.pt >> .env'
                     sh 'npm install'
@@ -24,32 +26,24 @@ pipeline {
                 }
             }
         }
+
         stage('Deploy Laravel') {
-    steps {
-        dir('laravel/Smart4Finances') {
-            sh """
-                rsync -avz --delete ./ ${LARAVEL_DIR}
-                chown -R www-data:www-data ${LARAVEL_DIR}
-                chmod -R 755 ${LARAVEL_DIR}
-                chmod -R 775 ${LARAVEL_DIR}/storage ${LARAVEL_DIR}/bootstrap/cache
-            """
+            steps {
+                dir('laravel/Smart4Finances') {
+                    sh 'rsync -avz --delete ./ ${LARAVEL_DIR}'
+                }
+            }
         }
-    }
-}
 
         stage('Deploy Vue') {
-    steps {
-        dir('vue/Smart4Finances') {
-            sh """
-                rsync -avz --delete dist/ ${VUE_DIR}
-                chown -R www-data:www-data ${VUE_DIR}
-                chmod -R 755 ${VUE_DIR}
-            """
+            steps {
+                dir('vue/Smart4Finances') {
+                    sh 'rsync -avz --delete dist/ ${VUE_DIR}'
+                }
+            }
         }
     }
-}
 
-    }
     post {
         success {
             echo '✅ Deploy concluído com sucesso!'
