@@ -27,8 +27,6 @@ pipeline {
             steps {
                 dir('laravel/Smart4Finances') {
                     sh "rsync -avz --delete ./ ${LARAVEL_DIR}"
-                    sh "chown -R www-data:www-data ${LARAVEL_DIR}/storage ${LARAVEL_DIR}/bootstrap/cache"
-                    sh "chmod -R 775 ${LARAVEL_DIR}/storage ${LARAVEL_DIR}/bootstrap/cache"
                 }
             }
         }
