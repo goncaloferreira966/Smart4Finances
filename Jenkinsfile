@@ -6,11 +6,6 @@ pipeline {
         VUE_DIR = '/var/www/cmartins.pt/html'
     }
     stages {
-        stage('Checkout') {
-        steps {
-                git credentialsId: 'github-token', url: 'https://github.com/goncaloferreira966/Smart4Finances.git'
-            }
-        }
         stage('Build Laravel') {
             steps {
                 // Instala dependências do Laravel e executa migrações
