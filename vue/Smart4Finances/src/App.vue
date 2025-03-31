@@ -48,7 +48,12 @@
         <addExpenses :expenseId="id" @ExpensesList="handleExpensesList" @ExpenseView="handleExpenseView"/>
       </div>
       <div v-else-if="currentSection === 'ExpensesList'">
-        <ExpensesList @ExpenseView="handleExpenseView" @addexpense="handleExpensEdit" />
+        <ExpensesList
+          :reloadExpensesList="reloadExpensesList"
+          @update:reloadExpensesList="reloadExpensesList = $event"
+          @ExpenseView="handleExpenseView"
+          @addexpense="handleExpensEdit"
+        />
       </div>
       <div v-else-if="currentSection === 'ExpenseView'">
         <ExpenseView @BackExpense="handleExpensesList" @editExpense="handleExpensEdit" :expenseId="id" />
@@ -69,8 +74,13 @@
         <DashboardClient />
       </div>
       <div v-else-if="currentSection === 'InvestmentList'">
-        <InvestmentsList @InvestmentView="handleInvestmentView" @addInvestment="handleInvestmentEdit"/>
-      </div>
+        <InvestmentsList
+          :reloadInvestmentsList="reloadInvestmentsList"
+          @update:reloadInvestmentsList="reloadInvestmentsList = $event"
+          @InvestmentView="handleInvestmentView"
+          @addInvestment="handleInvestmentEdit"
+        />
+        </div>
       <div v-else-if="currentSection === 'InvestmentView'">
         <InvestmentView @BackInvestment="handleInvestmentList" @editInvestment="handleInvestmentEdit" :investmentId="id"/>
       </div>
@@ -229,8 +239,11 @@ export default {
     handleUpdateCancel() {
       this.currentSection = 'profile';
     },
-    handleExpensesList() {
+    handleExpensesList(payload) {
       this.currentSection = 'ExpensesList';
+      if (payload?.reload) {
+        this.reloadExpensesList = true;
+      }
     },
     handleExpenseView(id) {
       this.id = id;
@@ -248,11 +261,17 @@ export default {
       this.id = id;
       this.currentSection = 'addInvestment';
     },
-    handleIncomeList() {
+    handleIncomeList(payload) {
       this.currentSection = 'IncomeList';
+      if (payload?.reload) {
+        this.reloadIncomeList = true;
+      }
     },
-    handleInvestmentList() {
+    handleInvestmentList(payload) {
       this.currentSection = 'InvestmentList';
+      if (payload?.reload) {
+        this.reloadInvestmentsList  = true; 
+      }
     },
     handleIncomeView(id) {
       this.id = id;

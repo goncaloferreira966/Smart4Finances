@@ -259,7 +259,7 @@ export default {
           headers: { 'Content-Type': 'application/json' }
         }).then(response => {
           toast.success("Receita atualizada com sucesso!");
-          this.$emit("IncomeList", null);
+          this.$emit("IncomeList", true);
         }).catch(error => {
           this.errorMessage = 'Erro ao atualizar receita. Verifique os dados e tente novamente.';
           toast.error(this.errorMessage);
@@ -269,7 +269,7 @@ export default {
           headers: { 'Content-Type': 'multipart/form-data' }
         }).then(response => {
           toast.success("Receita registada com sucesso!");
-          this.$emit("IncomeList", null);
+          this.$emit("IncomeList", true);
         }).catch(error => {
           this.errorMessage = 'Erro ao submeter receita. Verifique os dados e tente novamente.';
           toast.error(this.errorMessage);

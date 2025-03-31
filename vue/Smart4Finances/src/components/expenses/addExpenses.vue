@@ -351,7 +351,7 @@ export default {
           headers: { 'Content-Type': 'application/json' }
         }).then(response => {
           toast.success("Despesa atualizada com sucesso!");
-          this.$emit("ExpensesList", null);
+          this.$emit("ExpensesList", { reload: true } );
         }).catch(error => {
           this.errorMessage = 'Erro ao atualizar despesa. Verifique os dados e tente novamente.';
           toast.error(this.errorMessage);
@@ -361,7 +361,7 @@ export default {
           headers: { 'Content-Type': 'multipart/form-data' }
         }).then(response => {
           toast.success("Despesa registada com sucesso!");
-          this.$emit("ExpensesList", null);
+          this.$emit("ExpensesList", { reload: true } );
         }).catch(error => {
           this.errorMessage = 'Erro ao submeter despesa. Verifique os dados e tente novamente.';
           toast.error(this.errorMessage);

@@ -100,7 +100,9 @@ export default {
     };
   },
   created() {
-    this.loadIncomes();
+    this.incomes = [];
+    this.page = 1;
+    this.loadIncomes(true); // true para reset
     window.addEventListener('scroll', this.handleScroll);
     const authStore = useAuthStore();
     this.coin = (authStore.user?.data?.coin);  

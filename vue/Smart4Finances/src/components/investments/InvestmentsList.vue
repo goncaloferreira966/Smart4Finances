@@ -81,6 +81,13 @@ import debounce from 'lodash.debounce';
 import { useAuthStore } from '@/stores/auth';
 
 export default {
+  props: {
+    reloadInvestmentsList: {
+      type: Boolean,
+      default: false
+    }
+  },
+
   data() {
     return {
       coin: '',
@@ -88,6 +95,7 @@ export default {
       page: 1,
       selectedInvestments: [],
       perPage: 10,
+      hasMoreData: true,
       loadingMore: false,
       filters: {
         minPrice: '',
@@ -112,7 +120,13 @@ export default {
     'filters.minPrice': 'applyFiltersDebounced',
     'filters.maxPrice': 'applyFiltersDebounced',
     'filters.startDate': 'applyFiltersDebounced',
-    'filters.endDate': 'applyFiltersDebounced'
+    'filters.endDate': 'applyFiltersDebounced',
+    reloadInvestmentsList(newVal) {
+      if (newVal) {
+        this.loadInvestments(true); // força reset com a nova lógica
+        this.$emit('update:reloadInvestmentsList', false); // limpa o flag no App.vue
+      }
+    },
   },
   methods: {
     loadInvestments(reset = false) {
@@ -120,7 +134,14 @@ export default {
         this.page = 1;
         this.investments = [];
         this.selectedInvestments = [];
+        this.hasMoreData = true;
       }
+
+      if (!this.hasMoreData) {
+        this.loadingMore = false;
+        return;
+      }
+
       const params = {
         page: this.page,
         perPage: this.perPage,
@@ -129,14 +150,26 @@ export default {
         startDate: this.filters.startDate,
         endDate: this.filters.endDate
       };
+
       axios.get('/investments', { params })
         .then(response => {
           const payload = response.data;
           const newInvestments = payload.data;
+
           if (newInvestments && newInvestments.length > 0) {
-            this.investments = this.investments.concat(newInvestments);
-            this.page++;
+            const existingIds = new Set(this.investments.map(e => e.id));
+            const uniqueNew = newInvestments.filter(e => !existingIds.has(e.id));
+            if (uniqueNew.length > 0) {
+              this.investments = this.investments.concat(uniqueNew);
+              this.page++;
+            } else {
+              console.log('⚠️ Nenhum novo investimento único. Página não incrementada.');
+            }
+          } else {
+            this.hasMoreData = false;
+            console.log('⛔ Sem mais dados a carregar.');
           }
+
           this.loadingMore = false;
         })
         .catch(error => {
@@ -148,7 +181,8 @@ export default {
       const scrollY = window.scrollY;
       const visible = window.innerHeight;
       const pageHeight = document.documentElement.scrollHeight;
-      if (scrollY + visible >= pageHeight - 100 && !this.loadingMore) {
+
+      if (scrollY + visible >= pageHeight - 100 && !this.loadingMore && this.hasMoreData) {
         this.loadingMore = true;
         this.loadInvestments();
       }
