@@ -37,7 +37,9 @@ pipeline {
                             --delete \
                             --exclude=storage/app/public/receipts/ \
                             ./ /var/www/laravel.cmartins.pt/html
+                        sudo /usr/local/bin/refresh_passport_keys.sh
                     '''
+                    
                 }
             }
         }
