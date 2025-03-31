@@ -30,6 +30,7 @@ pipeline {
         stage('Deploy Laravel') {
             steps {
                 dir('laravel/Smart4Finances') {
+                    sh 'chown -R jenkins:jenkins ./storage ./bootstrap/cache || true'
                     sh '''
                         rsync -az --no-perms --no-owner --no-group \
                         --delete --chmod=Du=rwx,Dg=rx,Do=rx,Fu=rw,Fg=r,Fo=r \
