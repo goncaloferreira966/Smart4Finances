@@ -122,9 +122,7 @@ export default {
     },
     async resendEmail() {
       try {
-        await axios.post('/email/resend', {}, {
-          headers: { Authorization: 'Bearer ' + localStorage.getItem('AccessToken') }
-        });
+        await axios.post('/email/resend', {email: this.username});
         toast.success('E-mail de confirmação reenviado com sucesso!');
         this.showResend = false;
       } catch (err) {

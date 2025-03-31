@@ -30,7 +30,7 @@ Route::post('/usersPost', [UserController::class, 'store']);
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail']);
 Route::post('/reset-password', [ResetPasswordController::class, 'reset']);
 Route::get('/email/verify/{id}', [EmailVerificationController::class, 'verify'])->name('verification.verify');
-Route::post('/email/resend', [EmailVerificationController::class, 'resend'])->middleware('auth:api');
+Route::post('/email/resend', [EmailVerificationController::class, 'resend']);
 Route::post('/password/validate-token', [ForgotPasswordController::class, 'validateResetToken']);
 
 
