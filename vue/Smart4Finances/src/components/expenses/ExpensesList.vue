@@ -86,10 +86,17 @@ import debounce from 'lodash.debounce';
 import { useAuthStore } from "@/stores/auth";
 
 export default {
+  props: {
+    reloadExpensesList: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       coin: "",
       expenses: [],
+      hasMoreData: true,
       categories: [],
       page: 1,
       perPage: 15,
@@ -107,8 +114,10 @@ export default {
     };
   },
   created() {
+    this.incomes = [];
+    this.page = 1;
     this.loadCategories();
-    this.loadExpenses();
+    this.loadExpenses(true);
     const authStore = useAuthStore();
     this.coin = (authStore.user?.data?.coin);  
     window.addEventListener('scroll', this.handleScroll);
@@ -121,7 +130,13 @@ export default {
     'filters.minPrice': 'applyFiltersDebounced',
     'filters.maxPrice': 'applyFiltersDebounced',
     'filters.startDate': 'applyFiltersDebounced',
-    'filters.endDate': 'applyFiltersDebounced'
+    'filters.endDate': 'applyFiltersDebounced',
+    reloadExpensesList(newVal) {
+    if (newVal) {
+      this.loadExpenses(true);
+      this.$emit('update:reloadExpensesList', false); // para resetar o estado no pai
+    }
+  }
   },
   methods: {
     loadCategories() {
@@ -135,7 +150,14 @@ export default {
         this.page = 1;
         this.expenses = [];
         this.selectedExpenses = [];
+        this.hasMoreData = true;
       }
+
+      if (!this.hasMoreData) {
+        this.loadingMore = false;
+        return;
+      }
+
       const params = {
         page: this.page,
         perPage: this.perPage,
@@ -149,14 +171,23 @@ export default {
         .then(response => {
           const payload = response.data;
           const newExpenses = payload.data;
+
           if (newExpenses && newExpenses.length > 0) {
-            this.expenses = this.expenses.concat(newExpenses);
-            this.page++;
+            const existingIds = new Set(this.expenses.map(e => e.id));
+            const uniqueNewExpenses = newExpenses.filter(e => !existingIds.has(e.id));
+            
+            if (uniqueNewExpenses.length > 0) {
+              this.expenses = this.expenses.concat(uniqueNewExpenses);
+              this.page++;
+            } else {
+            }
+          } else {
+            this.hasMoreData = false;
           }
+
           this.loadingMore = false;
         })
         .catch(error => {
-          console.error(error);
           this.loadingMore = false;
         });
     },
@@ -164,7 +195,8 @@ export default {
       const scrollY = window.scrollY;
       const visible = window.innerHeight;
       const pageHeight = document.documentElement.scrollHeight;
-      if (scrollY + visible >= pageHeight - 100 && !this.loadingMore) {
+
+      if (scrollY + visible >= pageHeight - 100 && !this.loadingMore && this.hasMoreData) {
         this.loadingMore = true;
         this.loadExpenses();
       }

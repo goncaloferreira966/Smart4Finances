@@ -30,20 +30,27 @@ class EmailVerificationController extends Controller
 
     public function resend(Request $request)
     {
-        if ($request->user()->hasVerifiedEmail()) {
+        $request->validate(['email' => 'required|email']);
+
+        $user = \App\Models\User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'E-mail não encontrado.'], 404);
+        }
+
+        if ($user->hasVerifiedEmail()) {
             return response()->json(['message' => 'E-mail já confirmado.'], 400);
         }
 
-        // Gerar o URL com assinatura
         $url = URL::temporarySignedRoute(
             'verification.verify',
             now()->addMinutes(60),
-            ['id' => $request->user()->id]
+            ['id' => $user->id]
         );
 
-        // Enviar diretamente com Mailable
-        Mail::to($request->user()->email)->send(new ConfirmEmailMailable($request->user(), $url));
+        Mail::to($user->email)->send(new ConfirmEmailMailable($user, $url));
 
         return response()->json(['message' => 'Novo e-mail de verificação enviado com sucesso!']);
     }
+
 }

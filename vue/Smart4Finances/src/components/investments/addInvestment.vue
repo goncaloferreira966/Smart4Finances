@@ -103,7 +103,7 @@ export default {
           headers: { 'Content-Type': 'application/json' }
         }).then(response => {
           toast.success("Investimento atualizado com sucesso!");
-          this.$emit("InvestmentList", null);
+          this.$emit("InvestmentList", { reload: true });
         }).catch(error => {
           this.errorMessage = 'Erro ao atualizar investimento. Verifique os dados e tente novamente.';
           toast.error(this.errorMessage);
@@ -113,7 +113,7 @@ export default {
           headers: { 'Content-Type': 'multipart/form-data' }
         }).then(response => {
           toast.success("Investimento registado com sucesso!");
-          this.$emit("InvestmentList", null);
+          this.$emit("InvestmentList", { reload: true });
         }).catch(error => {
           this.errorMessage = 'Erro ao submeter investimento. Verifique os dados e tente novamente.';
           toast.error(this.errorMessage);

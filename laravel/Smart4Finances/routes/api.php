@@ -9,8 +9,8 @@ use App\Http\Controllers\api\UserController;
 use App\Http\Controllers\api\StatisticsController;
 use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\api\ExpenseController;
-use App\Http\Controllers\Api\IncomeController;
-use App\Http\Controllers\Api\InvestmentController;
+use App\Http\Controllers\api\IncomeController;
+use App\Http\Controllers\api\InvestmentController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\EmailVerificationController;
@@ -30,7 +30,7 @@ Route::post('/usersPost', [UserController::class, 'store']);
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail']);
 Route::post('/reset-password', [ResetPasswordController::class, 'reset']);
 Route::get('/email/verify/{id}', [EmailVerificationController::class, 'verify'])->name('verification.verify');
-Route::post('/email/resend', [EmailVerificationController::class, 'resend'])->middleware('auth:api');
+Route::post('/email/resend', [EmailVerificationController::class, 'resend']);
 Route::post('/password/validate-token', [ForgotPasswordController::class, 'validateResetToken']);
 
 
