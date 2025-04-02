@@ -37,6 +37,11 @@
             </button>
           </li>
           <li v-if="userRole !== 'A'">
+            <button @click="$emit('navigate', 'BudgetList')" class="hover:text-gray-200">
+              <i class="bi bi-cash-coin"></i> Orçamentos
+            </button>
+          </li>
+          <li v-if="userRole !== 'A'">
             <button @click="$emit('navigate', 'InvestmentList')" class="hover:text-gray-200">
               <i class="bi bi-currency-bitcoin"></i> Investimentos
             </button>

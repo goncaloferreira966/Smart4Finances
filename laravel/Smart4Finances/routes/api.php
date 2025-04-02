@@ -11,6 +11,7 @@ use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\api\ExpenseController;
 use App\Http\Controllers\api\IncomeController;
 use App\Http\Controllers\api\InvestmentController;
+use App\Http\Controllers\api\BudgetController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\EmailVerificationController;
@@ -91,6 +92,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::apiResource('incomes', IncomeController::class);
 
     Route::apiResource('investments', InvestmentController::class);
+
+    Route::apiResource('budgets', BudgetController::class);
 
     //Endpoints para dashboard do admin
     Route::get('/admin-statistics', [StatisticsController::class, 'index']);

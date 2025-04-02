@@ -11,8 +11,7 @@
       <label for="years">Projeção de Crescimento (Anos):</label>
       <input id="years" v-model.number="years" type="number" min="1" max="50" class="w-full mt-2 p-2 border rounded" />
 
-      <GChart type="LineChart" :data="chartData" :options="chartOptions"
-        style="width: 100%; margin-top: 25px;" />
+      <GChart type="LineChart" :data="chartData" :options="chartOptions" style="width: 100%; margin-top: 25px;" />
 
 
       <button @click="editInvestment" class="w-full mt-4 bg-blue-500 text-white px-4 py-2 rounded">
@@ -97,9 +96,14 @@ export default {
         title: 'Projeção de Crescimento',
         curveType: 'function',
         legend: { position: 'bottom' },
-        backgroundColor: '#f9fafb',
+        backgroundColor: '',
+        height: window.innerWidth < 768 ? 300 : 500,
         hAxis: { title: 'Anos' },
-        vAxis: { title: `Valor (${this.coin})` }
+        vAxis: { title: `Valor (${this.coin})` },
+        titleTextStyle: {
+          fontSize: 18, // Tamanho da fonte do título
+          bold: true
+        },
       };
     }
   }

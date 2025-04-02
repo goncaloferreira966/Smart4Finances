@@ -87,6 +87,15 @@
       <div v-else-if="currentSection === 'addInvestment'">
         <addInvestment @InvestmentList="handleInvestmentList" @InvestmentView="handleInvestmentView" :investmentId="id"/>
       </div>
+      <div v-else-if="currentSection === 'BudgetList'">
+        <BudgetsList  :reloadBudgetsList="reloadBudgetsList"
+          @update:reloadBudgetsList="reloadBudgetsList = $event"
+          @BudgetView="handleBudgetView"
+          @addBudget="handleBudgetEdit"/>
+      </div>
+      <div v-else-if="currentSection === 'BudgetView'">
+        <BudgetView @BackBudget="handleBudgetList" @editBudget="handleBudgetEdit" :budgetId="id"/>
+      </div>
     </div>
 
     <footer class="footer">
@@ -121,6 +130,8 @@ import ResetPassword from './components/password_mail/ResetPassword.vue';
 import InvestmentsList from './components/investments/InvestmentsList.vue';
 import InvestmentView from './components/investments/InvestmentView.vue';
 import addInvestment from './components/investments/addInvestment.vue';
+import BudgetsList from './components/budgets/BudgetsList.vue';
+import BudgetView from './components/budgets/BudgetView.vue';
 
 import EmailConfirmed from './components/password_mail/EmailConfirmed.vue';
 import EmailVerificationError from './components/password_mail/EmailVerificationError.vue';
@@ -153,6 +164,8 @@ export default {
     InvestmentsList,
     InvestmentView,
     addInvestment,
+    BudgetsList,
+    BudgetView,
   },
   data() {
     return {
@@ -253,6 +266,10 @@ export default {
       this.id = id;
       this.currentSection = 'InvestmentView';
     },
+    handleBudgetView(id) {
+      this.id = id;
+      this.currentSection = 'BudgetView';
+    },
     handleExpensEdit(id) {
       this.id = id;
       this.currentSection = 'addExpenses';
@@ -260,6 +277,10 @@ export default {
     handleInvestmentEdit(id){
       this.id = id;
       this.currentSection = 'addInvestment';
+    },
+    handleBudgetEdit(id){
+      this.id = id;
+      this.currentSection = 'addBudget';
     },
     handleIncomeList(payload) {
       this.currentSection = 'IncomeList';
@@ -273,9 +294,19 @@ export default {
         this.reloadInvestmentsList  = true; 
       }
     },
+    handleBudgetList(payload) {
+      this.currentSection = 'BudgetList';
+      if (payload?.reload) {
+        this.reloadBudgetList = true;
+      }
+    },
     handleIncomeView(id) {
       this.id = id;
       this.currentSection = 'IncomeView';
+    },
+    handleBudgetView(id) {
+      this.id = id;
+      this.currentSection = 'BudgetView';
     },
     handleIncomeEdit(id) {
       this.id = id;

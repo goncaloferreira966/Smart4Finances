@@ -37,13 +37,13 @@
 
       <div class="row mt-1">
         <div class="col-md-6">
-          <GChart v-if="incomeData.length" type="ColumnChart" :data="incomeData"
+          <GChart v-if="incomeData.length" type="AreaChart" :data="incomeData"
           :options="chartOptions(chartTitles.incomeChart)" />
 
         </div>
 
         <div class="col-md-6">
-          <GChart v-if="expenseData.length" type="ColumnChart" :data="expenseData"
+          <GChart v-if="expenseData.length" type="AreaChart" :data="expenseData"
           :options="chartOptions(chartTitles.expenseChart)" />
 
         </div>
@@ -51,7 +51,7 @@
 
       <div class="row mt-1">
         <div class="col-md-6">
-          <GChart v-if="investmentData.length" type="ColumnChart" :data="investmentData"
+          <GChart v-if="investmentData.length" type="AreaChart" :data="investmentData"
           :options="chartOptions(chartTitles.investmentChart)" />
 
         </div>
@@ -232,6 +232,7 @@ export default {
       height: window.innerWidth < 768 ? 300 : 500, // Altura dinâmica baseada na largura do ecra
       legend: { position: "bottom" },
       is3D: false,
+      pieHole: 0.4,  // Isso cria o efeito de "donut"
       backgroundColor: "transparent", // Fundo transparente
     });
 
