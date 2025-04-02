@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Expense;
+use App\Models\Budget;
 use Illuminate\Http\Request;
+use App\Notifications\CustomNotification;
 use Illuminate\Support\Facades\Log;
 
 class ExpenseController extends Controller
@@ -76,6 +78,38 @@ class ExpenseController extends Controller
             $data['receipt'] = $path;
         }
 
+        // Obtém o orçamento da categoria associada
+        $budget = Budget::where('user_id', auth()->id())
+            ->where('category_id', $data['category_id'])
+            ->first();
+
+        if ($budget) {
+            // Obtém o nome da categoria
+            $categoryName = $budget->category ? $budget->category->name : 'Desconhecida';
+
+
+            // Obtém o mês atual formatado (Ex: Abril de 2025)
+            $currentMonth = now()->translatedFormat('m/Y');
+
+            // Calcula o total gasto na categoria no mês atual
+            $totalSpentThisMonth = Expense::where('user_id', auth()->id())
+                ->where('category_id', $data['category_id'])
+                ->whereMonth('date', now()->month)
+                ->sum('amount');
+
+            // Verifica o impacto da nova despesa
+            $newTotal = $totalSpentThisMonth + $data['amount'];
+            $percentageUsed = ($newTotal / $budget->limit_amount) * 100;
+
+            // Notificações de alerta
+            $user = auth()->user();
+            if ($percentageUsed >= 100) {
+                $user->notify(new CustomNotification("🚨 Alerta: O seu orçamento para a categoria de $categoryName em $currentMonth foi excedido!"));
+            } elseif ($percentageUsed >= 90) {
+                $user->notify(new CustomNotification("⚠️ Atenção: Você já usou 90% ou mais do seu orçamento para a categoria de $categoryName em $currentMonth."));
+            }
+        }
+
         $expense = Expense::create($data);
 
         return response()->json($expense, 201);
@@ -93,64 +127,91 @@ class ExpenseController extends Controller
     }
 
     public function update(Request $request, $id)
-{
-    // Encontre a despesa
-    
-    $expense = Expense::find($id);
-    if (!$expense) {
-        return response()->json(['error' => 'Despesa não encontrada'], 404);
+    {
+        // Encontre a despesa
+        
+        $expense = Expense::find($id);
+        if (!$expense) {
+            return response()->json(['error' => 'Despesa não encontrada'], 404);
+        }
+
+        // Verifica se a despesa pertence ao usuário logado
+        if ($expense->user_id != auth()->id()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+
+        // Atualiza o upload do recibo, se houver um novo arquivo
+        if ($request->hasFile('receipt') && $request->file('receipt')->isValid()) {
+            $path = $request->file('receipt')->store('receipts', 'public');
+            $expense->receipt = $path;
+        }
+
+        // Atualiza os demais campos, se presentes no request
+        if ($request->has('category_id')) {
+            $expense->category_id = $request->input('category_id');
+        }
+
+        if ($request->has('amount')) {
+            $expense->amount = $request->input('amount');
+        }
+
+        if ($request->has('description')) {
+            $expense->description = $request->input('description');
+        }
+
+        if ($request->has('date')) {
+            $expense->date = $request->input('date');
+        }
+
+        // Log para verificar o objeto antes do save
+        \Log::info("Expense before save", $expense->toArray());
+
+        try {
+            $expense->save();
+
+               // Verifica se existe um orçamento para a nova categoria
+        $budget = Budget::where('user_id', auth()->id())
+        ->where('category_id', $expense->category_id)
+        ->first();
+
+    if ($budget) {
+        // Obtém o nome da categoria
+        $categoryName = $budget->category ? $budget->category->name : 'Desconhecida';
+
+        // Obtém o mês atual formatado (Ex: 04/2025)
+        $currentMonth = now()->translatedFormat('m/Y');
+
+        // Calcula o total gasto na categoria no mês atual
+        $totalSpentThisMonth = Expense::where('user_id', auth()->id())
+            ->where('category_id', $expense->category_id)
+            ->whereMonth('date', now()->month)
+            ->sum('amount');
+
+        // Verifica o impacto da nova despesa (considerando o valor atualizado)
+        $percentageUsed = ($totalSpentThisMonth / $budget->limit_amount) * 100;
+
+        // Notificações de alerta
+        $user = auth()->user();
+        if ($percentageUsed >= 100) {
+            $user->notify(new CustomNotification("🚨 Alerta: O seu orçamento para a categoria de $categoryName em $currentMonth foi excedido!"));
+        } elseif ($percentageUsed >= 90) {
+            $user->notify(new CustomNotification("⚠️ Atenção: Você já usou 90% ou mais do seu orçamento para a categoria de $categoryName em $currentMonth."));
+        }
     }
 
-    // Verifica se a despesa pertence ao usuário logado
-    if ($expense->user_id != auth()->id()) {
-        return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json([
+                'message' => 'Despesa atualizada com sucesso!',
+                'expense' => $expense,
+            ], 200);
+        } catch (\Exception $e) {
+            \Log::error("Erro ao atualizar a despesa", ['error' => $e->getMessage(), 'expense' => $expense->toArray()]);
+            return response()->json([
+                'message' => 'Erro ao atualizar a despesa',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
-
-
-    // Atualiza o upload do recibo, se houver um novo arquivo
-    if ($request->hasFile('receipt') && $request->file('receipt')->isValid()) {
-        $path = $request->file('receipt')->store('receipts', 'public');
-        $expense->receipt = $path;
-    }
-
-    // Atualiza os demais campos, se presentes no request
-    if ($request->has('category_id')) {
-        $expense->category_id = $request->input('category_id');
-    }
-
-    if ($request->has('amount')) {
-        $expense->amount = $request->input('amount');
-    }
-
-    if ($request->has('description')) {
-        $expense->description = $request->input('description');
-    }
-
-    if ($request->has('date')) {
-        $expense->date = $request->input('date');
-    }
-
-    // Log para verificar o objeto antes do save
-    \Log::info("Expense before save", $expense->toArray());
-
-    try {
-        $expense->save();
-
-        // Log para confirmar a atualização
-        \Log::info("Expense updated successfully", $expense->toArray());
-
-        return response()->json([
-            'message' => 'Despesa atualizada com sucesso!',
-            'expense' => $expense,
-        ], 200);
-    } catch (\Exception $e) {
-        \Log::error("Erro ao atualizar a despesa", ['error' => $e->getMessage(), 'expense' => $expense->toArray()]);
-        return response()->json([
-            'message' => 'Erro ao atualizar a despesa',
-            'error' => $e->getMessage(),
-        ], 500);
-    }
-}
 
 
     // Remove uma despesa
