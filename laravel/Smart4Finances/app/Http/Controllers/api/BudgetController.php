@@ -84,45 +84,78 @@ class BudgetController extends Controller
         ]);
     }
 
-    // Cria um novo orçamento
     public function store(Request $request)
     {
         $request->validate([
             'category_id' => 'required|exists:categories,id',
             'limit_amount' => 'required|numeric|min:0',
         ]);
-
-        // Define automaticamente o user_id do usuário autenticado
-        $budgetData = $request->all();
-        $budgetData['user_id'] = auth()->id();
-
-        $budget = Budget::create($budgetData);
-
-        return response()->json($budget, 201);
+    
+        $userId = auth()->id();
+        $categoryId = $request->category_id;
+    
+        // Verifica se já existe um orçamento para esta categoria e usuário
+        $existingBudget = Budget::where('user_id', $userId)
+            ->where('category_id', $categoryId)
+            ->first();
+    
+        if ($existingBudget) {
+            // Atualiza apenas o limit_amount se já existir
+            $existingBudget->update(['limit_amount' => $request->limit_amount]);
+            return response()->json($existingBudget, 200); // 200 OK (atualização)
+        } else {
+            // Cria um novo registro se não existir
+            $budget = Budget::create([
+                'user_id' => $userId,
+                'category_id' => $categoryId,
+                'limit_amount' => $request->limit_amount,
+            ]);
+            return response()->json($budget, 201); // 201 Created (novo registro)
+        }
     }
 
-    // Atualiza um orçamento existente
     public function update(Request $request, $id)
     {
         $budget = Budget::find($id);
         if (!$budget) {
             return response()->json(['error' => 'Orçamento não encontrado'], 404);
         }
-
+    
         $request->validate([
             'user_id' => 'sometimes|exists:users,id',
             'category_id' => 'sometimes|exists:categories,id',
             'limit_amount' => 'sometimes|numeric|min:0',
         ]);
-
+    
+        // Se category_id foi enviado no request, verifica se já existe outro orçamento
+        // com a mesma combinação de user_id e category_id
+        if ($request->has('category_id')) {
+            $existingBudget = Budget::where('user_id', $request->user_id ?? $budget->user_id)
+                ->where('category_id', $request->category_id)
+                ->where('id', '!=', $id) // Ignora o próprio orçamento que está sendo atualizado
+                ->first();
+    
+            if ($existingBudget) {
+                // Atualiza o orçamento existente e exclui o atual (para evitar duplicação)
+                $existingBudget->update(['limit_amount' => $request->limit_amount ?? $budget->limit_amount]);
+                $budget->delete(); // Opcional: usar soft delete se aplicável
+    
+                return response()->json([
+                    'message' => 'Orçamento mesclado com sucesso!',
+                    'budget' => $existingBudget,
+                ], 200);
+            }
+        }
+    
+        // Se não houver conflito, atualiza normalmente
         $budget->update($request->only(['user_id', 'category_id', 'limit_amount']));
-
+    
         return response()->json([
             'message' => 'Orçamento atualizado com sucesso!',
             'budget' => $budget,
         ], 200);
     }
-
+    
     // Remove um orçamento
     public function destroy($id)
     {
