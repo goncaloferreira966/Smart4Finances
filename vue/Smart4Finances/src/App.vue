@@ -94,7 +94,10 @@
           @addBudget="handleBudgetEdit"/>
       </div>
       <div v-else-if="currentSection === 'BudgetView'">
-        <BudgetView @BackBudget="handleBudgetList" @editBudget="handleBudgetEdit" :budgetId="id"/>
+        <BudgetView @BackBudget="handleBudgetsList" @editBudget="handleBudgetEdit" :budgetId="id"/>
+      </div>
+      <div v-else-if="currentSection === 'addBudgets'">
+        <addBudgets @BudgetsList="handleBudgetsList" @BudgetView="handleBudgetView" :budgetId="id"/>
       </div>
     </div>
 
@@ -132,6 +135,8 @@ import InvestmentView from './components/investments/InvestmentView.vue';
 import addInvestment from './components/investments/addInvestment.vue';
 import BudgetsList from './components/budgets/BudgetsList.vue';
 import BudgetView from './components/budgets/BudgetView.vue';
+import addBudgets from './components/budgets/addBudgets.vue';
+
 
 import EmailConfirmed from './components/password_mail/EmailConfirmed.vue';
 import EmailVerificationError from './components/password_mail/EmailVerificationError.vue';
@@ -166,6 +171,7 @@ export default {
     addInvestment,
     BudgetsList,
     BudgetView,
+    addBudgets,
   },
   data() {
     return {
@@ -266,10 +272,6 @@ export default {
       this.id = id;
       this.currentSection = 'InvestmentView';
     },
-    handleBudgetView(id) {
-      this.id = id;
-      this.currentSection = 'BudgetView';
-    },
     handleExpensEdit(id) {
       this.id = id;
       this.currentSection = 'addExpenses';
@@ -280,7 +282,7 @@ export default {
     },
     handleBudgetEdit(id){
       this.id = id;
-      this.currentSection = 'addBudget';
+      this.currentSection = 'addBudgets';
     },
     handleIncomeList(payload) {
       this.currentSection = 'IncomeList';
@@ -294,7 +296,7 @@ export default {
         this.reloadInvestmentsList  = true; 
       }
     },
-    handleBudgetList(payload) {
+    handleBudgetsList(payload) {
       this.currentSection = 'BudgetList';
       if (payload?.reload) {
         this.reloadBudgetList = true;

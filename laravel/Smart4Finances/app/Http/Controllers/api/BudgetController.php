@@ -87,12 +87,15 @@ class BudgetController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'user_id' => 'required|exists:users,id',
             'category_id' => 'required|exists:categories,id',
             'limit_amount' => 'required|numeric|min:0',
         ]);
 
-        $budget = Budget::create($request->all());
+        // Define automaticamente o user_id do usuário autenticado
+        $budgetData = $request->all();
+        $budgetData['user_id'] = auth()->id();
+
+        $budget = Budget::create($budgetData);
 
         return response()->json($budget, 201);
     }

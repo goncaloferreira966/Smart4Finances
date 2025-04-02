@@ -68,8 +68,6 @@ export default {
     };
   },
   mounted() {
-    console.log(this.investmentId);
-
     if (this.investmentId) {
       this.isEditMode = true;
       this.loadInvestment();
