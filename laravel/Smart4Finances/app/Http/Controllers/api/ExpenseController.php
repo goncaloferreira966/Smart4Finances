@@ -175,30 +175,30 @@ class ExpenseController extends Controller
         ->where('category_id', $expense->category_id)
         ->first();
 
-    if ($budget) {
-        // Obtém o nome da categoria
-        $categoryName = $budget->category ? $budget->category->name : 'Desconhecida';
+        if ($budget) {
+            // Obtém o nome da categoria
+            $categoryName = $budget->category ? $budget->category->name : 'Desconhecida';
 
-        // Obtém o mês atual formatado (Ex: 04/2025)
-        $currentMonth = now()->translatedFormat('m/Y');
+            // Obtém o mês atual formatado (Ex: 04/2025)
+            $currentMonth = now()->translatedFormat('m/Y');
 
-        // Calcula o total gasto na categoria no mês atual
-        $totalSpentThisMonth = Expense::where('user_id', auth()->id())
-            ->where('category_id', $expense->category_id)
-            ->whereMonth('date', now()->month)
-            ->sum('amount');
+            // Calcula o total gasto na categoria no mês atual
+            $totalSpentThisMonth = Expense::where('user_id', auth()->id())
+                ->where('category_id', $expense->category_id)
+                ->whereMonth('date', now()->month)
+                ->sum('amount');
 
-        // Verifica o impacto da nova despesa (considerando o valor atualizado)
-        $percentageUsed = ($totalSpentThisMonth / $budget->limit_amount) * 100;
+            // Verifica o impacto da nova despesa (considerando o valor atualizado)
+            $percentageUsed = ($totalSpentThisMonth / $budget->limit_amount) * 100;
 
-        // Notificações de alerta
-        $user = auth()->user();
-        if ($percentageUsed >= 100) {
-            $user->notify(new CustomNotification("🚨 Alerta: O seu orçamento para a categoria de $categoryName em $currentMonth foi excedido!"));
-        } elseif ($percentageUsed >= 90) {
-            $user->notify(new CustomNotification("⚠️ Atenção: Você já usou 90% ou mais do seu orçamento para a categoria de $categoryName em $currentMonth."));
+            // Notificações de alerta
+            $user = auth()->user();
+            if ($percentageUsed >= 100) {
+                $user->notify(new CustomNotification("🚨 Alerta: O seu orçamento para a categoria de $categoryName em $currentMonth foi excedido!"));
+            } elseif ($percentageUsed >= 90) {
+                $user->notify(new CustomNotification("⚠️ Atenção: Você já usou 90% ou mais do seu orçamento para a categoria de $categoryName em $currentMonth."));
+            }
         }
-    }
 
             return response()->json([
                 'message' => 'Despesa atualizada com sucesso!',
