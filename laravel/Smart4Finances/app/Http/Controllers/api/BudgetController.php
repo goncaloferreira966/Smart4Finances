@@ -75,6 +75,7 @@ class BudgetController extends Controller
         return response()->json([
             'id' => $budget->id,
             'user_id' => $budget->user_id,
+            'category_id' => $budget->category->id, // Retorna o nome da categoria
             'category' => $budget->category->name, // Retorna o nome da categoria
             'limit_amount' => $budget->limit_amount,
             'created_at' => $budget->created_at,

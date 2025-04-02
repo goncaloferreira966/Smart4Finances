@@ -128,7 +128,7 @@ export default {
       axios.get(`/budgets/${this.budgetId}`)
         .then(response => {
           this.budget = response.data;
-          
+     
           // Se as categorias já foram carregadas, atualiza o searchQuery
           if (this.categories.length > 0) {
             const cat = this.categories.find(c => c.id == this.budget.category_id);
@@ -141,15 +141,15 @@ export default {
           console.error('Erro ao carregar orçamento:', error);
         });
       },
-    selectCategory(category) {
-      this.expense.category_id = category.id;
-      this.searchQuery = category.name;
-    },
-    selectCategoryFromModal(category) {
-      this.expense.category_id = category.id;
-      this.searchQuery = category.name;
-      this.showModal = false;
-    },
+      selectCategory(category) {
+        this.budget.category_id = category.id; 
+        this.searchQuery = category.name;
+      },
+      selectCategoryFromModal(category) {
+        this.budget.category_id = category.id;
+        this.searchQuery = category.name;
+        this.showModal = false;
+      },
     submitBudget() {
       if (!this.budget.limit_amount || !this.budget.category_id) {
         this.errorMessage = 'Os campos Valor e Categoria são obrigatórios.';
