@@ -38,7 +38,7 @@
           </li>
           <li v-if="userRole !== 'A'">
             <button @click="$emit('navigate', 'BudgetList')" class="hover:text-gray-200">
-              <i class="bi bi-cash-coin"></i> Orçamentos
+              <i class="bi bi-cash-coin"></i> Limites
             </button>
           </li>
           <li v-if="userRole !== 'A'">

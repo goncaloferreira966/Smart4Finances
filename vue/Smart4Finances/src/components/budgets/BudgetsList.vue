@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg"
     style="margin-top: 7vh; margin-bottom: 7vh; min-width: 100vh;">
-    <h2 class="text-2xl font-bold mb-4" style="color: black;">Os Meus Orçamentos Mensais</h2>
+    <h2 class="text-2xl font-bold mb-4" style="color: black;">Os Meus Limites Mensais</h2>
 
     <!-- Filtros -->
     <div class="mb-4">
@@ -63,7 +63,7 @@
     <!-- Modal de confirmação de exclusão -->
     <div v-if="showDeleteModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div class="bg-white p-6 rounded-lg">
-        <p class="mb-4">Tem certeza que deseja apagar o(s) orçamentos(s) selecionado(s)?</p>
+        <p class="mb-4">Tem certeza que deseja apagar o(s) limites(s) selecionado(s)?</p>
         <div class="flex justify-end">
           <button @click="cancelDeletion" class="bg-gray-500 text-white px-4 py-2 rounded mr-2">Cancelar</button>
           <button @click="confirmDeletion" class="bg-red-500 text-white px-4 py-2 rounded">Confirmar</button>
@@ -161,7 +161,7 @@ export default {
               this.budgets = this.budgets.concat(uniqueNew);
               this.page++;
             } else {
-              console.log('⚠️ Nenhum novo orçamento único. Página não incrementada.');
+              console.log('⚠️ Nenhum novo limite único. Página não incrementada.');
             }
           } else {
             this.hasMoreData = false;

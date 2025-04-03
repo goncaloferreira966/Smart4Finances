@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg"
     style="margin-top: 7vh; margin-bottom: 7vh; min-width: 50vh;">
-    <h2 class="text-2xl font-bold mb-4" style="color: black;">Detalhes do Orçamento</h2>
+    <h2 class="text-2xl font-bold mb-4" style="color: black;">Detalhes do Limite</h2>
     <div v-if="budget">
       <p><strong>Data:</strong> {{ formatDate(budget.created_at) }}</p>
       <p><strong>Valor:</strong> {{ budget.limit_amount + " " + coin }}</p>
@@ -11,7 +11,7 @@
 
       <button @click="editBudget" class="w-full mt-4 bg-blue-500 text-white px-4 py-2 rounded">
         <i class="bi bi-pen"></i>
-        Editar Orçamento
+        Editar Limite
       </button>
       <br>
       <button @click="backList" class="w-full mt-4 bg-red-500 text-white px-4 py-2 rounded">
@@ -88,7 +88,7 @@ export default {
     },
     chartOptions() {
       return {
-        title: 'Orçamento Utilizado',
+        title: 'Limite Utilizado',
         pieHole: 0.4,
         colors: ['#d14343', '#6fde8d'],
         height: window.innerWidth < 768 ? 300 : 500,

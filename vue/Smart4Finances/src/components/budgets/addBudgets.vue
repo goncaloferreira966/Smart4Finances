@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg"
     style="margin-top: 7vh; margin-bottom: 7vh; min-width: 50vh;">
-    <h2 class="text-2xl font-bold mb-4">{{ isEditMode ? 'Editar Orçamento Mensal' : 'Registar  Orçamento Mensal' }}</h2>
+    <h2 class="text-2xl font-bold mb-4">{{ isEditMode ? 'Editar Limite Mensal' : 'Registar  Limite Mensal' }}</h2>
 
     <form @submit.prevent="submitBudget">
       <label class="block mb-2">Categoria:</label>
@@ -138,7 +138,7 @@ export default {
           }
         })
         .catch(error => {
-          console.error('Erro ao carregar orçamento:', error);
+          console.error('Erro ao carregar limite:', error);
         });
       },
       selectCategory(category) {
@@ -167,20 +167,20 @@ export default {
         axios.put(`/budgets/${this.budgetId}`, formData, {
           headers: { 'Content-Type': 'application/json' }
         }).then(response => {
-          toast.success("Orçamento atualizado com sucesso!");
+          toast.success("Limite atualizado com sucesso!");
           this.$emit("BudgetsList", { reload: true } );
         }).catch(error => {
-          this.errorMessage = 'Erro ao atualizar orçamento. Verifique os dados e tente novamente.';
+          this.errorMessage = 'Erro ao atualizar limite. Verifique os dados e tente novamente.';
           toast.error(this.errorMessage);
         });
       } else {
         axios.post('/budgets', formData, {
           headers: { 'Content-Type': 'application/json' }
         }).then(response => {
-          toast.success("Orçamento registado com sucesso!");
+          toast.success("Limite registado com sucesso!");
           this.$emit("BudgetsList", { reload: true } );
         }).catch(error => {
-          this.errorMessage = 'Erro ao submeter orçamento. Verifique os dados e tente novamente.';
+          this.errorMessage = 'Erro ao submeter limite. Verifique os dados e tente novamente.';
           toast.error(this.errorMessage);
         });
       }
