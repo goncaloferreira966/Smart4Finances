@@ -2,8 +2,20 @@
   <div class="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg"
     style="margin-top: 7vh; margin-bottom: 7vh; min-width: 100vh;">
     <h2 class="text-2xl font-bold mb-4" style="color: black;">Os Meus Investimentos</h2>
-
-    <!-- Filtros -->
+    <button
+  @click="toggleView"
+  class="mb-6 bg-gray-800 text-gray-100 font-medium py-3 px-6 rounded-lg 
+         shadow-[5px_5px_10px_rgba(0,0,0,0.3),-5px_-5px_10px_rgba(255,255,255,0.05)] 
+         hover:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.05)] 
+         active:shadow-inset transition-all duration-300 border border-gray-700"
+>
+  <span class="flex items-center gap-2">
+    <i class="bi" :class="showInvestments ? 'bi-bar-chart-line' : 'bi-cash-stack'"></i>
+    {{ showInvestments ? 'Mercados Financeiros' : 'Os Meus Investimentos' }}
+  </span>
+</button>
+    <div v-if="showInvestments">
+          <!-- Filtros -->
     <div class="mb-4">
       <div class="flex mb-2">
         <div class="mr-5 ml-2">
@@ -20,7 +32,8 @@
       <button @click="addInvestment" class="bg-green-500 text-white px-4 py-2 rounded">
         <i class="bi bi-plus-lg"></i>
       </button>
-      <button v-if="selectedInvestments.length > 0" @click="deleteSelectedInvestments" class="bg-red-500 text-white px-4 py-2 rounded ml-2">
+      <button v-if="selectedInvestments.length > 0" @click="deleteSelectedInvestments"
+        class="bg-red-500 text-white px-4 py-2 rounded ml-2">
         <i class="bi bi-trash"></i> Eleminar Selecionados
       </button>
     </div>
@@ -40,7 +53,7 @@
       <tbody>
         <tr v-for="investment in investments" :key="investment.id">
           <td class="px-2 py-1 text-center">
-            <input type="checkbox" :value="investment.id" v-model="selectedInvestments"/>
+            <input type="checkbox" :value="investment.id" v-model="selectedInvestments" />
           </td>
           <td class="px-2 py-1">{{ formatDate(investment.created_at) }}</td>
           <td class="px-2 py-1">{{ investment.amount + ' ' + coin }}</td>
@@ -72,6 +85,11 @@
         </div>
       </div>
     </div>
+    </div>
+    <div v-else>
+      <!-- Componente TradingView -->
+      <tradingview />
+    </div>
   </div>
 </template>
 
@@ -79,8 +97,11 @@
 import axios from 'axios';
 import debounce from 'lodash.debounce';
 import { useAuthStore } from '@/stores/auth';
+import tradingview from './tradingview.vue';
 
 export default {
+  components: { tradingview },
+
   props: {
     reloadInvestmentsList: {
       type: Boolean,
@@ -90,6 +111,7 @@ export default {
 
   data() {
     return {
+      showInvestments: true,
       coin: '',
       investments: [],
       page: 1,
@@ -104,7 +126,8 @@ export default {
         endDate: '',
       },
       showDeleteModal: false,
-      deletionTarget: null
+      deletionTarget: null,
+      tradingview,
     };
   },
   created() {
@@ -129,6 +152,9 @@ export default {
     },
   },
   methods: {
+    toggleView() {
+      this.showInvestments = !this.showInvestments;
+    },
     loadInvestments(reset = false) {
       if (reset) {
         this.page = 1;
@@ -254,7 +280,7 @@ export default {
           });
       }
     },
-    addInvestment(){
+    addInvestment() {
       this.$emit("addInvestment");
     },
   }
