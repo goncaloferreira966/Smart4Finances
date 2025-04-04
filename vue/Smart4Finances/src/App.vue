@@ -45,21 +45,17 @@
         <Notifications />
       </div>
       <div v-else-if="currentSection === 'addExpenses'">
-        <addExpenses :expenseId="id" @ExpensesList="handleExpensesList" @ExpenseView="handleExpenseView"/>
+        <addExpenses :expenseId="id" @ExpensesList="handleExpensesList" @ExpenseView="handleExpenseView" />
       </div>
       <div v-else-if="currentSection === 'ExpensesList'">
-        <ExpensesList
-          :reloadExpensesList="reloadExpensesList"
-          @update:reloadExpensesList="reloadExpensesList = $event"
-          @ExpenseView="handleExpenseView"
-          @addexpense="handleExpensEdit"
-        />
+        <ExpensesList :reloadExpensesList="reloadExpensesList" @update:reloadExpensesList="reloadExpensesList = $event"
+          @ExpenseView="handleExpenseView" @addexpense="handleExpensEdit" />
       </div>
       <div v-else-if="currentSection === 'ExpenseView'">
         <ExpenseView @BackExpense="handleExpensesList" @editExpense="handleExpensEdit" :expenseId="id" />
       </div>
       <div v-else-if="currentSection === 'addIncome'">
-        <addIncome :IncomeId="id" @IncomeList="handleIncomeList" @IncomeView="handleIncomeView"/>
+        <addIncome :IncomeId="id" @IncomeList="handleIncomeList" @IncomeView="handleIncomeView" />
       </div>
       <div v-else-if="currentSection === 'IncomeList'">
         <IncomeList @IncomeView="handleIncomeView" @addIncome="handleIncomeEdit" />
@@ -74,30 +70,30 @@
         <DashboardClient />
       </div>
       <div v-else-if="currentSection === 'InvestmentList'">
-        <InvestmentsList
-          :reloadInvestmentsList="reloadInvestmentsList"
-          @update:reloadInvestmentsList="reloadInvestmentsList = $event"
-          @InvestmentView="handleInvestmentView"
-          @addInvestment="handleInvestmentEdit"
-        />
-        </div>
+        <InvestmentsList :reloadInvestmentsList="reloadInvestmentsList"
+          @update:reloadInvestmentsList="reloadInvestmentsList = $event" @InvestmentView="handleInvestmentView"
+          @addInvestment="handleInvestmentEdit" />
+      </div>
       <div v-else-if="currentSection === 'InvestmentView'">
-        <InvestmentView @BackInvestment="handleInvestmentList" @editInvestment="handleInvestmentEdit" :investmentId="id"/>
+        <InvestmentView @BackInvestment="handleInvestmentList" @editInvestment="handleInvestmentEdit"
+          :investmentId="id" />
       </div>
       <div v-else-if="currentSection === 'addInvestment'">
-        <addInvestment @InvestmentList="handleInvestmentList" @InvestmentView="handleInvestmentView" :investmentId="id"/>
+        <addInvestment @InvestmentList="handleInvestmentList" @InvestmentView="handleInvestmentView"
+          :investmentId="id" />
       </div>
       <div v-else-if="currentSection === 'BudgetList'">
-        <BudgetsList  :reloadBudgetsList="reloadBudgetsList"
-          @update:reloadBudgetsList="reloadBudgetsList = $event"
-          @BudgetView="handleBudgetView"
-          @addBudget="handleBudgetEdit"/>
+        <BudgetsList :reloadBudgetsList="reloadBudgetsList" @update:reloadBudgetsList="reloadBudgetsList = $event"
+          @BudgetView="handleBudgetView" @addBudget="handleBudgetEdit" />
       </div>
       <div v-else-if="currentSection === 'BudgetView'">
-        <BudgetView @BackBudget="handleBudgetsList" @editBudget="handleBudgetEdit" :budgetId="id"/>
+        <BudgetView @BackBudget="handleBudgetsList" @editBudget="handleBudgetEdit" :budgetId="id" />
       </div>
       <div v-else-if="currentSection === 'addBudgets'">
-        <addBudgets @BudgetsList="handleBudgetsList" @BudgetView="handleBudgetView" :budgetId="id"/>
+        <addBudgets @BudgetsList="handleBudgetsList" @BudgetView="handleBudgetView" :budgetId="id" />
+      </div>
+      <div v-else-if="currentSection === 'CategoryList'">
+        <CategoryList />
       </div>
     </div>
 
@@ -136,6 +132,7 @@ import addInvestment from './components/investments/addInvestment.vue';
 import BudgetsList from './components/budgets/BudgetsList.vue';
 import BudgetView from './components/budgets/BudgetView.vue';
 import addBudgets from './components/budgets/addBudgets.vue';
+import CategoryList from './components/categories/CategoryList.vue';
 
 
 import EmailConfirmed from './components/password_mail/EmailConfirmed.vue';
@@ -172,6 +169,7 @@ export default {
     BudgetsList,
     BudgetView,
     addBudgets,
+    CategoryList,
   },
   data() {
     return {
@@ -197,22 +195,22 @@ export default {
       axios.post('/password/validate-token', {
         token,
         email
-      },{headers: { 'Content-Type': 'multipart/form-data' }})
-      .then((response) => {
-        if (response.data.valid) {
-          this.resetToken = token;
-          this.resetEmail = email;
-          this.currentSection = 'resetPassword';
-        } else {
+      }, { headers: { 'Content-Type': 'multipart/form-data' } })
+        .then((response) => {
+          if (response.data.valid) {
+            this.resetToken = token;
+            this.resetEmail = email;
+            this.currentSection = 'resetPassword';
+          } else {
+            this.currentSection = 'emailVerificationError';
+          }
+          window.history.replaceState({}, document.title, '/');
+        })
+        .catch(() => {
+          console.log('error');
           this.currentSection = 'emailVerificationError';
-        }
-        window.history.replaceState({}, document.title, '/');
-      })
-      .catch(() => {
-        console.log('error');
-        this.currentSection = 'emailVerificationError';
-        window.history.replaceState({}, document.title, '/');
-      });
+          window.history.replaceState({}, document.title, '/');
+        });
     }
 
     if (urlParams.get('email_verified') === 'true') {
@@ -276,11 +274,11 @@ export default {
       this.id = id;
       this.currentSection = 'addExpenses';
     },
-    handleInvestmentEdit(id){
+    handleInvestmentEdit(id) {
       this.id = id;
       this.currentSection = 'addInvestment';
     },
-    handleBudgetEdit(id){
+    handleBudgetEdit(id) {
       this.id = id;
       this.currentSection = 'addBudgets';
     },
@@ -293,7 +291,7 @@ export default {
     handleInvestmentList(payload) {
       this.currentSection = 'InvestmentList';
       if (payload?.reload) {
-        this.reloadInvestmentsList  = true; 
+        this.reloadInvestmentsList = true;
       }
     },
     handleBudgetsList(payload) {
