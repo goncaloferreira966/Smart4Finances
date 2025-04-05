@@ -236,6 +236,7 @@ export default {
     },
     logout() {
       this.isLoggedIn = false;
+      this.currentSection = 'login';
     },
     navigateTo(section) {
       this.currentSection = section;
