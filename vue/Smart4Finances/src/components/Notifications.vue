@@ -2,14 +2,15 @@
   <div class="notifications-page mb-5">
     <h2 class="card-title" style="color: black;">Notificações</h2>
     <div class="controls mt-4">
-      <button style="border-top-right-radius: 0; border-bottom-right-radius: 0;"
-              @click="fetchNotifications('unread')" :disabled="loading" :class="{ active: activeTab === 'unread' }">
+      <button style="border-top-right-radius: 0; border-bottom-right-radius: 0;" @click="fetchNotifications('unread')"
+        :disabled="loading" :class="{ active: activeTab === 'unread' }">
         <i class="bi bi-bell-fill text-danger"></i> Não Lidas
       </button>
-      <button style="border-top-left-radius: 0; border-bottom-left-radius: 0;" 
-              @click="fetchNotifications('all')" :disabled="loading" :class="{ active: activeTab === 'all' }">
-        <i class="bi bi-bell-fill"></i> Todas as Notificações
+      <button style="border-top-left-radius: 0; border-bottom-left-radius: 0;" @click="fetchNotifications('all')"
+        :disabled="loading" :class="{ active: activeTab === 'all' }">
+        <i class="bi bi-bell-fill "></i> Todas as Notificações
       </button>
+
     </div>
     <div v-if="loading" class="loading">A Carregar notificações...</div>
     <div v-else class="mt-4">
@@ -24,7 +25,8 @@
               <p><strong>Data:</strong> {{ formatDate(notification.created_at) }}</p>
             </div>
             <div class="col-md-4">
-              <button v-if="!notification.read_at" @click="markAsRead(notification.id)" class="mark-as-read-btn text-danger mt-3">
+              <button v-if="!notification.read_at" @click="markAsRead(notification.id)"
+                class="mark-as-read-btn text-danger mt-3">
                 <i class="bi bi-bell-slash-fill"></i> Marcar como lida
               </button>
               <p v-else class="read-status text-success mt-3"><i class="bi bi-eye-fill"></i> Lida</p>
@@ -98,3 +100,49 @@ export default {
   },
 };
 </script>
+
+
+
+
+
+
+
+<style scoped>
+.notifications-page {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.controls button {
+  padding: 8px 16px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #fff;
+  color: #555;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.controls button:hover:not(:disabled) {
+  background-color: #f0f0f0;
+  color: #000;
+}
+
+.controls button.active {
+  background-color: black;
+  color: white;
+  border-color: black;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+button:hover:not(:disabled) {
+  background-color: #f0f0f0;
+}
+</style>

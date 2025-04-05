@@ -206,7 +206,7 @@ import { useThemeStore } from "@/stores/theme";
 export default {
   methods: {
     exportToPDF() {
-      toast.info("Gerando PDF, por favor aguarde...");
+      toast.info("A Gerar PDF, por favor aguarde...");
       
       // Temporarily remove dark mode class for PDF generation if it exists
       const isDarkMode = document.documentElement.classList.contains('dark-mode');
@@ -270,7 +270,7 @@ export default {
     },
     
     sendEmail() {
-      toast.info("Preparando o email, por favor aguarde...");
+      toast.info("A Preparar o email, por favor aguarde...");
       
       // Temporarily remove dark mode class for PDF generation if it exists
       const isDarkMode = document.documentElement.classList.contains('dark-mode');
@@ -462,7 +462,7 @@ export default {
       is3D: false,
       pieHole: 0.4,  // Isso cria o efeito de "donut"
       backgroundColor: "transparent", // Fundo transparente
-      chartArea: { width: '90%', height: '70%' },
+      chartArea: { width: '80%', height: '70%' },
       fontName: 'Arial',
       titleTextStyle: {
         fontSize: 16,
@@ -525,101 +525,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.filters-container {
-  width: 100%;
-}
-
-.stat-card {
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.stat-card h3 {
-  font-weight: 600;
-}
-
-.stat-card p {
-  font-weight: 700;
-}
-
-/* Light mode styles */
-.stat-card-income {
-  background-color: #ebf5ff; /* Light blue background */
-  border-color: #bfdbfe;
-}
-
-.stat-card-income h3 i {
-  color: #3b82f6; /* Blue icon */
-}
-
-.stat-card-expense {
-  background-color: #fee2e2; /* Light red background */
-  border-color: #fecaca;
-}
-
-.stat-card-expense h3 i {
-  color: #ef4444; /* Red icon */
-}
-
-.stat-card-investment {
-  background-color: #ecfdf5; /* Light green background */
-  border-color: #a7f3d0;
-}
-
-.stat-card-investment h3 i {
-  color: #10b981; /* Green icon */
-}
-
-/* Dark mode versions */
-html.dark-mode .stat-card {
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
-}
-
-html.dark-mode .stat-card-income {
-  background: #071329 !important; /* Extremely dark blue */
-  border-color: #1d4ed8 !important;
-  box-shadow: 0 0 15px rgba(37, 99, 235, 0.2) !important;
-}
-
-html.dark-mode .stat-card-income h3 i {
-  color: #60a5fa !important; /* Bright blue icon for dark mode */
-}
-
-html.dark-mode .stat-card-expense {
-  background: #2c0303 !important; /* Extremely dark red */
-  border-color: #dc2626 !important;
-  box-shadow: 0 0 15px rgba(220, 38, 38, 0.2) !important;
-}
-
-html.dark-mode .stat-card-expense h3 i {
-  color: #f87171 !important; /* Bright red icon for dark mode */
-}
-
-html.dark-mode .stat-card-investment {
-  background: #052510 !important; /* Extremely dark green */
-  border-color: #10b981 !important;
-  box-shadow: 0 0 15px rgba(16, 185, 129, 0.2) !important;
-}
-
-html.dark-mode .stat-card-investment h3 i {
-  color: #34d399 !important; /* Bright green icon for dark mode */
-}
-
-html.dark-mode .stat-card h3,
-html.dark-mode .stat-card p {
-  color: #f8fafc !important;
-}
-
-html.dark-mode .stat-card p {
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
-}
-
-@media (max-width: 640px) {
-  button i {
-    margin-right: 4px;
-  }
-}
-</style>
