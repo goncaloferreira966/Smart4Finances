@@ -27,6 +27,17 @@ pipeline {
             }
         }
 
+        stage('Corrigir URLs no Laravel') {
+            steps {
+                dir('laravel/Smart4Finances') {
+                    sh '''
+                        echo "🔁 A substituir http://localhost:5173 por https://cmartins.pt no Laravel..."
+                        grep -rl 'http://localhost:5173' . | xargs sed -i 's|http://localhost:5173|https://cmartins.pt|g'
+                    '''
+                }
+            }
+        }
+
         stage('Deploy Laravel') {
             steps {
                 dir('laravel/Smart4Finances') {
@@ -39,7 +50,6 @@ pipeline {
                             ./ /var/www/laravel.cmartins.pt/html
                         sudo /usr/local/bin/refresh_passport_keys.sh
                     '''
-                    
                 }
             }
         }
