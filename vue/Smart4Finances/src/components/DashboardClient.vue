@@ -200,7 +200,7 @@ export default {
         const imgWidth = 220; // Define a largura desejada
         const imgHeight = (canvas.height * imgWidth) / canvas.width; // Mantém a proporção
 
-        doc.addImage(imgData, "PNG", 40, 40, imgWidth, imgHeight);
+        doc.addImage(imgData, "PNG", 40, 0, imgWidth, imgHeight);
 
         // Guarda o PDF
         doc.save("Smart4Finances_Relatório_Financeiro.pdf");
@@ -363,7 +363,7 @@ export default {
 
           const imgWidth = 220;
           const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          doc.addImage(imgData, "PNG", 40, 40, imgWidth, imgHeight);
+          doc.addImage(imgData, "PNG", 40, 0, imgWidth, imgHeight);
 
           const pdfBlob = doc.output("blob"); // Gera um blob do PDF
 
