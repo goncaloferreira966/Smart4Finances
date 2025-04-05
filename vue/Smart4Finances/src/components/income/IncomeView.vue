@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg" style="margin-top: 7vh; margin-bottom: 7vh; min-width: 50vh;">
+  <div class="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg" style="margin-top: 7vh; margin-bottom: 7vh; min-width: 50%;">
     <h2 class="text-2xl font-bold mb-4" style="color: black;">Detalhes da Receita</h2>
     <div v-if="income">
       <p><strong>Data:</strong> {{ income.date }}</p>

@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar bg-black p-4 text-[#DAA520] shadow-md">
+  <nav class="navbar bg-black p-1 text-[#DAA520] shadow-md">
     <div class="container mx-auto flex justify-between items-center">
       <!-- Logo -->
       <h1 class="text-xl font-bold">
@@ -10,7 +10,7 @@
 
       <!-- Menu Button - Shows on mobile -->
       <button @click="toggleMenu"
-        class="block lg:hidden text-[#DAA520] p-2 rounded-md hover:bg-gray-800 transition-colors">
+        class="block lg:hidden text-[#DAA520] p-1 rounded-md hover:bg-gray-800 transition-colors">
         <i class="bi bi-list text-2xl"></i>
       </button>
 
@@ -37,6 +37,11 @@
                 <button @click="navigateTo('administration')" class="nav-link rounded-md w-full hover:bg-gray-800"
                   :class="{ 'active-link': activeForm === 'administration' }">
                   <i class="bi bi-people text-lg"></i> Administração
+                </button>
+              </li>
+              <li v-if="userRole !== 'A'" class="w-full lg:w-auto">
+                <button @click="navigateTo('BudgetList')"  class="nav-link rounded-md w-full hover:bg-gray-800">
+                  <i class="bi bi-cash-coin"></i> Limites
                 </button>
               </li>
               <li v-if="userRole !== 'A'" class="w-full lg:w-auto">

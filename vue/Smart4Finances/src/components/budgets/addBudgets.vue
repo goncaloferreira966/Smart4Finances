@@ -1,6 +1,6 @@
 <template>
   <div class="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg"
-    style="margin-top: 7vh; margin-bottom: 7vh; min-width: 50vh;">
+    style="margin-top: 7vh; margin-bottom: 7vh; min-width: 50%;">
     <h2 class="text-2xl font-bold mb-4">{{ isEditMode ? 'Editar Limite Mensal' : 'Registar  Limite Mensal' }}</h2>
 
     <form @submit.prevent="submitBudget">
