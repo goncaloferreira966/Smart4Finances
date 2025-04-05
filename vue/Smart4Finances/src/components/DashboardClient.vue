@@ -1,31 +1,36 @@
 <template>
   <div class="container mt-4 mb-5">
     <h2 class="card-title" style="color: black;">Dashboard</h2>
-    <div id="content" ref="content" class=" space-x-4 mb-6 stats mt-4">
-      <div class="flex space-x-4 mb-6 ">
-        <input v-model="year" type="number" class="border p-2" placeholder="Ano" />
-        <select v-model="month" class="border p-2">
-          <option :value="null">Todos os meses</option>
-          <option value="1">Janeiro</option>
-          <option value="2">Fevereiro</option>
-          <option value="3">Março</option>
-          <option value="4">Abril</option>
-          <option value="5">Maio</option>
-          <option value="6">Junho</option>
-          <option value="7">Julho</option>
-          <option value="8">Agosto</option>
-          <option value="9">Setembro</option>
-          <option value="10">Outubro</option>
-          <option value="11">Novembro</option>
-          <option value="12">Dezembro</option>
-        </select>
-        <button @click="fetchData" class="bg-blue-500 text-white p-2 rounded"> <i class="bi bi-funnel"></i>
-          Filtrar</button>
-        <button @click="exportToPDF" class="bg-green-500 text-white p-2 rounded"> <i class="bi bi-share-fill"></i>
-          Exportar PDF</button>
-        <button @click="sendEmail" class="bg-yellow-500 text-white p-2 rounded"> <i class="bi bi-envelope"></i>
-          Partilhar PDF por E-mail</button>
-
+    <div id="content" ref="content" class="stats mt-4">
+      <!-- Filtros responsivos -->
+      <div class="filters-container mb-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+          <input v-model="year" type="number" class="border p-2 rounded" placeholder="Ano" />
+          <select v-model="month" class="border p-2 rounded">
+            <option :value="null">Todos os meses</option>
+            <option value="1">Janeiro</option>
+            <option value="2">Fevereiro</option>
+            <option value="3">Março</option>
+            <option value="4">Abril</option>
+            <option value="5">Maio</option>
+            <option value="6">Junho</option>
+            <option value="7">Julho</option>
+            <option value="8">Agosto</option>
+            <option value="9">Setembro</option>
+            <option value="10">Outubro</option>
+            <option value="11">Novembro</option>
+            <option value="12">Dezembro</option>
+          </select>
+          <button @click="fetchData" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors"> 
+            <i class="bi bi-funnel"></i> Filtrar
+          </button>
+          <button @click="exportToPDF" class="bg-green-500 text-white p-2 rounded hover:bg-green-600 transition-colors"> 
+            <i class="bi bi-share-fill"></i> Exportar PDF
+          </button>
+          <button @click="sendEmail" class="bg-yellow-500 text-white p-2 rounded hover:bg-yellow-600 transition-colors"> 
+            <i class="bi bi-envelope"></i> Partilhar PDF
+          </button>
+        </div>
       </div>
 
       <div class="row">
@@ -39,13 +44,11 @@
         <div class="col-md-6">
           <GChart v-if="incomeData.length" type="AreaChart" :data="incomeData"
           :options="chartOptions(chartTitles.incomeChart)" />
-
         </div>
 
         <div class="col-md-6">
           <GChart v-if="expenseData.length" type="AreaChart" :data="expenseData"
           :options="chartOptions(chartTitles.expenseChart)" />
-
         </div>
       </div>
 
@@ -53,19 +56,16 @@
         <div class="col-md-6">
           <GChart v-if="investmentData.length" type="AreaChart" :data="investmentData"
           :options="chartOptions(chartTitles.investmentChart)" />
-
         </div>
 
         <div class="col-md-6">
           <GChart v-if="incomeBySource.length" type="PieChart" :data="incomeBySource"
             :options="chartOptions('Distribuição de Rendimento por Fonte (%)')" />
-
         </div>
       </div>
 
       <div class="row mt-1">
         <div class="col-md-6">
-
           <GChart v-if="expenseCategories.length" type="PieChart" :data="expenseCategories"
             :options="chartOptions('Distribuição de Despesas por Categoria (%)')" />
         </div>
@@ -73,7 +73,6 @@
         <div class="col-md-6">
           <GChart v-if="investmentByType.length" type="PieChart" :data="investmentByType"
             :options="chartOptions('Distribuição de Investimentos por Tipo (%)')" />
-
         </div>
       </div>
     </div>
@@ -312,3 +311,15 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.filters-container {
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  button i {
+    margin-right: 4px;
+  }
+}
+</style>
