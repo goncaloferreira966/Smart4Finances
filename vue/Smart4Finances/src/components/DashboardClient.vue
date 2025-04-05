@@ -166,22 +166,155 @@ import { useAuthStore } from "@/stores/auth";
 export default {
   methods: {
     exportToPDF() {
-      const content = this.$refs.content;
+      // Cria um novo documento PDF
+      const doc = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
 
-      // Captura o conteúdo da página como imagem
-      html2canvas(content, {
-        allowTaint: true,
-        useCORS: true, // Permite capturar gráficos do Google Charts (por causa da política de CORS)
-        scale: 2, // Aumenta a qualidade da imagem gerada
-        //(se for para enviar email, meter scale 1 porque o 2 é demasiado grande torna o ficheiro grande)
-      }).then((canvas) => {
-        const imgData = canvas.toDataURL("image/png");
+      // Definindo a capa preta
+      doc.setFillColor(0, 0, 0);
+      doc.rect(0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height, 'F');
 
+      // Adicionando o logotipo
+      const logoWidth = 100;
+      const logoHeight = 80;
+      const logoX = (doc.internal.pageSize.width - logoWidth) / 2; // Centralizado
+      const logoY = 50; 
+      doc.addImage(logo, 'PNG', logoX, logoY, logoWidth, logoHeight);
+      
+      // Adicionar título na capa
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(24);
+      doc.text("Relatório Financeiro", doc.internal.pageSize.width / 2, logoY + logoHeight + 20, { align: "center" });
+      
+      // Adicionar data na capa
+      doc.setFontSize(14);
+      const today = new Date();
+      const dateStr = today.toLocaleDateString('pt-PT');
+      doc.text(`Gerado em: ${dateStr}`, doc.internal.pageSize.width / 2, logoY + logoHeight + 40, { align: "center" });
+
+      // Nova página para o resumo
+      doc.addPage();
+      
+      // Adicionar cabeçalho
+      doc.setFillColor(41, 128, 185); // Azul para o cabeçalho
+      doc.rect(0, 0, doc.internal.pageSize.width, 20, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(16);
+      doc.text("SMART4FINANCES", doc.internal.pageSize.width / 2, 12, { align: "center" });
+      
+      // Título do relatório
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(18);
+      doc.text("Resumo Financeiro", doc.internal.pageSize.width / 2, 30, { align: "center" });
+      
+      // Adicionar informações do filtro
+      doc.setFontSize(12);
+      let filterText = `Ano: ${this.year}`;
+      if (this.month) {
+        const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+        filterText += ` | Mês: ${months[this.month - 1]}`;
+      } else {
+        filterText += " | Todos os meses";
+      }
+      doc.text(filterText, doc.internal.pageSize.width / 2, 40, { align: "center" });
+      
+      // Linha separadora
+      doc.setDrawColor(220, 220, 220);
+      doc.line(20, 45, doc.internal.pageSize.width - 20, 45);
+      
+      // Adicionar estatísticas principais
+      let yPos = 60;
+      
+      // Título da seção
+      doc.setFontSize(14);
+      doc.setTextColor(41, 128, 185);
+      doc.text("Estatísticas Principais", 20, yPos);
+      yPos += 10;
+      
+      // Receitas
+      doc.setTextColor(52, 152, 219); // Azul para receitas
+      doc.setFontSize(12);
+      doc.text("Receitas Totais:", 30, yPos);
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`${this.getTotalValue(this.incomeData)} ${this.coin}`, 100, yPos);
+      yPos += 10;
+      
+      // Despesas
+      doc.setTextColor(231, 76, 60); // Vermelho para despesas
+      doc.setFontSize(12);
+      doc.text("Despesas Totais:", 30, yPos);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`${this.getTotalValue(this.expenseData)} ${this.coin}`, 100, yPos);
+      yPos += 10;
+      
+      // Investimentos
+      doc.setTextColor(46, 204, 113); // Verde para investimentos
+      doc.setFontSize(12);
+      doc.text("Investimentos Totais:", 30, yPos);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`${this.getTotalValue(this.investmentData)} ${this.coin}`, 100, yPos);
+      yPos += 20;
+      
+      // Linha separadora
+      doc.setDrawColor(220, 220, 220);
+      doc.line(20, yPos - 10, doc.internal.pageSize.width - 20, yPos - 10);
+      
+      // Adicionar distribuição de despesas por categoria
+      doc.setFontSize(14);
+      doc.setTextColor(41, 128, 185);
+      doc.text("Distribuição de Despesas", 20, yPos);
+      yPos += 10;
+      
+      if (this.expenseCategories.length > 1) {
+        for (let i = 1; i < this.expenseCategories.length; i++) {
+          const category = this.expenseCategories[i][0];
+          const value = this.expenseCategories[i][1];
+          const percentage = (value / parseFloat(this.getTotalValue(this.expenseData)) * 100).toFixed(1);
+          
+          doc.setTextColor(0, 0, 0);
+          doc.setFontSize(10);
+          doc.text(`${category}: ${value} ${this.coin} (${percentage}%)`, 30, yPos);
+          yPos += 7;
+          
+          // Verifica se precisa de uma nova página
+          if (yPos > 280) {
+            doc.addPage();
+            // Adicionar cabeçalho na nova página
+            doc.setFillColor(41, 128, 185);
+            doc.rect(0, 0, doc.internal.pageSize.width, 20, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(16);
+            doc.text("SMART4FINANCES", doc.internal.pageSize.width / 2, 12, { align: "center" });
+            yPos = 30;
+          }
+        }
+      } else {
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(10);
+        doc.text("Sem dados de categorias de despesa para exibir", 30, yPos);
+        yPos += 10;
+      }
+      
+      yPos += 10;
+      
+      // Adicionar página para gráficos (opcional)
+      // Se quiser incluir os gráficos existentes, ainda pode usar html2canvas para os gráficos específicos
+      // e adicioná-los ao PDF
+      
+      doc.save("Smart4Finances_Relatório_Financeiro.pdf");
+      toast.success("Relatório descarregado com sucesso!");
+    },
+    sendEmail: async () => {
+      try {
         // Cria um novo documento PDF
         const doc = new jsPDF({
-          orientation: "portrait", // ou "landscape" se preferir
+          orientation: "portrait",
           unit: "mm",
-          format: "a3",
+          format: "a4",
         });
 
         // Definindo a capa preta
@@ -189,24 +322,142 @@ export default {
         doc.rect(0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height, 'F');
 
         // Adicionando o logotipo
-        const logoWidth = 250;
-        const logoHeight = 200;
+        const logoWidth = 100;
+        const logoHeight = 80;
         const logoX = (doc.internal.pageSize.width - logoWidth) / 2; // Centralizado
-        const logoY = 100; //Distancia do logo smart4fiances do topo da página da capa (como se fosse mt-x)
+        const logoY = 50; 
         doc.addImage(logo, 'PNG', logoX, logoY, logoWidth, logoHeight);
+        
+        // Adicionar título na capa
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(24);
+        doc.text("Relatório Financeiro", doc.internal.pageSize.width / 2, logoY + logoHeight + 20, { align: "center" });
+        
+        // Adicionar data na capa
+        doc.setFontSize(14);
+        const today = new Date();
+        const dateStr = today.toLocaleDateString('pt-PT');
+        doc.text(`Gerado em: ${dateStr}`, doc.internal.pageSize.width / 2, logoY + logoHeight + 40, { align: "center" });
 
-        doc.addPage(); // Isso vai para a segunda página
+        // Nova página para o resumo
+        doc.addPage();
+        
+        // Adicionar cabeçalho
+        doc.setFillColor(41, 128, 185); // Azul para o cabeçalho
+        doc.rect(0, 0, doc.internal.pageSize.width, 20, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(16);
+        doc.text("SMART4FINANCES", doc.internal.pageSize.width / 2, 12, { align: "center" });
+        
+        // Título do relatório
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(18);
+        doc.text("Resumo Financeiro", doc.internal.pageSize.width / 2, 30, { align: "center" });
+        
+        // Adicionar informações do filtro
+        doc.setFontSize(12);
+        let filterText = `Ano: ${year.value}`;
+        if (month.value) {
+          const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+          filterText += ` | Mês: ${months[month.value - 1]}`;
+        } else {
+          filterText += " | Todos os meses";
+        }
+        doc.text(filterText, doc.internal.pageSize.width / 2, 40, { align: "center" });
+        
+        // Linha separadora
+        doc.setDrawColor(220, 220, 220);
+        doc.line(20, 45, doc.internal.pageSize.width - 20, 45);
+        
+        // Adicionar estatísticas principais
+        let yPos = 60;
+        
+        // Título da seção
+        doc.setFontSize(14);
+        doc.setTextColor(41, 128, 185);
+        doc.text("Estatísticas Principais", 20, yPos);
+        yPos += 10;
+        
+        // Receitas
+        doc.setTextColor(52, 152, 219); // Azul para receitas
+        doc.setFontSize(12);
+        doc.text("Receitas Totais:", 30, yPos);
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        doc.text(`${getTotalValue(incomeData.value)} ${coin.value}`, 100, yPos);
+        yPos += 10;
+        
+        // Despesas
+        doc.setTextColor(231, 76, 60); // Vermelho para despesas
+        doc.setFontSize(12);
+        doc.text("Despesas Totais:", 30, yPos);
+        doc.setTextColor(0, 0, 0);
+        doc.text(`${getTotalValue(expenseData.value)} ${coin.value}`, 100, yPos);
+        yPos += 10;
+        
+        // Investimentos
+        doc.setTextColor(46, 204, 113); // Verde para investimentos
+        doc.setFontSize(12);
+        doc.text("Investimentos Totais:", 30, yPos);
+        doc.setTextColor(0, 0, 0);
+        doc.text(`${getTotalValue(investmentData.value)} ${coin.value}`, 100, yPos);
+        yPos += 20;
+        
+        // Linha separadora
+        doc.setDrawColor(220, 220, 220);
+        doc.line(20, yPos - 10, doc.internal.pageSize.width - 20, yPos - 10);
+        
+        // Adicionar distribuição de despesas por categoria
+        doc.setFontSize(14);
+        doc.setTextColor(41, 128, 185);
+        doc.text("Distribuição de Despesas", 20, yPos);
+        yPos += 10;
+        
+        if (expenseCategories.value.length > 1) {
+          for (let i = 1; i < expenseCategories.value.length; i++) {
+            const category = expenseCategories.value[i][0];
+            const value = expenseCategories.value[i][1];
+            const percentage = (value / parseFloat(getTotalValue(expenseData.value)) * 100).toFixed(1);
+            
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.text(`${category}: ${value} ${coin.value} (${percentage}%)`, 30, yPos);
+            yPos += 7;
+            
+            // Verifica se precisa de uma nova página
+            if (yPos > 280) {
+              doc.addPage();
+              // Adicionar cabeçalho na nova página
+              doc.setFillColor(41, 128, 185);
+              doc.rect(0, 0, doc.internal.pageSize.width, 20, 'F');
+              doc.setTextColor(255, 255, 255);
+              doc.setFontSize(16);
+              doc.text("SMART4FINANCES", doc.internal.pageSize.width / 2, 12, { align: "center" });
+              yPos = 30;
+            }
+          }
+        } else {
+          doc.setTextColor(0, 0, 0);
+          doc.setFontSize(10);
+          doc.text("Sem dados de categorias de despesa para exibir", 30, yPos);
+          yPos += 10;
+        }
+        
+        // Gera um blob do PDF  
+        const pdfBlob = doc.output("blob");
 
-        const imgWidth = 220; // Define a largura desejada
-        const imgHeight = (canvas.height * imgWidth) / canvas.width; // Mantém a proporção
+        const formData = new FormData();
+        formData.append("file", pdfBlob, "Smart4Finances_Relatório_Financeiro.pdf");
 
-        doc.addImage(imgData, "PNG", 40, 40, imgWidth, imgHeight);
-
-        // Guarda o PDF
-        doc.save("Smart4Finances_Relatório_Financeiro.pdf");
-        toast.success("Relatório descarregado com sucesso!");
-
-      });
+        const response = await axios.post("/send-email", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        
+        toast.success("E-mail enviado com sucesso!");
+      } catch (error) {
+        toast.error("Erro ao enviar o E-mail");
+        console.error("Erro ao enviar email", error);
+      }
     },
   },
   components: { GChart },
@@ -333,60 +584,6 @@ export default {
       }
     });
 
-    const sendEmail = async () => {
-      try {
-        const content = document.querySelector("#content");
-        html2canvas(content, {
-          allowTaint: true,
-          useCORS: true,
-          //1.2 está no limite máximo do que o gmail permite de mb por email de forma gratuita
-          scale: 1.2, // Para envio por e-mail, manter a escala menor para reduzir o tamanho do arquivo
-        }).then((canvas) => {
-          const imgData = canvas.toDataURL("image/png");
-          const doc = new jsPDF({
-            orientation: "portrait",
-            unit: "mm",
-            format: "a3",
-          });
-
-          // Criar capa preta com logotipo
-          doc.setFillColor(0, 0, 0);
-          doc.rect(0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height, "F");
-
-          const logoWidth = 250;
-          const logoHeight = 200;
-          const logoX = (doc.internal.pageSize.width - logoWidth) / 2;
-          const logoY = 100;
-          doc.addImage(logo, "PNG", logoX, logoY, logoWidth, logoHeight);
-
-          doc.addPage();
-
-          const imgWidth = 220;
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          doc.addImage(imgData, "PNG", 40, 40, imgWidth, imgHeight);
-
-          const pdfBlob = doc.output("blob"); // Gera um blob do PDF
-
-          const formData = new FormData();
-          formData.append("file", pdfBlob, "Smart4Finances_Relatório_Financeiro.pdf");
-
-          axios.post("/send-email", formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          })
-            .then(() => {
-              toast.success("E-mail enviado com sucesso!");
-            })
-            .catch(() => {
-              toast.error("Erro ao enviar e-mail.");
-            });
-        });
-      } catch (error) {
-        toast.error("Erro ao enviar o E-mail");
-        console.error("Erro ao enviar email", error);
-      }
-    };
-
-
     onMounted(fetchData);
 
     return {
@@ -402,7 +599,6 @@ export default {
       chartOptions,
       formatPieChartData,
       lineChartData,
-      sendEmail,
       coin,
       chartTitles,
       getTotalValue,
