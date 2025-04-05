@@ -4,66 +4,76 @@
 
     <!-- Filtros -->
     <div class="mb-4">
-      <div class="flex mb-2">
-        <div class="mr-5 ml-2">
-          <label class="block">Categoria:</label>
-          <select v-model="filters.category" class="mb-2">
+      <div class="flex flex-col sm:flex-row mb-2 gap-4">
+        <div class="w-full sm:w-auto">
+          <label class="block mb-1">Categoria:</label>
+          <select v-model="filters.category" class="w-full p-2 border rounded">
             <option value="">Todas</option>
             <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
           </select>
         </div>
-        <div class="mr-5 ml-2">
-          <input type="number" v-model="filters.minPrice" placeholder="Preço mínimo" class="mr-2 p-2 border rounded" style="width: 15vh;"/>
-          <input type="number" v-model="filters.maxPrice" placeholder="Preço máximo" class="p-2 border rounded" style="width: 15vh;"/>
+        <div class="w-full sm:w-auto">
+          <label class="block mb-1">Preço:</label>
+          <div class="flex gap-2">
+            <input type="number" v-model="filters.minPrice" placeholder="Mínimo" class="w-full p-2 border rounded"/>
+            <input type="number" v-model="filters.maxPrice" placeholder="Máximo" class="w-full p-2 border rounded"/>
+          </div>
         </div>
-        <div class="flex mb-2 mr-5 ml-2">
-          <input type="date" v-model="filters.startDate" class="mr-2 p-2 border rounded"/>
-          <input type="date" v-model="filters.endDate" class="p-2 border rounded"/>
+        <div class="w-full sm:w-auto">
+          <label class="block mb-1">Data:</label>
+          <div class="flex gap-2">
+            <input type="date" v-model="filters.startDate" class="w-full p-2 border rounded"/>
+            <input type="date" v-model="filters.endDate" class="w-full p-2 border rounded"/>
+          </div>
         </div>
       </div>
-      <button @click="addexpense" class="bg-green-500 text-white px-4 py-2 rounded">
-        <i class="bi bi-plus-lg"></i>
-      </button>
-      <!-- Botão global de deletar aparece se houver alguma despesa selecionada -->
-      <button v-if="selectedExpenses.length > 0" @click="deleteSelectedExpenses" class="bg-red-500 text-white px-4 py-2 rounded ml-2">
-        <i class="bi bi-trash"></i> Eleminar Selecionados
-      </button>
+      <div class="flex justify-center gap-2 mt-4">
+        <button @click="addexpense" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+          <i class="bi bi-plus-lg"></i>
+        </button>
+        <!-- Botão global de deletar aparece se houver alguma despesa selecionada -->
+        <button v-if="selectedExpenses.length > 0" @click="deleteSelectedExpenses" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+          <i class="bi bi-trash"></i> Eleminar Selecionados
+        </button>
+      </div>
     </div>
 
     <!-- Tabela de despesas -->
-    <table class="w-full">
-      <thead>
-        <tr>
-          <th class="border px-2 py-1"></th>
-          <th class="border px-2 py-1">Data</th>
-          <th class="border px-2 py-1">Categoria</th>
-          <th class="border px-2 py-1">Valor</th>
-          <th class="border px-2 py-1">Descrição</th>
-          <th class="border px-2 py-1">Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="expense in expenses" :key="expense.id">
-          <td class="px-2 py-1 text-center">
-            <input type="checkbox" :value="expense.id" v-model="selectedExpenses"/>
-          </td>
-          <td class="px-2 py-1">{{ expense.date }}</td>
-          <td class="px-2 py-1">{{ getCategoryName(expense.category_id) }}</td>
-          <td class="px-2 py-1">{{ expense.amount + " "+coin}}</td>
-          <td class="px-2 py-1">{{ truncate(expense.description, 20) }}</td>
-          <td class="px-2 py-1">
-            <!-- Botão de delete individual -->
-            <button @click="deleteExpense(expense.id)" class="bg-red-500 text-white px-2 py-1 rounded">
-              <i class="bi bi-trash"></i>
-            </button>
-            <!-- Botão de visualizar -->
-            <button @click="viewExpense(expense.id)" class="bg-blue-500 text-white px-2 py-1 rounded ml-1">
-              <i class="bi bi-eye-fill"></i>
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-[600px]">
+        <thead>
+          <tr class="bg-gray-50">
+            <th class="border px-4 py-2"></th>
+            <th class="border px-4 py-2">Data</th>
+            <th class="border px-4 py-2">Categoria</th>
+            <th class="border px-4 py-2">Valor</th>
+            <th class="border px-4 py-2">Descrição</th>
+            <th class="border px-4 py-2">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="expense in expenses" :key="expense.id" class="hover:bg-gray-50">
+            <td class="px-4 py-2 text-center">
+              <input type="checkbox" :value="expense.id" v-model="selectedExpenses"/>
+            </td>
+            <td class="px-4 py-2">{{ expense.date }}</td>
+            <td class="px-4 py-2">{{ getCategoryName(expense.category_id) }}</td>
+            <td class="px-4 py-2">{{ expense.amount + " "+coin}}</td>
+            <td class="px-4 py-2">{{ truncate(expense.description, 20) }}</td>
+            <td class="px-4 py-2">
+              <div class="flex gap-2 justify-center">
+                <button @click="deleteExpense(expense.id)" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                  <i class="bi bi-trash"></i>
+                </button>
+                <button @click="viewExpense(expense.id)" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+                  <i class="bi bi-eye-fill"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <div v-if="loadingMore" class="mt-4 text-center">A Carregar mais...</div>
 

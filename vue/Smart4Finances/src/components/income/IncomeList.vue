@@ -4,60 +4,71 @@
 
     <!-- Filtros -->
     <div class="mb-4">
-      <div class="flex mb-2">
-        <div class="mr-5 ml-2">
-          <input type="text" v-model="filters.source" placeholder="Pesquisar fonte..." class="mb-2 p-2 border rounded" />
+      <div class="flex flex-col sm:flex-row mb-2 gap-4">
+        <div class="w-full sm:w-auto">
+          <label class="block mb-1">Fonte:</label>
+          <input type="text" v-model="filters.source" placeholder="Pesquisar fonte..." class="w-full p-2 border rounded" />
         </div>
-        <div class="mr-5 ml-2">
-          <input type="number" v-model="filters.minPrice" placeholder="Valor mínimo" class="mr-2 p-2 border rounded" style="width: 15vh;"/>
-          <input type="number" v-model="filters.maxPrice" placeholder="Valor máximo" class="p-2 border rounded" style="width: 15vh;"/>
+        <div class="w-full sm:w-auto">
+          <label class="block mb-1">Valor:</label>
+          <div class="flex gap-2">
+            <input type="number" v-model="filters.minPrice" placeholder="Mínimo" class="w-full p-2 border rounded"/>
+            <input type="number" v-model="filters.maxPrice" placeholder="Máximo" class="w-full p-2 border rounded"/>
+          </div>
         </div>
-        <div class="flex mb-2 mr-5 ml-2">
-          <input type="date" v-model="filters.startDate" class="mr-2 p-2 border rounded" />
-          <input type="date" v-model="filters.endDate" class="p-2 border rounded" />
+        <div class="w-full sm:w-auto">
+          <label class="block mb-1">Data:</label>
+          <div class="flex gap-2">
+            <input type="date" v-model="filters.startDate" class="w-full p-2 border rounded"/>
+            <input type="date" v-model="filters.endDate" class="w-full p-2 border rounded"/>
+          </div>
         </div>
       </div>
-      <button @click="addIncome" class="bg-green-500 text-white px-4 py-2 rounded">
-        <i class="bi bi-plus-lg"></i>
-      </button>
-      <!-- Botão global de deleção para os selecionados -->
-      <button v-if="selectedIncomes.length > 0" @click="deleteSelectedIncomes" class="bg-red-500 text-white px-4 py-2 rounded ml-2">
-        <i class="bi bi-trash"></i> Eleminar Selecionados
-      </button>
+      <div class="flex justify-center gap-2 mt-4">
+        <button @click="addIncome" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+          <i class="bi bi-plus-lg"></i>
+        </button>
+        <!-- Botão global de deleção para os selecionados -->
+        <button v-if="selectedIncomes.length > 0" @click="deleteSelectedIncomes" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+          <i class="bi bi-trash"></i> Eleminar Selecionados
+        </button>
+      </div>
     </div>
 
     <!-- Tabela de receitas -->
-    <table class="w-full">
-      <thead>
-        <tr>
-          <th class="px-2 py-1 text-center"></th>
-          <th class="border px-2 py-1">Data</th>
-          <th class="border px-2 py-1">Fonte</th>
-          <th class="border px-2 py-1">Valor</th>
-          <th class="border px-2 py-1">Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="income in incomes" :key="income.id">
-          <td class="px-2 py-1 text-center">
-            <input type="checkbox" :value="income.id" v-model="selectedIncomes"/>
-          </td>
-          <td class="px-2 py-1">{{ income.date }}</td>
-          <td class="px-2 py-1">{{ income.source }}</td>
-          <td class="px-2 py-1">{{ income.amount + " " + coin}}</td>
-          <td class="px-2 py-1">
-            <!-- Botão de delete individual -->
-            <button @click="deleteIncome(income.id)" class="bg-red-500 text-white px-2 py-1 rounded">
-              <i class="bi bi-trash"></i>
-            </button>
-            <!-- Botão de visualizar -->
-            <button @click="viewIncome(income.id)" class="bg-blue-500 text-white px-2 py-1 rounded ml-1">
-              <i class="bi bi-eye-fill"></i>
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-[600px]">
+        <thead>
+          <tr class="bg-gray-50">
+            <th class="px-4 py-2 text-center"></th>
+            <th class="border px-4 py-2">Data</th>
+            <th class="border px-4 py-2">Fonte</th>
+            <th class="border px-4 py-2">Valor</th>
+            <th class="border px-4 py-2">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="income in incomes" :key="income.id" class="hover:bg-gray-50">
+            <td class="px-4 py-2 text-center">
+              <input type="checkbox" :value="income.id" v-model="selectedIncomes"/>
+            </td>
+            <td class="px-4 py-2">{{ income.date }}</td>
+            <td class="px-4 py-2">{{ income.source }}</td>
+            <td class="px-4 py-2">{{ income.amount + " " + coin}}</td>
+            <td class="px-4 py-2">
+              <div class="flex gap-2 justify-center">
+                <button @click="deleteIncome(income.id)" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                  <i class="bi bi-trash"></i>
+                </button>
+                <button @click="viewIncome(income.id)" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+                  <i class="bi bi-eye-fill"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <div v-if="loadingMore" class="mt-4 text-center">A Carregar mais...</div>
 
