@@ -166,7 +166,9 @@ import { useAuthStore } from "@/stores/auth";
 export default {
   methods: {
     exportToPDF() {
-      // Cria um novo documento PDF
+      toast.info("Gerando PDF, por favor aguarde...");
+      
+      // Criar um documento PDF
       const doc = new jsPDF({
         orientation: "portrait",
         unit: "mm",
@@ -195,122 +197,291 @@ export default {
       const dateStr = today.toLocaleDateString('pt-PT');
       doc.text(`Gerado em: ${dateStr}`, doc.internal.pageSize.width / 2, logoY + logoHeight + 40, { align: "center" });
 
-      // Nova página para o resumo
-      doc.addPage();
-      
-      // Adicionar cabeçalho
-      doc.setFillColor(41, 128, 185); // Azul para o cabeçalho
-      doc.rect(0, 0, doc.internal.pageSize.width, 20, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(16);
-      doc.text("SMART4FINANCES", doc.internal.pageSize.width / 2, 12, { align: "center" });
-      
-      // Título do relatório
-      doc.setTextColor(0, 0, 0);
-      doc.setFontSize(18);
-      doc.text("Resumo Financeiro", doc.internal.pageSize.width / 2, 30, { align: "center" });
-      
-      // Adicionar informações do filtro
-      doc.setFontSize(12);
-      let filterText = `Ano: ${this.year}`;
-      if (this.month) {
-        const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-        filterText += ` | Mês: ${months[this.month - 1]}`;
-      } else {
-        filterText += " | Todos os meses";
-      }
-      doc.text(filterText, doc.internal.pageSize.width / 2, 40, { align: "center" });
-      
-      // Linha separadora
-      doc.setDrawColor(220, 220, 220);
-      doc.line(20, 45, doc.internal.pageSize.width - 20, 45);
-      
-      // Adicionar estatísticas principais
-      let yPos = 60;
-      
-      // Título da seção
-      doc.setFontSize(14);
-      doc.setTextColor(41, 128, 185);
-      doc.text("Estatísticas Principais", 20, yPos);
-      yPos += 10;
-      
-      // Receitas
-      doc.setTextColor(52, 152, 219); // Azul para receitas
-      doc.setFontSize(12);
-      doc.text("Receitas Totais:", 30, yPos);
-      doc.setFontSize(12);
-      doc.setTextColor(0, 0, 0);
-      doc.text(`${this.getTotalValue(this.incomeData)} ${this.coin}`, 100, yPos);
-      yPos += 10;
-      
-      // Despesas
-      doc.setTextColor(231, 76, 60); // Vermelho para despesas
-      doc.setFontSize(12);
-      doc.text("Despesas Totais:", 30, yPos);
-      doc.setTextColor(0, 0, 0);
-      doc.text(`${this.getTotalValue(this.expenseData)} ${this.coin}`, 100, yPos);
-      yPos += 10;
-      
-      // Investimentos
-      doc.setTextColor(46, 204, 113); // Verde para investimentos
-      doc.setFontSize(12);
-      doc.text("Investimentos Totais:", 30, yPos);
-      doc.setTextColor(0, 0, 0);
-      doc.text(`${this.getTotalValue(this.investmentData)} ${this.coin}`, 100, yPos);
-      yPos += 20;
-      
-      // Linha separadora
-      doc.setDrawColor(220, 220, 220);
-      doc.line(20, yPos - 10, doc.internal.pageSize.width - 20, yPos - 10);
-      
-      // Adicionar distribuição de despesas por categoria
-      doc.setFontSize(14);
-      doc.setTextColor(41, 128, 185);
-      doc.text("Distribuição de Despesas", 20, yPos);
-      yPos += 10;
-      
-      if (this.expenseCategories.length > 1) {
-        for (let i = 1; i < this.expenseCategories.length; i++) {
-          const category = this.expenseCategories[i][0];
-          const value = this.expenseCategories[i][1];
-          const percentage = (value / parseFloat(this.getTotalValue(this.expenseData)) * 100).toFixed(1);
+      // Função para adicionar gráficos ao PDF
+      const addGraphsToPDF = async () => {
+        try {
+          // Nova página para o resumo
+          doc.addPage();
           
+          // Adicionar cabeçalho
+          doc.setFillColor(41, 128, 185); // Azul para o cabeçalho
+          doc.rect(0, 0, doc.internal.pageSize.width, 20, 'F');
+          doc.setTextColor(255, 255, 255);
+          doc.setFontSize(16);
+          doc.text("SMART4FINANCES", doc.internal.pageSize.width / 2, 12, { align: "center" });
+          
+          // Título do relatório
           doc.setTextColor(0, 0, 0);
-          doc.setFontSize(10);
-          doc.text(`${category}: ${value} ${this.coin} (${percentage}%)`, 30, yPos);
-          yPos += 7;
+          doc.setFontSize(18);
+          doc.text("Resumo Financeiro", doc.internal.pageSize.width / 2, 30, { align: "center" });
           
-          // Verifica se precisa de uma nova página
-          if (yPos > 280) {
+          // Adicionar informações do filtro
+          doc.setFontSize(12);
+          let filterText = `Ano: ${this.year}`;
+          if (this.month) {
+            const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+            filterText += ` | Mês: ${months[this.month - 1]}`;
+          } else {
+            filterText += " | Todos os meses";
+          }
+          doc.text(filterText, doc.internal.pageSize.width / 2, 40, { align: "center" });
+          
+          // Linha separadora
+          doc.setDrawColor(220, 220, 220);
+          doc.line(20, 45, doc.internal.pageSize.width - 20, 45);
+          
+          // Adicionar estatísticas principais
+          let yPos = 60;
+          
+          // Título da seção
+          doc.setFontSize(14);
+          doc.setTextColor(41, 128, 185);
+          doc.text("Estatísticas Principais", 20, yPos);
+          yPos += 10;
+          
+          // Receitas
+          doc.setTextColor(52, 152, 219); // Azul para receitas
+          doc.setFontSize(12);
+          doc.text("Receitas Totais:", 30, yPos);
+          doc.setFontSize(12);
+          doc.setTextColor(0, 0, 0);
+          doc.text(`${this.getTotalValue(this.incomeData)} ${this.coin}`, 100, yPos);
+          yPos += 10;
+          
+          // Despesas
+          doc.setTextColor(231, 76, 60); // Vermelho para despesas
+          doc.setFontSize(12);
+          doc.text("Despesas Totais:", 30, yPos);
+          doc.setTextColor(0, 0, 0);
+          doc.text(`${this.getTotalValue(this.expenseData)} ${this.coin}`, 100, yPos);
+          yPos += 10;
+          
+          // Investimentos
+          doc.setTextColor(46, 204, 113); // Verde para investimentos
+          doc.setFontSize(12);
+          doc.text("Investimentos Totais:", 30, yPos);
+          doc.setTextColor(0, 0, 0);
+          doc.text(`${this.getTotalValue(this.investmentData)} ${this.coin}`, 100, yPos);
+          yPos += 20;
+          
+          // Linha separadora
+          doc.setDrawColor(220, 220, 220);
+          doc.line(20, yPos - 10, doc.internal.pageSize.width - 20, yPos - 10);
+          
+          // Adicionar distribuição de despesas por categoria
+          doc.setFontSize(14);
+          doc.setTextColor(41, 128, 185);
+          doc.text("Distribuição de Despesas", 20, yPos);
+          yPos += 10;
+          
+          if (this.expenseCategories.length > 1) {
+            for (let i = 1; i < this.expenseCategories.length; i++) {
+              const category = this.expenseCategories[i][0];
+              const value = this.expenseCategories[i][1];
+              const percentage = (value / parseFloat(this.getTotalValue(this.expenseData)) * 100).toFixed(1);
+              
+              doc.setTextColor(0, 0, 0);
+              doc.setFontSize(10);
+              doc.text(`${category}: ${value} ${this.coin} (${percentage}%)`, 30, yPos);
+              yPos += 7;
+              
+              // Verifica se precisa de uma nova página
+              if (yPos > 280) {
+                doc.addPage();
+                // Adicionar cabeçalho na nova página
+                doc.setFillColor(41, 128, 185);
+                doc.rect(0, 0, doc.internal.pageSize.width, 20, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(16);
+                doc.text("SMART4FINANCES", doc.internal.pageSize.width / 2, 12, { align: "center" });
+                yPos = 30;
+              }
+            }
+          } else {
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.text("Sem dados de categorias de despesa para exibir", 30, yPos);
+            yPos += 10;
+          }
+          
+          // Adicionar gráficos ao PDF
+          // Capturar e adicionar o gráfico de linha
+          const lineChart = document.querySelector('.bg-white:nth-child(4) .google-visualization-chart');
+          if (lineChart) {
             doc.addPage();
-            // Adicionar cabeçalho na nova página
             doc.setFillColor(41, 128, 185);
             doc.rect(0, 0, doc.internal.pageSize.width, 20, 'F');
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(16);
             doc.text("SMART4FINANCES", doc.internal.pageSize.width / 2, 12, { align: "center" });
-            yPos = 30;
+            
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(14);
+            doc.text("Resumo Financeiro", 20, 30);
+            
+            const canvas = await html2canvas(lineChart);
+            const imgData = canvas.toDataURL('image/png');
+            doc.addImage(imgData, 'PNG', 10, 40, 190, 100);
           }
+          
+          // Capturar e adicionar os gráficos de área (receitas e despesas)
+          const incomeChart = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2:nth-child(5) .bg-white:nth-child(1) .google-visualization-chart');
+          const expenseChart = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2:nth-child(5) .bg-white:nth-child(2) .google-visualization-chart');
+          
+          if (incomeChart || expenseChart) {
+            doc.addPage();
+            doc.setFillColor(41, 128, 185);
+            doc.rect(0, 0, doc.internal.pageSize.width, 20, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(16);
+            doc.text("SMART4FINANCES", doc.internal.pageSize.width / 2, 12, { align: "center" });
+            
+            let yPosition = 30;
+            
+            if (incomeChart) {
+              doc.setTextColor(0, 0, 0);
+              doc.setFontSize(14);
+              doc.text("Receitas Mensais", 20, yPosition);
+              
+              const canvas = await html2canvas(incomeChart);
+              const imgData = canvas.toDataURL('image/png');
+              doc.addImage(imgData, 'PNG', 10, yPosition + 10, 190, 100);
+              yPosition += 120;
+            }
+            
+            if (expenseChart) {
+              // Se não couber na página, adiciona uma nova
+              if (yPosition > 160) {
+                doc.addPage();
+                doc.setFillColor(41, 128, 185);
+                doc.rect(0, 0, doc.internal.pageSize.width, 20, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(16);
+                doc.text("SMART4FINANCES", doc.internal.pageSize.width / 2, 12, { align: "center" });
+                yPosition = 30;
+              }
+              
+              doc.setTextColor(0, 0, 0);
+              doc.setFontSize(14);
+              doc.text("Despesas Mensais", 20, yPosition);
+              
+              const canvas = await html2canvas(expenseChart);
+              const imgData = canvas.toDataURL('image/png');
+              doc.addImage(imgData, 'PNG', 10, yPosition + 10, 190, 100);
+            }
+          }
+          
+          // Capturar e adicionar os gráficos de área (investimentos) e gráfico de pizza (rendimentos)
+          const investmentChart = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2:nth-child(6) .bg-white:nth-child(1) .google-visualization-chart');
+          const incomeSourceChart = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2:nth-child(6) .bg-white:nth-child(2) .google-visualization-chart');
+          
+          if (investmentChart || incomeSourceChart) {
+            doc.addPage();
+            doc.setFillColor(41, 128, 185);
+            doc.rect(0, 0, doc.internal.pageSize.width, 20, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(16);
+            doc.text("SMART4FINANCES", doc.internal.pageSize.width / 2, 12, { align: "center" });
+            
+            let yPosition = 30;
+            
+            if (investmentChart) {
+              doc.setTextColor(0, 0, 0);
+              doc.setFontSize(14);
+              doc.text("Investimentos Mensais", 20, yPosition);
+              
+              const canvas = await html2canvas(investmentChart);
+              const imgData = canvas.toDataURL('image/png');
+              doc.addImage(imgData, 'PNG', 10, yPosition + 10, 190, 100);
+              yPosition += 120;
+            }
+            
+            if (incomeSourceChart) {
+              // Se não couber na página, adiciona uma nova
+              if (yPosition > 160) {
+                doc.addPage();
+                doc.setFillColor(41, 128, 185);
+                doc.rect(0, 0, doc.internal.pageSize.width, 20, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(16);
+                doc.text("SMART4FINANCES", doc.internal.pageSize.width / 2, 12, { align: "center" });
+                yPosition = 30;
+              }
+              
+              doc.setTextColor(0, 0, 0);
+              doc.setFontSize(14);
+              doc.text("Distribuição de Rendimento por Fonte", 20, yPosition);
+              
+              const canvas = await html2canvas(incomeSourceChart);
+              const imgData = canvas.toDataURL('image/png');
+              doc.addImage(imgData, 'PNG', 10, yPosition + 10, 190, 100);
+            }
+          }
+          
+          // Capturar e adicionar os gráficos de pizza (despesas por categoria e investimentos por tipo)
+          const expenseCategoryChart = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2:nth-child(7) .bg-white:nth-child(1) .google-visualization-chart');
+          const investmentTypeChart = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2:nth-child(7) .bg-white:nth-child(2) .google-visualization-chart');
+          
+          if (expenseCategoryChart || investmentTypeChart) {
+            doc.addPage();
+            doc.setFillColor(41, 128, 185);
+            doc.rect(0, 0, doc.internal.pageSize.width, 20, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(16);
+            doc.text("SMART4FINANCES", doc.internal.pageSize.width / 2, 12, { align: "center" });
+            
+            let yPosition = 30;
+            
+            if (expenseCategoryChart) {
+              doc.setTextColor(0, 0, 0);
+              doc.setFontSize(14);
+              doc.text("Distribuição de Despesas por Categoria", 20, yPosition);
+              
+              const canvas = await html2canvas(expenseCategoryChart);
+              const imgData = canvas.toDataURL('image/png');
+              doc.addImage(imgData, 'PNG', 10, yPosition + 10, 190, 100);
+              yPosition += 120;
+            }
+            
+            if (investmentTypeChart) {
+              // Se não couber na página, adiciona uma nova
+              if (yPosition > 160) {
+                doc.addPage();
+                doc.setFillColor(41, 128, 185);
+                doc.rect(0, 0, doc.internal.pageSize.width, 20, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(16);
+                doc.text("SMART4FINANCES", doc.internal.pageSize.width / 2, 12, { align: "center" });
+                yPosition = 30;
+              }
+              
+              doc.setTextColor(0, 0, 0);
+              doc.setFontSize(14);
+              doc.text("Distribuição de Investimentos por Tipo", 20, yPosition);
+              
+              const canvas = await html2canvas(investmentTypeChart);
+              const imgData = canvas.toDataURL('image/png');
+              doc.addImage(imgData, 'PNG', 10, yPosition + 10, 190, 100);
+            }
+          }
+          
+          // Salvar o PDF depois de adicionar todos os gráficos
+          doc.save("Smart4Finances_Relatório_Financeiro.pdf");
+          toast.success("Relatório descarregado com sucesso!");
+        } catch (error) {
+          console.error("Erro ao gerar o PDF:", error);
+          toast.error("Erro ao gerar o relatório PDF");
         }
-      } else {
-        doc.setTextColor(0, 0, 0);
-        doc.setFontSize(10);
-        doc.text("Sem dados de categorias de despesa para exibir", 30, yPos);
-        yPos += 10;
-      }
+      };
       
-      yPos += 10;
-      
-      // Adicionar página para gráficos (opcional)
-      // Se quiser incluir os gráficos existentes, ainda pode usar html2canvas para os gráficos específicos
-      // e adicioná-los ao PDF
-      
-      doc.save("Smart4Finances_Relatório_Financeiro.pdf");
-      toast.success("Relatório descarregado com sucesso!");
+      // Chamar a função para adicionar os gráficos
+      addGraphsToPDF();
     },
-    sendEmail: async () => {
+    sendEmail: async function() {
       try {
-        // Cria um novo documento PDF
+        toast.info("Preparando o email, por favor aguarde...");
+        
+        // Criar um novo documento PDF
         const doc = new jsPDF({
           orientation: "portrait",
           unit: "mm",
@@ -356,10 +527,10 @@ export default {
         
         // Adicionar informações do filtro
         doc.setFontSize(12);
-        let filterText = `Ano: ${year.value}`;
-        if (month.value) {
+        let filterText = `Ano: ${this.year}`;
+        if (this.month) {
           const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-          filterText += ` | Mês: ${months[month.value - 1]}`;
+          filterText += ` | Mês: ${months[this.month - 1]}`;
         } else {
           filterText += " | Todos os meses";
         }
@@ -384,7 +555,7 @@ export default {
         doc.text("Receitas Totais:", 30, yPos);
         doc.setFontSize(12);
         doc.setTextColor(0, 0, 0);
-        doc.text(`${getTotalValue(incomeData.value)} ${coin.value}`, 100, yPos);
+        doc.text(`${this.getTotalValue(this.incomeData)} ${this.coin}`, 100, yPos);
         yPos += 10;
         
         // Despesas
@@ -392,7 +563,7 @@ export default {
         doc.setFontSize(12);
         doc.text("Despesas Totais:", 30, yPos);
         doc.setTextColor(0, 0, 0);
-        doc.text(`${getTotalValue(expenseData.value)} ${coin.value}`, 100, yPos);
+        doc.text(`${this.getTotalValue(this.expenseData)} ${this.coin}`, 100, yPos);
         yPos += 10;
         
         // Investimentos
@@ -400,7 +571,7 @@ export default {
         doc.setFontSize(12);
         doc.text("Investimentos Totais:", 30, yPos);
         doc.setTextColor(0, 0, 0);
-        doc.text(`${getTotalValue(investmentData.value)} ${coin.value}`, 100, yPos);
+        doc.text(`${this.getTotalValue(this.investmentData)} ${this.coin}`, 100, yPos);
         yPos += 20;
         
         // Linha separadora
@@ -413,15 +584,15 @@ export default {
         doc.text("Distribuição de Despesas", 20, yPos);
         yPos += 10;
         
-        if (expenseCategories.value.length > 1) {
-          for (let i = 1; i < expenseCategories.value.length; i++) {
-            const category = expenseCategories.value[i][0];
-            const value = expenseCategories.value[i][1];
-            const percentage = (value / parseFloat(getTotalValue(expenseData.value)) * 100).toFixed(1);
+        if (this.expenseCategories.length > 1) {
+          for (let i = 1; i < this.expenseCategories.length; i++) {
+            const category = this.expenseCategories[i][0];
+            const value = this.expenseCategories[i][1];
+            const percentage = (value / parseFloat(this.getTotalValue(this.expenseData)) * 100).toFixed(1);
             
             doc.setTextColor(0, 0, 0);
             doc.setFontSize(10);
-            doc.text(`${category}: ${value} ${coin.value} (${percentage}%)`, 30, yPos);
+            doc.text(`${category}: ${value} ${this.coin} (${percentage}%)`, 30, yPos);
             yPos += 7;
             
             // Verifica se precisa de uma nova página
@@ -443,6 +614,167 @@ export default {
           yPos += 10;
         }
         
+        // Adicionar gráficos ao PDF
+        // Capturar e adicionar o gráfico de linha
+        const lineChart = document.querySelector('.bg-white:nth-child(4) .google-visualization-chart');
+        if (lineChart) {
+          doc.addPage();
+          doc.setFillColor(41, 128, 185);
+          doc.rect(0, 0, doc.internal.pageSize.width, 20, 'F');
+          doc.setTextColor(255, 255, 255);
+          doc.setFontSize(16);
+          doc.text("SMART4FINANCES", doc.internal.pageSize.width / 2, 12, { align: "center" });
+          
+          doc.setTextColor(0, 0, 0);
+          doc.setFontSize(14);
+          doc.text("Resumo Financeiro", 20, 30);
+          
+          const canvas = await html2canvas(lineChart);
+          const imgData = canvas.toDataURL('image/png');
+          doc.addImage(imgData, 'PNG', 10, 40, 190, 100);
+        }
+        
+        // Capturar e adicionar os gráficos de área (receitas e despesas)
+        const incomeChart = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2:nth-child(5) .bg-white:nth-child(1) .google-visualization-chart');
+        const expenseChart = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2:nth-child(5) .bg-white:nth-child(2) .google-visualization-chart');
+        
+        if (incomeChart || expenseChart) {
+          doc.addPage();
+          doc.setFillColor(41, 128, 185);
+          doc.rect(0, 0, doc.internal.pageSize.width, 20, 'F');
+          doc.setTextColor(255, 255, 255);
+          doc.setFontSize(16);
+          doc.text("SMART4FINANCES", doc.internal.pageSize.width / 2, 12, { align: "center" });
+          
+          let yPosition = 30;
+          
+          if (incomeChart) {
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(14);
+            doc.text("Receitas Mensais", 20, yPosition);
+            
+            const canvas = await html2canvas(incomeChart);
+            const imgData = canvas.toDataURL('image/png');
+            doc.addImage(imgData, 'PNG', 10, yPosition + 10, 190, 100);
+            yPosition += 120;
+          }
+          
+          if (expenseChart) {
+            // Se não couber na página, adiciona uma nova
+            if (yPosition > 160) {
+              doc.addPage();
+              doc.setFillColor(41, 128, 185);
+              doc.rect(0, 0, doc.internal.pageSize.width, 20, 'F');
+              doc.setTextColor(255, 255, 255);
+              doc.setFontSize(16);
+              doc.text("SMART4FINANCES", doc.internal.pageSize.width / 2, 12, { align: "center" });
+              yPosition = 30;
+            }
+            
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(14);
+            doc.text("Despesas Mensais", 20, yPosition);
+            
+            const canvas = await html2canvas(expenseChart);
+            const imgData = canvas.toDataURL('image/png');
+            doc.addImage(imgData, 'PNG', 10, yPosition + 10, 190, 100);
+          }
+        }
+        
+        // Capturar e adicionar os gráficos de área (investimentos) e gráfico de pizza (rendimentos)
+        const investmentChart = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2:nth-child(6) .bg-white:nth-child(1) .google-visualization-chart');
+        const incomeSourceChart = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2:nth-child(6) .bg-white:nth-child(2) .google-visualization-chart');
+        
+        if (investmentChart || incomeSourceChart) {
+          doc.addPage();
+          doc.setFillColor(41, 128, 185);
+          doc.rect(0, 0, doc.internal.pageSize.width, 20, 'F');
+          doc.setTextColor(255, 255, 255);
+          doc.setFontSize(16);
+          doc.text("SMART4FINANCES", doc.internal.pageSize.width / 2, 12, { align: "center" });
+          
+          let yPosition = 30;
+          
+          if (investmentChart) {
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(14);
+            doc.text("Investimentos Mensais", 20, yPosition);
+            
+            const canvas = await html2canvas(investmentChart);
+            const imgData = canvas.toDataURL('image/png');
+            doc.addImage(imgData, 'PNG', 10, yPosition + 10, 190, 100);
+            yPosition += 120;
+          }
+          
+          if (incomeSourceChart) {
+            // Se não couber na página, adiciona uma nova
+            if (yPosition > 160) {
+              doc.addPage();
+              doc.setFillColor(41, 128, 185);
+              doc.rect(0, 0, doc.internal.pageSize.width, 20, 'F');
+              doc.setTextColor(255, 255, 255);
+              doc.setFontSize(16);
+              doc.text("SMART4FINANCES", doc.internal.pageSize.width / 2, 12, { align: "center" });
+              yPosition = 30;
+            }
+            
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(14);
+            doc.text("Distribuição de Rendimento por Fonte", 20, yPosition);
+            
+            const canvas = await html2canvas(incomeSourceChart);
+            const imgData = canvas.toDataURL('image/png');
+            doc.addImage(imgData, 'PNG', 10, yPosition + 10, 190, 100);
+          }
+        }
+        
+        // Capturar e adicionar os gráficos de pizza (despesas por categoria e investimentos por tipo)
+        const expenseCategoryChart = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2:nth-child(7) .bg-white:nth-child(1) .google-visualization-chart');
+        const investmentTypeChart = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2:nth-child(7) .bg-white:nth-child(2) .google-visualization-chart');
+        
+        if (expenseCategoryChart || investmentTypeChart) {
+          doc.addPage();
+          doc.setFillColor(41, 128, 185);
+          doc.rect(0, 0, doc.internal.pageSize.width, 20, 'F');
+          doc.setTextColor(255, 255, 255);
+          doc.setFontSize(16);
+          doc.text("SMART4FINANCES", doc.internal.pageSize.width / 2, 12, { align: "center" });
+          
+          let yPosition = 30;
+          
+          if (expenseCategoryChart) {
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(14);
+            doc.text("Distribuição de Despesas por Categoria", 20, yPosition);
+            
+            const canvas = await html2canvas(expenseCategoryChart);
+            const imgData = canvas.toDataURL('image/png');
+            doc.addImage(imgData, 'PNG', 10, yPosition + 10, 190, 100);
+            yPosition += 120;
+          }
+          
+          if (investmentTypeChart) {
+            // Se não couber na página, adiciona uma nova
+            if (yPosition > 160) {
+              doc.addPage();
+              doc.setFillColor(41, 128, 185);
+              doc.rect(0, 0, doc.internal.pageSize.width, 20, 'F');
+              doc.setTextColor(255, 255, 255);
+              doc.setFontSize(16);
+              doc.text("SMART4FINANCES", doc.internal.pageSize.width / 2, 12, { align: "center" });
+              yPosition = 30;
+            }
+            
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(14);
+            doc.text("Distribuição de Investimentos por Tipo", 20, yPosition);
+            
+            const canvas = await html2canvas(investmentTypeChart);
+            const imgData = canvas.toDataURL('image/png');
+            doc.addImage(imgData, 'PNG', 10, yPosition + 10, 190, 100);
+          }
+        }
+
         // Gera um blob do PDF  
         const pdfBlob = doc.output("blob");
 
