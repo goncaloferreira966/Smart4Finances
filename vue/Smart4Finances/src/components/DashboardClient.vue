@@ -231,11 +231,11 @@ export default {
     }));
 
     const getTotalValue = (dataArray) => {
-      if (!dataArray.value || dataArray.value.length <= 1) return '0.00';
+      if (!dataArray || dataArray.length <= 1) return '0.00';
       
       let total = 0;
-      for (let i = 1; i < dataArray.value.length; i++) {
-        total += dataArray.value[i][1];
+      for (let i = 1; i < dataArray.length; i++) {
+        total += dataArray[i][1];
       }
       return total.toFixed(2);
     };
