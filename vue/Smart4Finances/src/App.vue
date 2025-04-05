@@ -94,8 +94,16 @@
       </div>
     </div>
 
+    <!-- Floating Dark Mode Toggle for mobile access -->
+    <button 
+      @click="toggleTheme" 
+      class="fixed bottom-4 right-4 rounded-full w-12 h-12 shadow-lg flex items-center justify-center z-50 transition-colors"
+      :class="{'bg-gray-800 text-yellow-400': themeStore.darkMode, 'bg-white text-gray-800': !themeStore.darkMode}">
+      <i class="bi" :class="{'bi-moon-fill': themeStore.darkMode, 'bi-sun-fill': !themeStore.darkMode}"></i>
+    </button>
+
     <footer class="footer">
-      <p style="color:#DAA520">&copy; {{ currentYear }} Smart4Finances. Todos os direitos reservados.</p>
+      <p>&copy; {{ currentYear }} Smart4Finances. Todos os direitos reservados.</p>
       <div class="footer-links">
         <a href="#">Política de Privacidade</a>
         <a href="#">Termos de Serviço</a>
@@ -135,6 +143,8 @@ import EmailVerificationError from './components/password_mail/EmailVerification
 import EmailAlreadyVerified from './components/password_mail/EmailAlreadyVerified.vue';
 import { toast } from 'vue3-toastify';
 import axios from 'axios';
+import { useAuthStore } from "@/stores/auth";
+import { useThemeStore } from "@/stores/theme";
 
 export default {
   components: {
@@ -165,6 +175,13 @@ export default {
     BudgetView,
     addBudgets,
   },
+  setup() {
+    const themeStore = useThemeStore();
+    // Initialize theme from localStorage
+    themeStore.init();
+    
+    return { themeStore };
+  },
   data() {
     return {
       isLoggedIn: false,
@@ -173,6 +190,10 @@ export default {
       id: null,
       resetToken: null,
       resetEmail: null,
+      reloadExpensesList: false,
+      reloadIncomeList: false,
+      reloadInvestmentsList: false,
+      reloadBudgetsList: false,
     };
   },
   computed: {
@@ -224,6 +245,9 @@ export default {
     }
   },
   methods: {
+    toggleTheme() {
+      this.themeStore.toggleDarkMode();
+    },
     handleLoginSuccess() {
       this.isLoggedIn = true;
       this.currentSection = 'profile';
@@ -310,3 +334,7 @@ export default {
   },
 };
 </script>
+
+<style>
+/* App-level styles can go here */
+</style>

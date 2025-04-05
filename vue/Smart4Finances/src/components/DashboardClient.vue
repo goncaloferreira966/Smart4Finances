@@ -1,36 +1,36 @@
 <template>
-  <div class="container mx-auto p-6 bg-white shadow-md rounded-lg mb-10" style="margin-top: 7vh; margin-bottom: 7vh;">
-    <h2 class="text-2xl font-bold mb-6" style="color: black;">Dashboard Financeiro</h2>
+  <div class="container mx-auto p-6 shadow-md rounded-lg mb-10" style="margin-top: 7vh; margin-bottom: 7vh;">
+    <h2 class="text-2xl font-bold mb-6">Dashboard Financeiro</h2>
     
     <div id="content" ref="content" class="stats">
       <!-- Filtros responsivos com design melhorado -->
       <div class="filters-container mb-8">
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           <div class="w-full">
-            <label class="block mb-2 text-gray-700 font-medium">Ano:</label>
+            <label class="block mb-2 font-medium">Ano:</label>
             <input v-model="year" type="number" 
                   class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all" 
                   placeholder="Ano" />
           </div>
           
           <div class="w-full">
-            <label class="block mb-2 text-gray-700 font-medium">Mês:</label>
+            <label class="block mb-2 font-medium">Mês:</label>
             <select v-model="month" 
                    class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
-              <option :value="null">Todos os meses</option>
-              <option value="1">Janeiro</option>
-              <option value="2">Fevereiro</option>
-              <option value="3">Março</option>
-              <option value="4">Abril</option>
-              <option value="5">Maio</option>
-              <option value="6">Junho</option>
-              <option value="7">Julho</option>
-              <option value="8">Agosto</option>
-              <option value="9">Setembro</option>
-              <option value="10">Outubro</option>
-              <option value="11">Novembro</option>
-              <option value="12">Dezembro</option>
-            </select>
+          <option :value="null">Todos os meses</option>
+          <option value="1">Janeiro</option>
+          <option value="2">Fevereiro</option>
+          <option value="3">Março</option>
+          <option value="4">Abril</option>
+          <option value="5">Maio</option>
+          <option value="6">Junho</option>
+          <option value="7">Julho</option>
+          <option value="8">Agosto</option>
+          <option value="9">Setembro</option>
+          <option value="10">Outubro</option>
+          <option value="11">Novembro</option>
+          <option value="12">Dezembro</option>
+        </select>
           </div>
           
           <div class="flex items-end">
@@ -92,7 +92,7 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <h3 class="text-lg font-semibold mb-4 text-gray-700">Receitas Mensais</h3>
           <GChart v-if="incomeData.length" type="AreaChart" :data="incomeData"
-            :options="chartOptions(chartTitles.incomeChart)" />
+          :options="chartOptions(chartTitles.incomeChart)" />
           <div v-else class="flex justify-center items-center h-64 text-gray-500">
             <p>Sem dados de receitas para exibir</p>
           </div>
@@ -101,7 +101,7 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <h3 class="text-lg font-semibold mb-4 text-gray-700">Despesas Mensais</h3>
           <GChart v-if="expenseData.length" type="AreaChart" :data="expenseData"
-            :options="chartOptions(chartTitles.expenseChart)" />
+          :options="chartOptions(chartTitles.expenseChart)" />
           <div v-else class="flex justify-center items-center h-64 text-gray-500">
             <p>Sem dados de despesas para exibir</p>
           </div>
@@ -113,7 +113,7 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <h3 class="text-lg font-semibold mb-4 text-gray-700">Investimentos Mensais</h3>
           <GChart v-if="investmentData.length" type="AreaChart" :data="investmentData"
-            :options="chartOptions(chartTitles.investmentChart)" />
+          :options="chartOptions(chartTitles.investmentChart)" />
           <div v-else class="flex justify-center items-center h-64 text-gray-500">
             <p>Sem dados de investimentos para exibir</p>
           </div>
@@ -162,11 +162,18 @@ import jsPDF from "jspdf";
 import logo from '@/assets/logo.png'; // Imagem no Vue
 import { toast } from 'vue3-toastify';
 import { useAuthStore } from "@/stores/auth";
+import { useThemeStore } from "@/stores/theme";
 
 export default {
   methods: {
     exportToPDF() {
       toast.info("Gerando PDF, por favor aguarde...");
+      
+      // Temporarily remove dark mode class for PDF generation if it exists
+      const isDarkMode = document.documentElement.classList.contains('dark-mode');
+      if (isDarkMode) {
+        document.documentElement.classList.remove('dark-mode');
+      }
       
       // Criar um documento PDF
       const doc = new jsPDF({
@@ -468,9 +475,19 @@ export default {
           // Salvar o PDF depois de adicionar todos os gráficos
           doc.save("Smart4Finances_Relatório_Financeiro.pdf");
           toast.success("Relatório descarregado com sucesso!");
+          
+          // Restore dark mode if it was active
+          if (isDarkMode) {
+            document.documentElement.classList.add('dark-mode');
+          }
         } catch (error) {
           console.error("Erro ao gerar o PDF:", error);
           toast.error("Erro ao gerar o relatório PDF");
+          
+          // Restore dark mode in case of error too
+          if (isDarkMode) {
+            document.documentElement.classList.add('dark-mode');
+          }
         }
       };
       
@@ -480,6 +497,12 @@ export default {
     sendEmail: async function() {
       try {
         toast.info("Preparando o email, por favor aguarde...");
+        
+        // Temporarily remove dark mode class for PDF generation if it exists
+        const isDarkMode = document.documentElement.classList.contains('dark-mode');
+        if (isDarkMode) {
+          document.documentElement.classList.remove('dark-mode');
+        }
         
         // Criar um novo documento PDF
         const doc = new jsPDF({
@@ -498,7 +521,7 @@ export default {
         const logoX = (doc.internal.pageSize.width - logoWidth) / 2; // Centralizado
         const logoY = 50; 
         doc.addImage(logo, 'PNG', logoX, logoY, logoWidth, logoHeight);
-        
+
         // Adicionar título na capa
         doc.setTextColor(255, 255, 255);
         doc.setFontSize(24);
@@ -786,9 +809,20 @@ export default {
         });
         
         toast.success("E-mail enviado com sucesso!");
+        
+        // Restore dark mode if it was active
+        if (isDarkMode) {
+          document.documentElement.classList.add('dark-mode');
+        }
       } catch (error) {
         toast.error("Erro ao enviar o E-mail");
         console.error("Erro ao enviar email", error);
+        
+        // Restore dark mode in case of error too
+        const isDarkMode = document.documentElement.classList.contains('dark-mode');
+        if (isDarkMode) {
+          document.documentElement.classList.add('dark-mode');
+        }
       }
     },
   },
@@ -804,14 +838,15 @@ export default {
     const incomeBySource = ref([]);
     const lineChartData = ref([]);
     const authStore = useAuthStore();
+    const themeStore = useThemeStore();
     const coin = ref(authStore.user?.data?.coin);  
 
     const chartTitles = computed(() => ({
-      lineChart: `Receitas, Despesas e Investimentos Mensais (${coin.value})`,
-      incomeChart: `Receitas Mensais (${coin.value})`,
-      expenseChart: `Despesas Mensais (${coin.value})`,
-      investmentChart: `Investimentos Mensais (${coin.value})`
-    }));
+    lineChart: `Receitas, Despesas e Investimentos Mensais (${coin.value})`,
+    incomeChart: `Receitas Mensais (${coin.value})`,
+    expenseChart: `Despesas Mensais (${coin.value})`,
+    investmentChart: `Investimentos Mensais (${coin.value})`
+  }));
 
     const getTotalValue = (dataArray) => {
       if (!dataArray || dataArray.length <= 1) return '0.00';
@@ -906,13 +941,33 @@ export default {
       titleTextStyle: {
         fontSize: 16,
         bold: true,
-        color: '#333'
+        color: themeStore.darkMode ? '#f0f0f0' : '#333' // Dynamic color based on theme
       },
       colors: ['#4285F4', '#EA4335', '#34A853', '#FBBC05', '#FF6D01', '#46BDC6'],
       animation: {
         startup: true,
         duration: 1000,
         easing: 'out'
+      },
+      // Additional options for better dark mode compatibility
+      hAxis: {
+        textStyle: {
+          color: themeStore.darkMode ? '#e0e0e0' : '#333'
+        },
+        gridlines: {
+          color: themeStore.darkMode ? '#444' : '#ccc'
+        }
+      },
+      vAxis: {
+        textStyle: {
+          color: themeStore.darkMode ? '#e0e0e0' : '#333'
+        },
+        gridlines: {
+          color: themeStore.darkMode ? '#444' : '#ccc'
+        }
+      },
+      legendTextStyle: {
+        color: themeStore.darkMode ? '#e0e0e0' : '#333'
       }
     });
 

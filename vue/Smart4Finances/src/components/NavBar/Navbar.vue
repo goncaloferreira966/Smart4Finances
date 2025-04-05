@@ -8,6 +8,11 @@
         </button>
       </h1>
 
+      <!-- Theme Toggle -->
+      <button @click="toggleTheme" class="text-[#DAA520] p-1 rounded-md hover:bg-gray-800 transition-colors mr-2">
+        <i class="bi" :class="{ 'bi-moon-fill': themeStore.darkMode, 'bi-sun-fill': !themeStore.darkMode }"></i>
+      </button>
+
       <!-- Menu Button - Shows on mobile -->
       <button @click="toggleMenu"
         class="block lg:hidden text-[#DAA520] p-1 rounded-md hover:bg-gray-800 transition-colors">
@@ -102,6 +107,7 @@
 
 <script>
 import { useAuthStore } from "@/stores/auth";
+import { useThemeStore } from "@/stores/theme";
 
 export default {
   name: "Navbar",
@@ -128,6 +134,9 @@ export default {
       const nickname = authStore.user?.data?.nickname || "";
       this.userRole = authStore.user?.data?.type;
       return nickname.charAt(0).toUpperCase() + nickname.slice(1);
+    },
+    themeStore() {
+      return useThemeStore();
     }
   },
   methods: {
@@ -157,6 +166,9 @@ export default {
       if (this.isLargeScreen) {
         document.body.style.overflow = '';
       }
+    },
+    toggleTheme() {
+      this.themeStore.toggleDarkMode();
     }
   },
   mounted() {
