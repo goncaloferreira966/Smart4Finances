@@ -57,4 +57,12 @@ class User extends Authenticatable implements MustVerifyEmail
             'custom' => 'json', // Adicionado para tratar o campo como JSON
         ];
     }
+    
+    /**
+     * Get the categories for the user.
+     */
+    public function categories()
+    {
+        return $this->hasMany(Category::class);
+    }
 }

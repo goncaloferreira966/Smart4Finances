@@ -11,16 +11,35 @@
     </div>
 
     <form @submit.prevent="submitExpense">
-      <label class="block mb-2">Categoria:</label>
-      <input type="text" v-model="searchQuery" placeholder="Pesquisar categoria..."
-        class="w-full p-2 border rounded mb-2" />
-      <div class="border rounded mb-4" style="max-height: 200px; overflow-y: auto;">
-        <div v-for="category in filteredCategories" :key="category.id" class="p-2 cursor-pointer hover:bg-gray-200"
-          @click="selectCategory(category)">
-          {{ category.name }}
+      <div class="mb-4">
+        <div class="flex justify-between items-center mb-2">
+          <label>Categoria:</label>
+          <button type="button" @click="showAddCategoryModal = true" class="text-blue-500 hover:text-blue-700">
+            <i class="bi bi-plus-circle"></i> Nova Categoria
+          </button>
         </div>
-        <div v-if="filteredCategories.length === 0" class="p-2 text-gray-500">
-          Nenhuma categoria encontrada.
+        <input type="text" v-model="searchQuery" placeholder="Pesquisar categoria..."
+          class="w-full p-2 border rounded mb-2" />
+        <div class="border rounded mb-4" style="max-height: 200px; overflow-y: auto;">
+          <div v-for="category in filteredCategories" :key="category.id" 
+              class="p-2 cursor-pointer hover:bg-gray-200 flex justify-between items-center"
+              @click="selectCategory(category)">
+            <span>{{ category.name }}</span>
+            <div class="flex items-center">
+              <button v-if="category.user_id !== null" type="button" @click.stop="editCategoryName(category)" 
+                  class="text-blue-500 hover:text-blue-700 mr-2" title="Editar categoria">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button v-if="category.user_id !== null" type="button" @click.stop="confirmDeleteCategory(category)" 
+                  class="text-red-500 hover:text-red-700" title="Excluir categoria">
+                <i class="bi bi-trash"></i>
+              </button>
+              <span v-else class="text-gray-400 text-xs italic">Categoria geral</span>
+            </div>
+          </div>
+          <div v-if="filteredCategories.length === 0" class="p-2 text-gray-500">
+            Nenhuma categoria encontrada.
+          </div>
         </div>
       </div>
 
@@ -66,48 +85,128 @@
       Voltar
     </button>
 
-    <!-- Modal para seleção de categoria -->
-    <div v-if="showModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div class="bg-white p-6 rounded-lg w-11/12 max-w-md">
-        <h3 class="text-xl font-bold mb-4">Selecione uma Categoria</h3>
-        <input type="text" v-model="modalSearchQuery" placeholder="Pesquisar categoria..."
-          class="w-full p-2 border rounded mb-2" />
-        <div class="border rounded mb-4" style="max-height: 300px; overflow-y: auto;">
-          <div v-for="category in modalFilteredCategories" :key="category.id"
-            class="p-2 cursor-pointer hover:bg-gray-200" @click="selectCategoryFromModal(category)">
-            {{ category.name }}
-          </div>
-          <div v-if="modalFilteredCategories.length === 0" class="p-2 text-gray-500">
-            Nenhuma categoria encontrada.
-          </div>
+    <!-- Modal de visualização de categorias -->
+    <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white p-6 rounded-lg shadow-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+        <h3 class="text-xl font-bold mb-4">Todas as Categorias</h3>
+        
+        <div class="mb-4 flex items-center">
+          <input type="text" v-model="modalSearchQuery" placeholder="Pesquisar categoria..." 
+                 class="flex-grow p-2 border rounded mr-2" />
+          <button @click="showAddCategoryModal = true; showModal = false;" 
+                  class="bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600">
+            <i class="bi bi-plus-circle"></i> Nova
+          </button>
         </div>
-        <button @click="showModal = false" style="background-color:black; color:#DAA520"
-          class="w-full py-2 rounded hover:bg-gray-600">
-          Fechar
-        </button>
+        
+        <div class="overflow-y-auto max-h-96">
+          <table class="min-w-full bg-white">
+            <thead>
+              <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                <th class="py-3 px-6 text-left">Nome</th>
+                <th class="py-3 px-6 text-center">Ações</th>
+              </tr>
+            </thead>
+            <tbody class="text-gray-600 text-sm">
+              <tr v-for="category in modalFilteredCategories" :key="category.id" 
+                  class="border-b border-gray-200 hover:bg-gray-100">
+                <td class="py-3 px-6 text-left">
+                  {{ category.name }}
+                  <span v-if="category.user_id === null" class="ml-2 text-xs italic text-blue-500">(geral)</span>
+                  <span v-else class="ml-2 text-xs italic text-green-500">(personalizada)</span>
+                </td>
+                <td class="py-3 px-6 text-center">
+                  <div class="flex item-center justify-center">
+                    <button @click="selectCategoryFromModal(category)" 
+                            class="transform hover:text-blue-500 hover:scale-110 mr-3">
+                      <i class="bi bi-check-circle"></i>
+                    </button>
+                    <button v-if="category.user_id !== null" @click.stop="editCategoryName(category)"
+                            class="transform hover:text-blue-500 hover:scale-110 mr-3">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button v-if="category.user_id !== null" @click="confirmDeleteCategory(category)"
+                            class="transform hover:text-red-500 hover:scale-110">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                    <span v-else class="text-gray-400 text-xs italic">Não editável</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="flex justify-end mt-4">
+          <button @click="showModal = false" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+            Fechar
+          </button>
+        </div>
       </div>
     </div>
 
-    <!-- Modal de visualização da imagem -->
-    <div v-if="showImageModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50"
-      @wheel.prevent="onWheel" @mousedown="onMouseDown" @mousemove="onMouseMove" @mouseup="onMouseUp"
-      @mouseleave="onMouseUp">
-      <div class="relative p-2 rounded overflow-hidden"
-        style="background: transparent; max-width: 90vw; max-height: 90vh;">
-        <img :src="receiptPreview" alt="Recibo Detalhado" :style="imageStyle" class="select-none" />
+    <!-- Modal para adicionar/editar categoria -->
+    <div v-if="showAddCategoryModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+        <h3 class="text-xl font-bold mb-4">{{ editingCategory ? 'Editar Categoria' : 'Nova Categoria' }}</h3>
+        
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="categoryName">
+            Nome da Categoria
+          </label>
+          <input id="categoryName" type="text" v-model="newCategory.name"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              placeholder="Nome da categoria" />
+        </div>
+        
+        <div class="flex justify-end space-x-2">
+          <button @click="cancelCategoryEdit"
+              class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600">
+            Cancelar
+          </button>
+          <button @click="saveCategory" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+            {{ editingCategory ? 'Atualizar' : 'Adicionar' }}
+          </button>
+        </div>
       </div>
-      <button @click="closeImageModal" class="absolute top-4 right-4 px-4 py-2 bg-red-500 text-white rounded">
-        Fechar
+    </div>
+
+    <!-- Modal de confirmação de exclusão de categoria -->
+    <div v-if="showDeleteCategoryModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+        <h3 class="text-xl font-bold mb-4">Confirmar Exclusão</h3>
+        <p class="mb-4">Tem certeza que deseja excluir a categoria <strong>{{ categoryToDelete?.name }}</strong>?</p>
+        
+        <div class="flex justify-end space-x-2">
+          <button @click="showDeleteCategoryModal = false"
+              class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600">
+            Cancelar
+          </button>
+          <button @click="deleteCategory" class="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600">
+            Excluir
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de visualização da imagem com zoom e pan -->
+    <div v-if="showImageModal" class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"
+      @click="closeImageModal">
+      <button @click.stop="closeImageModal" class="absolute top-4 right-4 text-white text-2xl">
+        <i class="bi bi-x-circle"></i>
       </button>
+      <div @click.stop class="max-w-3xl max-h-[80vh] overflow-hidden select-none" @wheel="onWheel">
+        <img :src="receiptPreview" alt="Ampliação do Recibo" :style="imageStyle" @mousedown="onMouseDown"
+          @mousemove="onMouseMove" @mouseup="onMouseUp" @mouseleave="onMouseUp" class="max-w-none" />
+      </div>
     </div>
-
   </div>
 </template>
 
 <script>
 import axios from 'axios';
-import Tesseract from 'tesseract.js';
 import { toast } from 'vue3-toastify';
+import Tesseract from 'tesseract.js';
 
 export default {
   props: {
@@ -143,7 +242,16 @@ export default {
       dragStartX: 0,
       dragStartY: 0,
       startOffsetX: 0,
-      startOffsetY: 0
+      startOffsetY: 0,
+      // Novos campos para gerenciamento de categorias
+      showAddCategoryModal: false,
+      showDeleteCategoryModal: false,
+      categoryToDelete: null,
+      newCategory: {
+        name: '',
+        id: null
+      },
+      editingCategory: false
     };
   },
   computed: {
@@ -168,19 +276,23 @@ export default {
     }
   },
   mounted() {
-    axios.get('/categories')
-      .then(response => {
-        this.categories = response.data;
-      })
-      .catch(error => {
-        console.error('Erro ao buscar categorias:', error);
-      });
+    this.loadCategories();
     if (this.expenseId) {
       this.isEditMode = true;
       this.loadExpense();
     }
   },
   methods: {
+    loadCategories() {
+      axios.get('/categories')
+        .then(response => {
+          this.categories = response.data;
+        })
+        .catch(error => {
+          console.error('Erro ao buscar categorias:', error);
+          toast.error('Erro ao carregar categorias');
+        });
+    },
     loadExpense() {
       axios.get(`/expenses/${this.expenseId}`)
         .then(response => {
@@ -197,6 +309,7 @@ export default {
         })
         .catch(error => {
           console.error('Erro ao carregar despesa:', error);
+          toast.error('Erro ao carregar dados da despesa');
         });
     },
     onFileChange(event) {
@@ -208,75 +321,52 @@ export default {
         this.processImage(file);
       }
     },
-    async processImage(file) {
+    processImage(file) {
       this.processing = true;
-      const toastId = toast.info("Processando imagem...", { autoClose: false });
-      try {
-        const result = await Tesseract.recognize(file, 'por', {
-          logger: m => {
-            if (m.status === 'recognizing text') {
-              const progress = Math.floor(m.progress * 100);
-              toast.update(toastId, { render: `Processando imagem... ${progress}%` });
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        Tesseract.recognize(e.target.result, 'por', {
+          logger: (m) => {
+            console.log(m);
+          }
+        }).then(({ data: { text } }) => {
+          this.processing = false;
+          console.log("Texto extraído:", text);
+
+          // Extrair valor
+          const valueMatch = text.match(/(?:EUR|€|EURO)?\s*(\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{2}))/i);
+          if (valueMatch && valueMatch[1]) {
+            const extractedValue = valueMatch[1].replace(',', '.');
+            this.expense.amount = this.formatAmountValue(extractedValue);
+          }
+
+          // Extrair data
+          const dateStr = this.extractDate(text);
+          if (dateStr) {
+            const formattedDate = this.formatDate(dateStr);
+            if (formattedDate) {
+              this.expense.date = formattedDate;
             }
+          } else {
+            // Se não conseguir extrair a data, usar a data atual
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            this.expense.date = `${year}-${month}-${day}`;
           }
+
+          // Extrair descrição (primeiras linhas do texto ou algo relevante)
+          const description = this.cleanValue(text.split('\n')[0]);
+          if (description) {
+            this.expense.description = description.substring(0, 100); // Limitar a 100 caracteres
+          }
+        }).catch(error => {
+          this.processing = false;
+          console.error("Erro ao processar a imagem:", error);
         });
-        toast.remove(toastId);
-        // Extraindo e formatando o valor
-        this.expense.amount = this.formatAmountValue(this.extractTotal(result.data.text));
-        const extractedDate = this.extractDate(result.data.text);
-        if (extractedDate) {
-          this.expense.date = this.formatDate(extractedDate);
-        }
-        toast.success("Imagem processada com sucesso!");
-      } catch (error) {
-        console.error('Erro ao processar imagem:', error);
-        toast.remove(toastId);
-        toast.error("Erro ao processar imagem");
-      }
-      this.processing = false;
-    },
-    extractTotal(text) {
-      const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-      const candidateKeywords = ['total', 'pagar', 'pagamento'];
-      const excludedKeywords = ['iban', 'swift', 'bic'];
-      const candidates = lines.filter(line => {
-        const lower = line.toLowerCase();
-        return candidateKeywords.some(k => lower.includes(k)) &&
-          !excludedKeywords.some(e => lower.includes(e));
-      });
-
-      let candidateLine;
-      if (candidates.length > 0) {
-        const nonSubtotal = candidates.filter(line => !line.toLowerCase().includes('subtotal'));
-        candidateLine = nonSubtotal.length > 0 ? nonSubtotal[nonSubtotal.length - 1] : candidates[candidates.length - 1];
-        const regex = /(?:r\$|\$|€|£|eur)?\s*(\d+(?:[,.]\d+)?)/i;
-        const match = candidateLine.match(regex);
-        if (match && match[1]) {
-          return this.stripSymbols(this.cleanValue(match[1]));
-        }
-      }
-
-      const subtotalLine = lines.find(line => line.toLowerCase().includes('subtotal'));
-      if (subtotalLine) {
-        const regex = /(?:r\$|\$|€|£|eur)?\s*(\d+(?:[,.]\d+)?)/i;
-        const match = subtotalLine.match(regex);
-        if (match && match[1]) {
-          return this.stripSymbols(this.cleanValue(match[1]));
-        }
-      }
-
-      for (let i = lines.length - 1; i >= 0; i--) {
-        const lower = lines[i].toLowerCase();
-        if (!excludedKeywords.some(e => lower.includes(e))) {
-          const regex = /(?:r\$|\$|€|£|eur)?\s*(\d+(?:[,.]\d+)?)/i;
-          const match = lines[i].match(regex);
-          if (match && match[1]) {
-            return this.stripSymbols(this.cleanValue(match[1]));
-          }
-        }
-      }
-
-      return '0.00';
+      };
+      reader.readAsDataURL(file);
     },
     extractDate(text) {
       const dateRegex = /(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})/;
@@ -367,6 +457,109 @@ export default {
           toast.error(this.errorMessage);
         });
       }
+    },
+    // Métodos para gerenciamento de categoria
+    saveCategory() {
+      if (!this.newCategory.name.trim()) {
+        toast.error('O nome da categoria é obrigatório');
+        return;
+      }
+
+      const categoryData = {
+        name: this.newCategory.name.trim()
+      };
+
+      if (this.editingCategory) {
+        // Atualiza categoria existente
+        axios.put(`/categories/${this.newCategory.id}`, categoryData)
+          .then(response => {
+            toast.success('Categoria atualizada com sucesso!');
+            this.loadCategories();
+            this.cancelCategoryEdit();
+          })
+          .catch(error => {
+            console.error('Erro ao atualizar categoria:', error);
+            toast.error('Erro ao atualizar categoria. Tente novamente.');
+          });
+      } else {
+        // Adiciona nova categoria
+        axios.post('/categories', categoryData)
+          .then(response => {
+            toast.success('Categoria adicionada com sucesso!');
+            this.loadCategories();
+            this.cancelCategoryEdit();
+          })
+          .catch(error => {
+            console.error('Erro ao adicionar categoria:', error);
+            toast.error('Erro ao adicionar categoria. Tente novamente.');
+          });
+      }
+    },
+    editCategoryName(category) {
+      // Não permite editar categorias do sistema
+      if (category.user_id === null) {
+        toast.error('Categorias do sistema não podem ser editadas');
+        return;
+      }
+      
+      event.stopPropagation(); // Impede que o clique propague
+      this.editingCategory = true;
+      this.newCategory.id = category.id;
+      this.newCategory.name = category.name;
+      this.showAddCategoryModal = true;
+      this.showModal = false; // Fecha o modal de visualização, se estiver aberto
+    },
+    cancelCategoryEdit() {
+      this.showAddCategoryModal = false;
+      this.editingCategory = false;
+      this.newCategory = {
+        name: '',
+        id: null
+      };
+    },
+    confirmDeleteCategory(category) {
+      // Impede exclusão de categorias do sistema (user_id nulo)
+      if (category.user_id === null) {
+        toast.error('Categorias do sistema não podem ser excluídas');
+        return;
+      }
+      
+      event.stopPropagation(); // Impede que o clique propague para o item da categoria
+      this.categoryToDelete = category;
+      this.showDeleteCategoryModal = true;
+    },
+    deleteCategory() {
+      if (!this.categoryToDelete || this.categoryToDelete.user_id === null) {
+        toast.error('Esta categoria não pode ser excluída');
+        this.showDeleteCategoryModal = false;
+        return;
+      }
+
+      axios.delete(`/categories/${this.categoryToDelete.id}`)
+        .then(response => {
+          toast.success('Categoria excluída com sucesso!');
+          this.loadCategories();
+          this.showDeleteCategoryModal = false;
+          this.categoryToDelete = null;
+          
+          // Se a categoria excluída era a selecionada, limpa a seleção
+          if (this.expense.category_id === this.categoryToDelete.id) {
+            this.expense.category_id = '';
+            this.searchQuery = '';
+          }
+        })
+        .catch(error => {
+          console.error('Erro ao excluir categoria:', error);
+          
+          // Verifica se o erro é devido a categoria em uso
+          if (error.response && error.response.status === 422) {
+            toast.error('Esta categoria não pode ser excluída porque está sendo usada em despesas.');
+          } else {
+            toast.error('Erro ao excluir a categoria. Tente novamente.');
+          }
+          
+          this.showDeleteCategoryModal = false;
+        });
     },
     openImageModal() {
       this.showImageModal = true;

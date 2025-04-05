@@ -92,9 +92,6 @@
       <div v-else-if="currentSection === 'addBudgets'">
         <addBudgets @BudgetsList="handleBudgetsList" @BudgetView="handleBudgetView" :budgetId="id" />
       </div>
-      <div v-else-if="currentSection === 'CategoryList'">
-        <CategoryList />
-      </div>
     </div>
 
     <footer class="footer">
@@ -132,8 +129,6 @@ import addInvestment from './components/investments/addInvestment.vue';
 import BudgetsList from './components/budgets/BudgetsList.vue';
 import BudgetView from './components/budgets/BudgetView.vue';
 import addBudgets from './components/budgets/addBudgets.vue';
-import CategoryList from './components/categories/CategoryList.vue';
-
 
 import EmailConfirmed from './components/password_mail/EmailConfirmed.vue';
 import EmailVerificationError from './components/password_mail/EmailVerificationError.vue';
@@ -169,7 +164,6 @@ export default {
     BudgetsList,
     BudgetView,
     addBudgets,
-    CategoryList,
   },
   data() {
     return {

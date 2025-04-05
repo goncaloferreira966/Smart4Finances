@@ -62,12 +62,6 @@
                   <i class="bi bi-dash-circle"></i> <span class="lg:hidden xl:inline">Despesas</span>
                 </button>
               </li>
-              <li v-if="userRole !== 'A'" class="w-full lg:w-auto">
-                <button @click="navigateTo('CategoryList')" class="nav-link rounded-md w-full hover:bg-gray-800"
-                  :class="{ 'active-link': activeForm === 'CategoryList' }">
-                  <i class="bi bi-tag"></i> <span class="lg:hidden xl:inline">Categorias</span>
-                </button>
-              </li>
               <li class="w-full lg:w-auto">
                 <button @click="navigateTo('notifications')" class="nav-link rounded-md w-full hover:bg-gray-800"
                   :class="{ 'active-link': activeForm === 'notifications' }">
