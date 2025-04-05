@@ -17,20 +17,20 @@
             <label class="block mb-2 font-medium">Mês:</label>
             <select v-model="month" 
                    class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
-          <option :value="null">Todos os meses</option>
-          <option value="1">Janeiro</option>
-          <option value="2">Fevereiro</option>
-          <option value="3">Março</option>
-          <option value="4">Abril</option>
-          <option value="5">Maio</option>
-          <option value="6">Junho</option>
-          <option value="7">Julho</option>
-          <option value="8">Agosto</option>
-          <option value="9">Setembro</option>
-          <option value="10">Outubro</option>
-          <option value="11">Novembro</option>
-          <option value="12">Dezembro</option>
-        </select>
+              <option :value="null">Todos os meses</option>
+              <option value="1">Janeiro</option>
+              <option value="2">Fevereiro</option>
+              <option value="3">Março</option>
+              <option value="4">Abril</option>
+              <option value="5">Maio</option>
+              <option value="6">Junho</option>
+              <option value="7">Julho</option>
+              <option value="8">Agosto</option>
+              <option value="9">Setembro</option>
+              <option value="10">Outubro</option>
+              <option value="11">Novembro</option>
+              <option value="12">Dezembro</option>
+            </select>
           </div>
           
           <div class="flex items-end">
@@ -58,25 +58,64 @@
 
       <!-- Cards com estatísticas principais -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-blue-50 p-5 rounded-lg shadow-sm border border-blue-100">
-          <h3 class="text-lg font-semibold text-blue-700 mb-2 flex items-center">
-            <i class="bi bi-cash-coin mr-2"></i> Receitas
+        <div class="stat-card stat-card-income p-5 rounded-lg shadow-sm border"
+             :style="{ 
+               'background-color': isDarkMode ? '#071329' : '#ebf5ff',
+               'border-color': isDarkMode ? '#1d4ed8' : '#bfdbfe',
+               'box-shadow': isDarkMode ? '0 0 15px rgba(37, 99, 235, 0.2)' : 'initial'
+             }">
+          <h3 class="text-lg font-semibold mb-2 flex items-center"
+              :style="{ 'color': isDarkMode ? '#f8fafc' : 'initial' }">
+            <i class="bi bi-cash-coin mr-2" 
+               :style="{ 'color': isDarkMode ? '#60a5fa' : '#3b82f6' }"></i> Receitas
           </h3>
-          <p class="text-2xl font-bold text-blue-900">{{ getTotalValue(incomeData) }} {{ coin }}</p>
+          <p class="text-2xl font-bold"
+             :style="{ 
+               'color': isDarkMode ? '#f8fafc' : 'initial',
+               'text-shadow': isDarkMode ? '0 1px 3px rgba(0, 0, 0, 0.5)' : 'initial'
+             }">
+            {{ getTotalValue(incomeData) }} {{ coin }}
+          </p>
         </div>
         
-        <div class="bg-red-50 p-5 rounded-lg shadow-sm border border-red-100">
-          <h3 class="text-lg font-semibold text-red-700 mb-2 flex items-center">
-            <i class="bi bi-credit-card mr-2"></i> Despesas
+        <div class="stat-card stat-card-expense p-5 rounded-lg shadow-sm border"
+             :style="{ 
+               'background-color': isDarkMode ? '#2c0303' : '#fee2e2',
+               'border-color': isDarkMode ? '#dc2626' : '#fecaca',
+               'box-shadow': isDarkMode ? '0 0 15px rgba(220, 38, 38, 0.2)' : 'initial'
+             }">
+          <h3 class="text-lg font-semibold mb-2 flex items-center"
+              :style="{ 'color': isDarkMode ? '#f8fafc' : 'initial' }">
+            <i class="bi bi-credit-card mr-2"
+               :style="{ 'color': isDarkMode ? '#f87171' : '#ef4444' }"></i> Despesas
           </h3>
-          <p class="text-2xl font-bold text-red-900">{{ getTotalValue(expenseData) }} {{ coin }}</p>
+          <p class="text-2xl font-bold"
+             :style="{ 
+               'color': isDarkMode ? '#f8fafc' : 'initial',
+               'text-shadow': isDarkMode ? '0 1px 3px rgba(0, 0, 0, 0.5)' : 'initial'
+             }">
+            {{ getTotalValue(expenseData) }} {{ coin }}
+          </p>
         </div>
         
-        <div class="bg-green-50 p-5 rounded-lg shadow-sm border border-green-100">
-          <h3 class="text-lg font-semibold text-green-700 mb-2 flex items-center">
-            <i class="bi bi-graph-up-arrow mr-2"></i> Investimentos
+        <div class="stat-card stat-card-investment p-5 rounded-lg shadow-sm border"
+             :style="{ 
+               'background-color': isDarkMode ? '#052510' : '#ecfdf5',
+               'border-color': isDarkMode ? '#10b981' : '#a7f3d0',
+               'box-shadow': isDarkMode ? '0 0 15px rgba(16, 185, 129, 0.2)' : 'initial'
+             }">
+          <h3 class="text-lg font-semibold mb-2 flex items-center"
+              :style="{ 'color': isDarkMode ? '#f8fafc' : 'initial' }">
+            <i class="bi bi-graph-up-arrow mr-2"
+               :style="{ 'color': isDarkMode ? '#34d399' : '#10b981' }"></i> Investimentos
           </h3>
-          <p class="text-2xl font-bold text-green-900">{{ getTotalValue(investmentData) }} {{ coin }}</p>
+          <p class="text-2xl font-bold"
+             :style="{ 
+               'color': isDarkMode ? '#f8fafc' : 'initial',
+               'text-shadow': isDarkMode ? '0 1px 3px rgba(0, 0, 0, 0.5)' : 'initial'
+             }">
+            {{ getTotalValue(investmentData) }} {{ coin }}
+          </p>
         </div>
       </div>
 
@@ -167,6 +206,14 @@ import { useThemeStore } from "@/stores/theme";
 export default {
   methods: {
     exportToPDF() {
+      toast.info("Gerando PDF, por favor aguarde...");
+      
+      // Temporarily remove dark mode class for PDF generation if it exists
+      const isDarkMode = document.documentElement.classList.contains('dark-mode');
+      if (isDarkMode) {
+        document.documentElement.classList.remove('dark-mode');
+      }
+      
       const content = this.$refs.content;
 
       // Captura o conteúdo da página como imagem
@@ -206,9 +253,104 @@ export default {
         // Guarda o PDF
         doc.save("Smart4Finances_Relatório_Financeiro.pdf");
         toast.success("Relatório descarregado com sucesso!");
-
+        
+        // Restore dark mode if it was active
+        if (isDarkMode) {
+          document.documentElement.classList.add('dark-mode');
+        }
+      }).catch(error => {
+        console.error("Erro ao gerar o PDF:", error);
+        toast.error("Erro ao gerar o relatório PDF");
+        
+        // Restore dark mode in case of error too
+        if (isDarkMode) {
+          document.documentElement.classList.add('dark-mode');
+        }
       });
     },
+    
+    sendEmail() {
+      toast.info("Preparando o email, por favor aguarde...");
+      
+      // Temporarily remove dark mode class for PDF generation if it exists
+      const isDarkMode = document.documentElement.classList.contains('dark-mode');
+      if (isDarkMode) {
+        document.documentElement.classList.remove('dark-mode');
+      }
+      
+      const content = this.$refs.content;
+      html2canvas(content, {
+        allowTaint: true,
+        useCORS: true,
+        scale: 1.2, // Para envio por e-mail, manter a escala menor para reduzir o tamanho do arquivo
+      }).then((canvas) => {
+        const imgData = canvas.toDataURL("image/png");
+        const doc = new jsPDF({
+          orientation: "portrait",
+          unit: "mm",
+          format: "a3",
+        });
+
+        // Criar capa preta com logotipo
+        doc.setFillColor(0, 0, 0);
+        doc.rect(0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height, "F");
+
+        const logoWidth = 250;
+        const logoHeight = 200;
+        const logoX = (doc.internal.pageSize.width - logoWidth) / 2;
+        const logoY = 100;
+        doc.addImage(logo, "PNG", logoX, logoY, logoWidth, logoHeight);
+        
+        // Adicionar título na capa
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(24);
+        doc.text("Relatório Financeiro", doc.internal.pageSize.width / 2, logoY + logoHeight + 20, { align: "center" });
+        
+        // Adicionar data na capa
+        doc.setFontSize(14);
+        const today = new Date();
+        const dateStr = today.toLocaleDateString('pt-PT');
+        doc.text(`Gerado em: ${dateStr}`, doc.internal.pageSize.width / 2, logoY + logoHeight + 40, { align: "center" });
+
+        doc.addPage();
+
+        const imgWidth = 220;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        doc.addImage(imgData, "PNG", 40, 0, imgWidth, imgHeight);
+
+        const pdfBlob = doc.output("blob"); // Gera um blob do PDF
+
+        const formData = new FormData();
+        formData.append("file", pdfBlob, "Smart4Finances_Relatório_Financeiro.pdf");
+
+        axios.post("/send-email", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        })
+          .then(() => {
+            toast.success("E-mail enviado com sucesso!");
+            // Restore dark mode if it was active
+            if (isDarkMode) {
+              document.documentElement.classList.add('dark-mode');
+            }
+          })
+          .catch((error) => {
+            toast.error("Erro ao enviar e-mail.");
+            console.error("Erro ao enviar email", error);
+            // Restore dark mode in case of error
+            if (isDarkMode) {
+              document.documentElement.classList.add('dark-mode');
+            }
+          });
+      }).catch(error => {
+        toast.error("Erro ao preparar o relatório para e-mail");
+        console.error("Erro ao preparar o relatório", error);
+        
+        // Restore dark mode in case of error
+        if (isDarkMode) {
+          document.documentElement.classList.add('dark-mode');
+        }
+      });
+    }
   },
   components: { GChart },
   setup() {
@@ -355,59 +497,10 @@ export default {
       }
     });
 
-    const sendEmail = async () => {
-      try {
-        const content = document.querySelector("#content");
-        html2canvas(content, {
-          allowTaint: true,
-          useCORS: true,
-          //1.2 está no limite máximo do que o gmail permite de mb por email de forma gratuita
-          scale: 1.2, // Para envio por e-mail, manter a escala menor para reduzir o tamanho do arquivo
-        }).then((canvas) => {
-          const imgData = canvas.toDataURL("image/png");
-          const doc = new jsPDF({
-            orientation: "portrait",
-            unit: "mm",
-            format: "a3",
-          });
-
-          // Criar capa preta com logotipo
-          doc.setFillColor(0, 0, 0);
-          doc.rect(0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height, "F");
-
-          const logoWidth = 250;
-          const logoHeight = 200;
-          const logoX = (doc.internal.pageSize.width - logoWidth) / 2;
-          const logoY = 100;
-          doc.addImage(logo, "PNG", logoX, logoY, logoWidth, logoHeight);
-
-          doc.addPage();
-
-          const imgWidth = 220;
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          doc.addImage(imgData, "PNG", 40, 0, imgWidth, imgHeight);
-
-          const pdfBlob = doc.output("blob"); // Gera um blob do PDF
-
-          const formData = new FormData();
-          formData.append("file", pdfBlob, "Smart4Finances_Relatório_Financeiro.pdf");
-
-          axios.post("/send-email", formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          })
-            .then(() => {
-              toast.success("E-mail enviado com sucesso!");
-            })
-            .catch(() => {
-              toast.error("Erro ao enviar e-mail.");
-            });
-        });
-      } catch (error) {
-        toast.error("Erro ao enviar o E-mail");
-        console.error("Erro ao enviar email", error);
-      }
-    };
-
+    // Add an isDarkMode computed property to directly check dark mode state
+    const isDarkMode = computed(() => {
+      return themeStore.darkMode;
+    });
 
     onMounted(fetchData);
 
@@ -424,10 +517,10 @@ export default {
       chartOptions,
       formatPieChartData,
       lineChartData,
-      sendEmail,
       coin,
       chartTitles,
       getTotalValue,
+      isDarkMode,
     };
   },
 };
@@ -436,6 +529,92 @@ export default {
 <style scoped>
 .filters-container {
   width: 100%;
+}
+
+.stat-card {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card h3 {
+  font-weight: 600;
+}
+
+.stat-card p {
+  font-weight: 700;
+}
+
+/* Light mode styles */
+.stat-card-income {
+  background-color: #ebf5ff; /* Light blue background */
+  border-color: #bfdbfe;
+}
+
+.stat-card-income h3 i {
+  color: #3b82f6; /* Blue icon */
+}
+
+.stat-card-expense {
+  background-color: #fee2e2; /* Light red background */
+  border-color: #fecaca;
+}
+
+.stat-card-expense h3 i {
+  color: #ef4444; /* Red icon */
+}
+
+.stat-card-investment {
+  background-color: #ecfdf5; /* Light green background */
+  border-color: #a7f3d0;
+}
+
+.stat-card-investment h3 i {
+  color: #10b981; /* Green icon */
+}
+
+/* Dark mode versions */
+html.dark-mode .stat-card {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
+}
+
+html.dark-mode .stat-card-income {
+  background: #071329 !important; /* Extremely dark blue */
+  border-color: #1d4ed8 !important;
+  box-shadow: 0 0 15px rgba(37, 99, 235, 0.2) !important;
+}
+
+html.dark-mode .stat-card-income h3 i {
+  color: #60a5fa !important; /* Bright blue icon for dark mode */
+}
+
+html.dark-mode .stat-card-expense {
+  background: #2c0303 !important; /* Extremely dark red */
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 15px rgba(220, 38, 38, 0.2) !important;
+}
+
+html.dark-mode .stat-card-expense h3 i {
+  color: #f87171 !important; /* Bright red icon for dark mode */
+}
+
+html.dark-mode .stat-card-investment {
+  background: #052510 !important; /* Extremely dark green */
+  border-color: #10b981 !important;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.2) !important;
+}
+
+html.dark-mode .stat-card-investment h3 i {
+  color: #34d399 !important; /* Bright green icon for dark mode */
+}
+
+html.dark-mode .stat-card h3,
+html.dark-mode .stat-card p {
+  color: #f8fafc !important;
+}
+
+html.dark-mode .stat-card p {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
 }
 
 @media (max-width: 640px) {
