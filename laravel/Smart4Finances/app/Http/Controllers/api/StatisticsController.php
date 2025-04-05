@@ -69,11 +69,15 @@ class StatisticsController extends Controller
             ->orderBy('month')
             ->pluck('total', 'month');
         
-        $expensesByCategory = $queryExpense->join('categories', 'expenses.category_id', '=', 'categories.id')
-            ->selectRaw('categories.name, SUM(expenses.amount) as total')
-            ->groupBy('categories.name')
+        $expensesByCategory = Expense::from('expenses as e')
+            ->join('categories as c', 'e.category_id', '=', 'c.id')
+            ->where('e.user_id', $user->id)
+            ->whereYear('e.date', $year)
+            ->when($month, fn($query) => $query->whereMonth('e.date', $month))
+            ->selectRaw('c.name, SUM(e.amount) as total')
+            ->groupBy('c.name')
             ->orderByDesc('total')
-            ->pluck('total', 'name');
+            ->pluck('total', 'c.name');
         
         $investmentByMonth = $queryInvestment->selectRaw('MONTH(created_at) as month, SUM(amount) as total')
             ->groupBy('month')
