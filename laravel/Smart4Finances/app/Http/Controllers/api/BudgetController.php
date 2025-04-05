@@ -9,15 +9,11 @@ use Illuminate\Http\Request;
 
 class BudgetController extends Controller
 {
-    // Lista todos os orçamentos
+    // Lista todos os orçamentos do usuário logado
     public function index(Request $request)
     {
-        $query = Budget::with('category'); // Carrega a relação com a categoria
-    
-        // Filtra pelo usuário, se informado
-        if ($request->filled('user_id')) {
-            $query->where('user_id', $request->user_id);
-        }
+        $query = Budget::with('category') // Carrega a relação com a categoria
+                       ->where('user_id', auth()->id()); // Filtra pelo usuário logado
     
         // Filtra pelo limite mínimo, se informado
         if ($request->filled('min_limit')) {
@@ -54,10 +50,13 @@ class BudgetController extends Controller
         }));
     }
     
-    // Exibe os detalhes de um orçamento
+    // Exibe os detalhes de um orçamento do usuário logado
     public function show($id)
     {
-        $budget = Budget::with('category')->find($id);
+        $budget = Budget::with('category')
+                        ->where('id', $id)
+                        ->where('user_id', auth()->id())
+                        ->first();
     
         if (!$budget) {
             return response()->json(['error' => 'Orçamento não encontrado'], 404);
@@ -69,6 +68,7 @@ class BudgetController extends Controller
 
         // Soma das despesas associadas a este orçamento durante o mês atual
         $totalExpenses = Expense::where('category_id', $budget->category_id)
+            ->where('user_id', auth()->id()) // Filtra despesas do usuário logado
             ->whereBetween('date', [$startOfMonth, $endOfMonth])
             ->sum('amount');
     
@@ -116,21 +116,23 @@ class BudgetController extends Controller
 
     public function update(Request $request, $id)
     {
-        $budget = Budget::find($id);
+        $budget = Budget::where('id', $id)
+                        ->where('user_id', auth()->id())
+                        ->first();
+                        
         if (!$budget) {
             return response()->json(['error' => 'Orçamento não encontrado'], 404);
         }
     
         $request->validate([
-            'user_id' => 'sometimes|exists:users,id',
             'category_id' => 'sometimes|exists:categories,id',
             'limit_amount' => 'sometimes|numeric|min:0',
         ]);
     
         // Se category_id foi enviado no request, verifica se já existe outro orçamento
-        // com a mesma combinação de user_id e category_id
+        // com a mesma category_id para o usuário logado
         if ($request->has('category_id')) {
-            $existingBudget = Budget::where('user_id', $request->user_id ?? $budget->user_id)
+            $existingBudget = Budget::where('user_id', auth()->id())
                 ->where('category_id', $request->category_id)
                 ->where('id', '!=', $id) // Ignora o próprio orçamento que está sendo atualizado
                 ->first();
@@ -148,7 +150,7 @@ class BudgetController extends Controller
         }
     
         // Se não houver conflito, atualiza normalmente
-        $budget->update($request->only(['user_id', 'category_id', 'limit_amount']));
+        $budget->update($request->only(['category_id', 'limit_amount']));
     
         return response()->json([
             'message' => 'Orçamento atualizado com sucesso!',
@@ -156,10 +158,13 @@ class BudgetController extends Controller
         ], 200);
     }
     
-    // Remove um orçamento
+    // Remove um orçamento do usuário logado
     public function destroy($id)
     {
-        $budget = Budget::find($id);
+        $budget = Budget::where('id', $id)
+                        ->where('user_id', auth()->id())
+                        ->first();
+                        
         if (!$budget) {
             return response()->json(['error' => 'Orçamento não encontrado'], 404);
         }
