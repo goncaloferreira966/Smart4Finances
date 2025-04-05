@@ -62,11 +62,11 @@
             <td class="px-4 py-2">{{ truncate(expense.description, 20) }}</td>
             <td class="px-4 py-2">
               <div class="flex gap-2 justify-center">
-                <button @click="deleteExpense(expense.id)" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
-                  <i class="bi bi-trash"></i>
-                </button>
                 <button @click="viewExpense(expense.id)" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
                   <i class="bi bi-eye-fill"></i>
+                </button>
+                <button @click="deleteExpense(expense.id)" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                  <i class="bi bi-trash"></i>
                 </button>
               </div>
             </td>
