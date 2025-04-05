@@ -2,88 +2,120 @@
   <div class="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg" style="margin-top: 7vh; margin-bottom: 7vh; min-width: 70%;">
     <h2 class="text-2xl font-bold mb-4" style="color: black;">As Minhas Despesas</h2>
 
-    <!-- Filtros -->
-    <div class="mb-4">
-      <div class="flex flex-col sm:flex-row mb-2 gap-4">
-        <div class="w-full sm:w-auto">
-          <label class="block mb-1">Categoria:</label>
-          <select v-model="filters.category" class="w-full p-2 border rounded">
-            <option value="">Todas</option>
-            <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
-          </select>
-        </div>
-        <div class="w-full sm:w-auto">
-          <label class="block mb-1">Preço:</label>
-          <div class="flex gap-2">
-            <input type="number" v-model="filters.minPrice" placeholder="Mínimo" class="w-full p-2 border rounded"/>
-            <input type="number" v-model="filters.maxPrice" placeholder="Máximo" class="w-full p-2 border rounded"/>
+    <!-- Filtros com design melhorado -->
+    <div class="mb-6">
+      <div class="filters-container">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+          <div>
+            <label class="block mb-2 text-gray-700 font-medium">Categoria:</label>
+            <select v-model="filters.category" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+              <option value="">Todas as categorias</option>
+              <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
+            </select>
+          </div>
+          
+          <div>
+            <label class="block mb-2 text-gray-700 font-medium">Preço:</label>
+            <div class="flex gap-2">
+              <input type="number" v-model="filters.minPrice" placeholder="Mínimo" 
+                    class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"/>
+              <input type="number" v-model="filters.maxPrice" placeholder="Máximo" 
+                    class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"/>
+            </div>
+          </div>
+          
+          <div>
+            <label class="block mb-2 text-gray-700 font-medium">Período:</label>
+            <div class="flex gap-2">
+              <input type="date" v-model="filters.startDate" 
+                    class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"/>
+              <input type="date" v-model="filters.endDate" 
+                    class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"/>
+            </div>
           </div>
         </div>
-        <div class="w-full sm:w-auto">
-          <label class="block mb-1">Data:</label>
-          <div class="flex gap-2">
-            <input type="date" v-model="filters.startDate" class="w-full p-2 border rounded"/>
-            <input type="date" v-model="filters.endDate" class="w-full p-2 border rounded"/>
-          </div>
+        
+        <div class="flex justify-center gap-3 mt-4">
+          <button @click="applyFilters" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">
+            <i class="bi bi-funnel mr-1"></i> Filtrar
+          </button>
+          <button @click="resetFilters" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors">
+            <i class="bi bi-x-circle mr-1"></i> Limpar Filtros
+          </button>
+          <button @click="addexpense" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors">
+            <i class="bi bi-plus-lg mr-1"></i> Nova Despesa
+          </button>
+          <!-- Botão global de deletar aparece se houver alguma despesa selecionada -->
+          <button v-if="selectedExpenses.length > 0" @click="deleteSelectedExpenses" 
+                 class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors">
+            <i class="bi bi-trash mr-1"></i> Eleminar Selecionados ({{ selectedExpenses.length }})
+          </button>
         </div>
-      </div>
-      <div class="flex justify-center gap-2 mt-4">
-        <button @click="addexpense" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-          <i class="bi bi-plus-lg"></i>
-        </button>
-        <!-- Botão global de deletar aparece se houver alguma despesa selecionada -->
-        <button v-if="selectedExpenses.length > 0" @click="deleteSelectedExpenses" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-          <i class="bi bi-trash"></i> Eleminar Selecionados
-        </button>
       </div>
     </div>
 
     <!-- Tabela de despesas -->
     <div class="overflow-x-auto">
-      <table class="w-full min-w-[600px]">
+      <table class="w-full min-w-[600px] border-collapse">
         <thead>
-          <tr class="bg-gray-50">
-            <th class="border px-4 py-2"></th>
-            <th class="border px-4 py-2">Data</th>
-            <th class="border px-4 py-2">Categoria</th>
-            <th class="border px-4 py-2">Valor</th>
-            <th class="border px-4 py-2">Descrição</th>
-            <th class="border px-4 py-2">Ações</th>
+          <tr class="bg-gray-100 text-gray-600 uppercase text-sm">
+            <th class="border px-4 py-3 text-center w-10">
+              <input type="checkbox" @click="toggleSelectAll" :checked="allSelected" />
+            </th>
+            <th class="border px-4 py-3 text-left">Data</th>
+            <th class="border px-4 py-3 text-left">Categoria</th>
+            <th class="border px-4 py-3 text-right">Valor</th>
+            <th class="border px-4 py-3 text-left">Descrição</th>
+            <th class="border px-4 py-3 text-center">Ações</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="expense in expenses" :key="expense.id" class="hover:bg-gray-50">
-            <td class="px-4 py-2 text-center">
+          <tr v-for="expense in expenses" :key="expense.id" class="border-b hover:bg-gray-50 transition-colors">
+            <td class="px-4 py-3 text-center">
               <input type="checkbox" :value="expense.id" v-model="selectedExpenses"/>
             </td>
-            <td class="px-4 py-2">{{ expense.date }}</td>
-            <td class="px-4 py-2">{{ getCategoryName(expense.category_id) }}</td>
-            <td class="px-4 py-2">{{ expense.amount + " "+coin}}</td>
-            <td class="px-4 py-2">{{ truncate(expense.description, 20) }}</td>
-            <td class="px-4 py-2">
+            <td class="px-4 py-3">{{ formatDate(expense.date) }}</td>
+            <td class="px-4 py-3">{{ getCategoryName(expense.category_id) }}</td>
+            <td class="px-4 py-3 text-right font-medium">{{ formatAmount(expense.amount) }} {{ coin }}</td>
+            <td class="px-4 py-3">{{ truncate(expense.description, 30) }}</td>
+            <td class="px-4 py-3">
               <div class="flex gap-2 justify-center">
-                <button @click="viewExpense(expense.id)" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+                <button @click="viewExpense(expense.id)" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition-colors">
                   <i class="bi bi-eye-fill"></i>
                 </button>
-                <button @click="deleteExpense(expense.id)" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                <button @click="deleteExpense(expense.id)" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors">
                   <i class="bi bi-trash"></i>
                 </button>
               </div>
+            </td>
+          </tr>
+          <tr v-if="expenses.length === 0">
+            <td colspan="6" class="px-4 py-6 text-center text-gray-500">
+              <i class="bi bi-inbox text-4xl block mb-2"></i>
+              Nenhuma despesa encontrada.
             </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <div v-if="loadingMore" class="mt-4 text-center">A Carregar mais...</div>
+    <div v-if="loadingMore" class="mt-4 text-center">
+      <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent"></div>
+      <p class="mt-2 text-gray-600">A Carregar mais...</p>
+    </div>
 
     <!-- Modal de confirmação de exclusão -->
-    <div v-if="showDeleteModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div class="bg-white p-6 rounded-lg">
-        <p class="mb-4">Tem certeza que deseja apagar a(s) despesa(s) selecionada(s)?</p>
-        <div class="flex justify-end">
-          <button @click="cancelDeletion" class="bg-gray-500 text-white px-4 py-2 rounded mr-2">Cancelar</button>
-          <button @click="confirmDeletion" class="bg-red-500 text-white px-4 py-2 rounded">Confirmar</button>
+    <div v-if="showDeleteModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+        <h3 class="text-xl font-bold mb-2">Confirmar Exclusão</h3>
+        <p class="mb-6">Tem certeza que deseja apagar {{ deletionTarget ? '1 despesa' : selectedExpenses.length + ' despesas' }}?</p>
+        <div class="flex justify-end gap-3">
+          <button @click="cancelDeletion" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors">
+            Cancelar
+          </button>
+          <button @click="confirmDeletion" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors">
+            Confirmar
+          </button>
         </div>
       </div>
     </div>
@@ -276,23 +308,49 @@ export default {
             this.showDeleteModal = false;
           });
       }
+    },
+    resetFilters() {
+      this.filters = {
+        category: '',
+        minPrice: '',
+        maxPrice: '',
+        startDate: '',
+        endDate: ''
+      };
+      this.applyFilters();
+    },
+    formatDate(dateString) {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('pt-PT');
+    },
+    formatAmount(amount) {
+      return parseFloat(amount).toFixed(2);
+    },
+    toggleSelectAll() {
+      if (this.allSelected) {
+        this.selectedExpenses = [];
+      } else {
+        this.selectedExpenses = this.expenses.map(e => e.id);
+      }
+    }
+  },
+  computed: {
+    allSelected() {
+      return this.expenses.length > 0 && this.selectedExpenses.length === this.expenses.length;
     }
   }
 };
 </script>
 
 <style scoped>
-/* Estilos para o modal */
-.fixed {
-  position: fixed;
+.filters-container {
+  width: 100%;
 }
-.inset-0 {
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-}
-.bg-opacity-50 {
-  background-color: rgba(0, 0, 0, 0.5);
+
+@media (max-width: 640px) {
+  button i {
+    margin-right: 4px;
+  }
 }
 </style>

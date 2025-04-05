@@ -3,96 +3,126 @@
     style="margin-top: 7vh; margin-bottom: 7vh; min-width: 70%;">
     <h2 class="text-2xl font-bold mb-4" style="color: black;">Os Meus Investimentos</h2>
     <button
-  @click="toggleView"
-  class="mb-6 bg-gray-800 text-gray-100 font-medium py-3 px-6 rounded-lg 
-         shadow-[5px_5px_10px_rgba(0,0,0,0.3),-5px_-5px_10px_rgba(255,255,255,0.05)] 
-         hover:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.05)] 
-         active:shadow-inset transition-all duration-300 border border-gray-700"
->
-  <span class="flex items-center gap-2">
-    <i class="bi" :class="showInvestments ? 'bi-bar-chart-line' : 'bi-cash-stack'"></i>
-    {{ showInvestments ? 'Mercados Financeiros' : 'Os Meus Investimentos' }}
-  </span>
-</button>
+      @click="toggleView"
+      class="mb-6 bg-gray-800 text-gray-100 font-medium py-3 px-6 rounded-lg 
+            shadow-[5px_5px_10px_rgba(0,0,0,0.3),-5px_-5px_10px_rgba(255,255,255,0.05)] 
+            hover:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.05)] 
+            active:shadow-inset transition-all duration-300 border border-gray-700"
+    >
+      <span class="flex items-center gap-2">
+        <i class="bi" :class="showInvestments ? 'bi-bar-chart-line' : 'bi-cash-stack'"></i>
+        {{ showInvestments ? 'Mercados Financeiros' : 'Os Meus Investimentos' }}
+      </span>
+    </button>
     <div v-if="showInvestments">
-          <!-- Filtros -->
-    <div class="mb-4">
-      <div class="flex flex-col sm:flex-row mb-2 gap-4">
-        <div class="w-full sm:w-auto">
-          <label class="block mb-1">Valor:</label>
-          <div class="flex gap-2">
-            <input type="number" v-model="filters.minPrice" placeholder="Mínimo" class="w-full p-2 border rounded"/>
-            <input type="number" v-model="filters.maxPrice" placeholder="Máximo" class="w-full p-2 border rounded"/>
-          </div>
-        </div>
-        <div class="w-full sm:w-auto">
-          <label class="block mb-1">Data:</label>
-          <div class="flex gap-2">
-            <input type="date" v-model="filters.startDate" class="w-full p-2 border rounded"/>
-            <input type="date" v-model="filters.endDate" class="w-full p-2 border rounded"/>
-          </div>
-        </div>
-      </div>
-      <div class="flex justify-center gap-2 mt-4">
-        <button @click="addInvestment" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-          <i class="bi bi-plus-lg"></i>
-        </button>
-        <button v-if="selectedInvestments.length > 0" @click="deleteSelectedInvestments"
-          class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-          <i class="bi bi-trash"></i> Eleminar Selecionados
-        </button>
-      </div>
-    </div>
-
-    <!-- Tabela de investimentos -->
-    <div class="overflow-x-auto">
-      <table class="w-full min-w-[600px]">
-        <thead>
-          <tr class="bg-gray-50">
-            <th class="border px-4 py-2"></th>
-            <th class="border px-4 py-2">Data</th>
-            <th class="border px-4 py-2">Valor</th>
-            <th class="border px-4 py-2">Tipo</th>
-            <th class="border px-4 py-2">ROI</th>
-            <th class="border px-4 py-2">Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="investment in investments" :key="investment.id" class="hover:bg-gray-50">
-            <td class="px-4 py-2 text-center">
-              <input type="checkbox" :value="investment.id" v-model="selectedInvestments" />
-            </td>
-            <td class="px-4 py-2">{{ formatDate(investment.created_at) }}</td>
-            <td class="px-4 py-2">{{ investment.amount + ' ' + coin }}</td>
-            <td class="px-4 py-2">{{ investment.type }}</td>
-            <td class="px-4 py-2">{{ investment.roi }} %</td>
-            <td class="px-4 py-2">
-              <div class="flex gap-2 justify-center">
-                <button @click="viewInvestment(investment.id)" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
-                  <i class="bi bi-eye-fill"></i>
-                </button>
-                <button @click="deleteInvestment(investment.id)" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
-                  <i class="bi bi-trash"></i>
-                </button>
+      <!-- Filtros com design melhorado -->
+      <div class="mb-6">
+        <div class="filters-container">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+            <div>
+              <label class="block mb-2 text-gray-700 font-medium">Valor:</label>
+              <div class="flex gap-2">
+                <input type="number" v-model="filters.minPrice" placeholder="Mínimo" 
+                      class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"/>
+                <input type="number" v-model="filters.maxPrice" placeholder="Máximo" 
+                      class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"/>
               </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div v-if="loadingMore" class="mt-4 text-center">A Carregar mais...</div>
-
-    <!-- Modal de confirmação de exclusão -->
-    <div v-if="showDeleteModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div class="bg-white p-6 rounded-lg">
-        <p class="mb-4">Tem certeza que deseja apagar o(s) investimentos(s) selecionado(s)?</p>
-        <div class="flex justify-end">
-          <button @click="cancelDeletion" class="bg-gray-500 text-white px-4 py-2 rounded mr-2">Cancelar</button>
-          <button @click="confirmDeletion" class="bg-red-500 text-white px-4 py-2 rounded">Confirmar</button>
+            </div>
+            <div>
+              <label class="block mb-2 text-gray-700 font-medium">Período:</label>
+              <div class="flex gap-2">
+                <input type="date" v-model="filters.startDate" 
+                      class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"/>
+                <input type="date" v-model="filters.endDate" 
+                      class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"/>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex justify-center gap-3 mt-4">
+            <button @click="applyFilters" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">
+              <i class="bi bi-funnel mr-1"></i> Filtrar
+            </button>
+            <button @click="resetFilters" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors">
+              <i class="bi bi-x-circle mr-1"></i> Limpar Filtros
+            </button>
+            <button @click="addInvestment" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors">
+              <i class="bi bi-plus-lg mr-1"></i> Novo Investimento
+            </button>
+            <!-- Botão global de deletar aparece se houver algum investimento selecionado -->
+            <button v-if="selectedInvestments.length > 0" @click="deleteSelectedInvestments" 
+                  class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors">
+              <i class="bi bi-trash mr-1"></i> Eleminar Selecionados ({{ selectedInvestments.length }})
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+
+      <!-- Tabela de investimentos -->
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[600px] border-collapse">
+          <thead>
+            <tr class="bg-gray-100 text-gray-600 uppercase text-sm">
+              <th class="border px-4 py-3 text-center w-10">
+                <input type="checkbox" @click="toggleSelectAll" :checked="allSelected" />
+              </th>
+              <th class="border px-4 py-3 text-left">Data</th>
+              <th class="border px-4 py-3 text-right">Valor</th>
+              <th class="border px-4 py-3 text-left">Tipo</th>
+              <th class="border px-4 py-3 text-right">ROI</th>
+              <th class="border px-4 py-3 text-center">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="investment in investments" :key="investment.id" class="border-b hover:bg-gray-50 transition-colors">
+              <td class="px-4 py-3 text-center">
+                <input type="checkbox" :value="investment.id" v-model="selectedInvestments" />
+              </td>
+              <td class="px-4 py-3">{{ formatDate(investment.created_at) }}</td>
+              <td class="px-4 py-3 text-right font-medium">{{ formatAmount(investment.amount) }} {{ coin }}</td>
+              <td class="px-4 py-3">{{ investment.type }}</td>
+              <td class="px-4 py-3 text-right font-medium">{{ investment.roi }} %</td>
+              <td class="px-4 py-3">
+                <div class="flex gap-2 justify-center">
+                  <button @click="viewInvestment(investment.id)" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition-colors">
+                    <i class="bi bi-eye-fill"></i>
+                  </button>
+                  <button @click="deleteInvestment(investment.id)" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr v-if="investments.length === 0">
+              <td colspan="6" class="px-4 py-6 text-center text-gray-500">
+                <i class="bi bi-inbox text-4xl block mb-2"></i>
+                Nenhum investimento encontrado.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div v-if="loadingMore" class="mt-4 text-center">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent"></div>
+        <p class="mt-2 text-gray-600">A Carregar mais...</p>
+      </div>
+
+      <!-- Modal de confirmação de exclusão -->
+      <div v-if="showDeleteModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+          <h3 class="text-xl font-bold mb-2">Confirmar Exclusão</h3>
+          <p class="mb-6">Tem certeza que deseja apagar {{ deletionTarget ? '1 investimento' : selectedInvestments.length + ' investimentos' }}?</p>
+          <div class="flex justify-end gap-3">
+            <button @click="cancelDeletion" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors">
+              Cancelar
+            </button>
+            <button @click="confirmDeletion" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors">
+              Confirmar
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
     <div v-else>
       <!-- Componente TradingView -->
@@ -159,6 +189,11 @@ export default {
       }
     },
   },
+  computed: {
+    allSelected() {
+      return this.investments.length > 0 && this.selectedInvestments.length === this.investments.length;
+    }
+  },
   methods: {
     toggleView() {
       this.showInvestments = !this.showInvestments;
@@ -224,17 +259,33 @@ export default {
     formatDate(dateString) {
       const date = new Date(Date.parse(dateString));
       if (isNaN(date)) return 'Data inválida';
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
+      return date.toLocaleDateString('pt-PT');
+    },
+    formatAmount(amount) {
+      return parseFloat(amount).toFixed(2);
     },
     applyFilters() {
       this.loadInvestments(true);
     },
+    resetFilters() {
+      this.filters = {
+        minPrice: '',
+        maxPrice: '',
+        startDate: '',
+        endDate: ''
+      };
+      this.applyFilters();
+    },
     applyFiltersDebounced: debounce(function () {
       this.applyFilters();
     }, 500),
+    toggleSelectAll() {
+      if (this.allSelected) {
+        this.selectedInvestments = [];
+      } else {
+        this.selectedInvestments = this.investments.map(inv => inv.id);
+      }
+    },
     truncate(text, maxLength) {
       if (!text) return '';
       return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
@@ -294,3 +345,15 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.filters-container {
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  button i {
+    margin-right: 4px;
+  }
+}
+</style>
