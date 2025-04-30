@@ -55,7 +55,8 @@
                 </button>
               </li>
               <li v-if="userRole !== 'A'" class="w-full lg:w-auto">
-                <button @click="navigateTo('BudgetList')"  class="nav-link rounded-md w-full hover:bg-gray-800">
+                <button @click="navigateTo('BudgetList')"  class="nav-link rounded-md w-full hover:bg-gray-800"
+                :class="{ 'active-link': activeForm === 'BudgetList' }">
                   <i class="bi bi-cash-coin"></i> <span class="lg:hidden xl:inline">Limites</span>
                 </button>
               </li>
