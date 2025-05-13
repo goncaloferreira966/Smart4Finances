@@ -27,14 +27,15 @@
             class="form-control w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
         <div class="mb-4">
-            <label for="coin" class="block text-gray-700 font-semibold mb-2">Moeda</label>
-            <select required id="coin" v-model="coin" class="form-control w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="">Selecione uma moeda</option>
-              <option value="$">Dólar (USD)</option>
-              <option value="€">Euro (EUR)</option>
-              <option value="R$">Real (BRL)</option>
-              <option value="£">Libra (GBP)</option>
-            </select>
+          <label for="coin" class="block text-gray-700 font-semibold mb-2">Moeda</label>
+          <select required id="coin" v-model="coin"
+            class="form-control w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">Selecione uma moeda</option>
+            <option value="$">Dólar (USD)</option>
+            <option value="€">Euro (EUR)</option>
+            <option value="R$">Real (BRL)</option>
+            <option value="£">Libra (GBP)</option>
+          </select>
         </div>
         <div class="mb-6">
           <label for="password" class="block text-gray-700 font-semibold mb-2">Password</label>
@@ -69,6 +70,16 @@ export default {
     };
   },
   methods: {
+    translateErrorMessage(message) {
+      const translations = {
+        "The nickname has already been taken.": "Este nickname já está em uso.",
+        "The email has already been taken.": "Este e-mail já está em uso.",
+        "The password must be at least 8 characters.": "A senha deve ter pelo menos 8 caracteres.",
+        "The email must be a valid email address.": "O e-mail deve ser um endereço válido."
+      };
+
+      return translations[message] || message;
+    },
     async handleRegister() {
       if (this.name && this.email && this.nickname && this.password) {
         try {
@@ -85,7 +96,6 @@ export default {
             headers: { "Content-Type": "multipart/form-data" },
           });
           if (response.status === 200 || response.status === 201) {
-            toast.success("Registo realizado com sucesso! Já pode fazer Login!");
             this.$emit("register-success", response.data);
           } else {
             this.errorMessage = response.data.message || "Erro ao registrar. Tente novamente.";
@@ -93,8 +103,27 @@ export default {
           }
         } catch (error) {
           console.error(error);
-          this.errorMessage = "Ocorreu um erro ao conectar à API. Tente novamente.";
-          toast.error(this.errorMessage);
+          if (error.response && error.response.data) {
+            if (error.response.data.errors) {
+              // Processar os erros de validação específicos
+              const errorMessages = [];
+              for (const field in error.response.data.errors) {
+                const originalMessage = error.response.data.errors[field][0];
+                errorMessages.push(this.translateErrorMessage(originalMessage));
+              }
+              this.errorMessage = errorMessages.join(' ');
+              toast.error(this.errorMessage);
+            } else if (error.response.data.message) {
+              this.errorMessage = error.response.data.message;
+              toast.error(this.errorMessage);
+            } else {
+              this.errorMessage = "Erro ao registrar. Tente novamente.";
+              toast.error(this.errorMessage);
+            }
+          } else {
+            this.errorMessage = "Ocorreu um erro ao conectar à API. Tente novamente.";
+            toast.error(this.errorMessage);
+          }
         }
       } else {
         this.errorMessage = "Preencha todos os campos corretamente.";
