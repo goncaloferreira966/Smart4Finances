@@ -19,13 +19,8 @@ class SendReport extends Mailable
 
     public function build()
     {
-        $filePath = storage_path("app/" . $this->path);
-        
         return $this->subject("Relatório Smart4Finances")
             ->view("emails.report")
-            ->attach($filePath, [
-                'as' => 'Smart4Finances_Relatório_Financeiro.pdf',
-                'mime' => 'application/pdf',
-            ]);
+            ->attach(storage_path("app/private/" . $this->path));
     }
 }
