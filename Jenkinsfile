@@ -49,6 +49,7 @@ pipeline {
                             --exclude=storage/app/public/receipts/ \
                             ./ /var/www/laravel.cmartins.pt/html
                         sudo /usr/local/bin/refresh_passport_keys.sh
+                        cd /var/www/laravel.cmartins.pt/html && php artisan storage:link
                     '''
                 }
             }
