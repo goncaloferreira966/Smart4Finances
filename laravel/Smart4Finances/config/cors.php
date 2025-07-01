@@ -21,8 +21,8 @@ return [
 
     'allowed_origins' => [
         'https://cmartins.pt',
-        'http://localhost:5173',
-        'http://localhost:3000',
+        'https://laravel.cmartins.pt',
+        'http://localhost:5173', // Para desenvolvimento local
     ],
 
     'allowed_origins_patterns' => [],

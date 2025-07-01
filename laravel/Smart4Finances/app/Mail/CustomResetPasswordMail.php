@@ -15,7 +15,7 @@ class CustomResetPasswordMail extends Mailable
     public function __construct($user, $token)
     {
         $this->user = $user;
-        $this->url = 'http://localhost:5173/reset-password?token=' . $token . '&email=' . urlencode($user->email);
+        $this->url = 'https://cmartins.pt/reset-password?token=' . $token . '&email=' . urlencode($user->email);
     }
 
     public function build()

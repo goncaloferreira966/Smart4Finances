@@ -20,7 +20,7 @@ class CustomResetPassword extends Notification
 
     public function toMail($notifiable)
     {
-        $url = 'http://localhost:5173/reset-password?token=' . $this->token . '&email=' . urlencode($notifiable->getEmailForPasswordReset());
+        $url = 'https://cmartins.pt/reset-password?token=' . $this->token . '&email=' . urlencode($notifiable->getEmailForPasswordReset());
 
         return (new MailMessage)
             ->subject('🔐 Recuperação de Password - Smart4Finances')

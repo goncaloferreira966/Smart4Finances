@@ -10,7 +10,7 @@ pipeline {
         stage('Build Laravel') {
             steps {
                 dir('laravel/Smart4Finances') {
-                    sh 'cp .env.jenkins .env'
+                    sh 'cp production.env .env'
                     sh 'composer install --no-dev --prefer-dist'
                 }
             }
@@ -32,7 +32,10 @@ pipeline {
                 dir('laravel/Smart4Finances') {
                     sh '''
                         echo "🔁 A substituir http://localhost:5173 por https://cmartins.pt no Laravel..."
-                        grep -rl 'http://localhost:5173' . | xargs sed -i 's|http://localhost:5173|https://cmartins.pt|g'
+                        find . -name "*.php" -type f -exec grep -l 'http://localhost:5173' {} \\; | xargs -r sed -i 's|http://localhost:5173|https://cmartins.pt|g'
+                        
+                        echo "🔁 A verificar se ainda existem URLs localhost..."
+                        find . -name "*.php" -type f -exec grep -l 'http://localhost:5173' {} \\; || echo "✅ Todos os URLs foram substituídos"
                     '''
                 }
             }

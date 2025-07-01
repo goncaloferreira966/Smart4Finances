@@ -15,17 +15,17 @@ class EmailVerificationController extends Controller
         $user = User::findOrFail($id);
 
         if (! $request->hasValidSignature()) {
-            return redirect('http://localhost:5173?email_verified=invalid');
+            return redirect('https://cmartins.pt?email_verified=invalid');
         }
 
         if ($user->email_verified_at) {
-            return redirect('http://localhost:5173?email_verified=already');
+            return redirect('https://cmartins.pt?email_verified=already');
         }
 
         $user->email_verified_at = now();
         $user->save();
 
-        return redirect('http://localhost:5173?email_verified=true');
+        return redirect('https://cmartins.pt?email_verified=true');
     }
 
     public function resend(Request $request)
