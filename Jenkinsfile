@@ -43,12 +43,17 @@ pipeline {
                 dir('laravel/Smart4Finances') {
                     sh '''
                         chown -R jenkins:jenkins ./storage ./bootstrap/cache || true
+                        # Ajustar permissões no destino antes do rsync
+                        sudo chown -R jenkins:jenkins /var/www/laravel.cmartins.pt/html/storage/app/public/photos/ || true
+                        sudo chmod -R 755 /var/www/laravel.cmartins.pt/html/storage/app/public/photos/ || true
+                        
                         rsync -az --no-perms --no-owner --no-group \
                             --chmod=Du=rwx,Dg=rx,Do=rx,Fu=rw,Fg=r,Fo=r \
                             --delete \
                             --exclude=storage/app/public/receipts/ \
                             --exclude=storage/app/public/photos/ \
                             ./ /var/www/laravel.cmartins.pt/html
+                        
                         sudo /usr/local/bin/refresh_passport_keys.sh
                         cd /var/www/laravel.cmartins.pt/html && php artisan storage:link
                     '''
