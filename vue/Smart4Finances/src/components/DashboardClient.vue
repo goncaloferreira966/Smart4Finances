@@ -282,7 +282,7 @@ export default {
       html2canvas(content, {
         allowTaint: true,
         useCORS: true,
-        scale: 1, // Para envio por e-mail, manter a escala menor para reduzir o tamanho do arquivo
+        scale: 1.2, // Para envio por e-mail, manter a escala menor para reduzir o tamanho do arquivo
       }).then((canvas) => {
         const imgData = canvas.toDataURL("image/png");
         const doc = new jsPDF({
