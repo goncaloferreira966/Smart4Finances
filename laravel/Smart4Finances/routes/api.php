@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use App\Mail\SendReport;
 use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\UserController;
@@ -61,16 +63,29 @@ Route::middleware(['auth:api'])->group(function () {
     });
 
     Route::post('/send-email', function (Request $request) {
-        if ($request->hasFile('file')) {
-            $file = $request->file('file');
-            $path = $file->storeAs('pdfs', 'Smart4Finances_Relatório_Financeiro.pdf', 'local');        
-    
-            Mail::to(auth()->user()->email)->send(new SendReport($path));
-    
-            return response()->json(["message" => "Email enviado com sucesso!"]);
+        try {
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $fileName = 'Smart4Finances_Relatório_Financeiro_' . date('Y-m-d_H-i-s') . '.pdf';
+                $path = $file->storeAs('reports', $fileName, 'local');
+                
+                if (!$path) {
+                    return response()->json(["error" => "Erro ao salvar o arquivo"], 500);
+                }
+                
+                Mail::to(auth()->user()->email)->send(new SendReport($path));
+                
+                // Limpar o arquivo após envio
+                Storage::disk('local')->delete($path);
+                
+                return response()->json(["message" => "Email enviado com sucesso!"]);
+            }
+            
+            return response()->json(["error" => "Arquivo não encontrado"], 400);
+        } catch (\Exception $e) {
+            Log::error('Erro ao enviar email: ' . $e->getMessage());
+            return response()->json(["error" => "Erro interno do servidor"], 500);
         }
-    
-        return response()->json(["error" => "Arquivo não encontrado"], 400);
     });
 
     // Endpoints para usuários (DAD)
